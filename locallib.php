@@ -36,3 +36,25 @@ defined('MOODLE_INTERNAL') || die();
  *    return new stdClass();
  *}
  */
+
+
+function set_restriction($activity, $user, $course, $section) {
+    global $DB;
+
+    $restriction =  '{"op":"|","c":[{"type":"profile","sf":"idnumber","op":"isequalto","v":"01"}],"show":true}';
+
+    $module = $DB->get_record('course_modules', array('course' => $course , 'section' => $sectionid ), '*', MUST_EXIST);
+
+    $course_module = new stdClass();
+    $course_module->id = $module->id;
+    $course_module->course = $course;
+    $course_module->section = $sectionid;
+    $course_module->availability = $restriction;
+
+    $res = $DB->update_record('course_modules', $course_module);
+
+    if($res)
+        rebuild_course_cache($course, true);
+
+    return $res;
+}
