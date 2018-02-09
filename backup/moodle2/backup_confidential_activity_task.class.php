@@ -19,7 +19,7 @@
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2016 Your Name <your@email.address>
+ * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/mod/confidential/backup/moodle2/backup_confidenti
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2016 Your Name <your@email.address>
+ * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_confidential_activity_task extends backup_activity_task {

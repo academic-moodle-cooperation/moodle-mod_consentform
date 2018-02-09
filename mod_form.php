@@ -21,7 +21,7 @@
  * visit: http://docs.moodle.org/en/Development:lib/formslib.php
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
  * Module instance settings form
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_confidential_mod_form extends moodleform_mod {
@@ -67,15 +67,9 @@ class mod_confidential_mod_form extends moodleform_mod {
             $this->add_intro_editor();
         }
 
-        // Adding the rest of confidential settings, spreading all them into this fieldset
-        // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        $mform->addElement('static', 'label1', 'confidentialsetting1', 'Your confidential fields go here. Replace me!');
-
-        $mform->addElement('header', 'confidentialfieldset', get_string('confidentialfieldset', 'confidential'));
-        $mform->addElement('static', 'label2', 'confidentialsetting2', 'Your confidential fields go here. Replace me!');
-
-        // Add standard grading elements.
-        $this->standard_grading_coursemodule_elements();
+        $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_confidential'));
+        $mform->setType('confirmationtext', PARAM_RAW); // no XSS prevention here, users must be trusted
+        $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
@@ -83,4 +77,18 @@ class mod_confidential_mod_form extends moodleform_mod {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
     }
+
+    /**
+     * Split form editor field array of confirmationtext into two fields
+     */
+    public function get_data($slashed = true) {
+        if ($data = parent::get_data($slashed)) {
+            if(isset($data->confirmationtext)) {
+                $data->confirmationtext = $data->confirmationtext['text'];
+            }
+        }
+        return $data;
+    }
+
+
 }

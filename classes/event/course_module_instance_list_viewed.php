@@ -18,7 +18,7 @@
  * The mod_confidential instance list viewed event.
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * The mod_confidential instance list viewed event class.
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {

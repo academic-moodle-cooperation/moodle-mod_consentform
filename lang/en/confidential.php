@@ -22,21 +22,24 @@
  * if you like, and it can span multiple lines.
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'confidential';
-$string['modulenameplural'] = 'confidentials';
-$string['modulename_help'] = 'Use the confidential module for... | The confidential module allows...';
-$string['confidential:addinstance'] = 'Add a new confidential';
-$string['confidential:submit'] = 'Submit confidential';
-$string['confidential:view'] = 'View confidential';
-$string['confidentialfieldset'] = 'Custom example fieldset';
-$string['confidentialname'] = 'confidential name';
-$string['confidentialname_help'] = 'This is the content of the help tooltip associated with the confidentialname field. Markdown syntax is supported.';
-$string['confidential'] = 'confidential';
-$string['pluginadministration'] = 'confidential administration';
-$string['pluginname'] = 'confidential';
+$string['modulename'] = 'Confidentiality obligation';
+$string['modulenameplural'] = 'Confidentiality obligations';
+$string['modulename_help'] = 'Use the confidentiality obligation module to uncover certain activities not before the participant has agreed.';
+$string['confidential:addinstance'] = 'Add a new confidentiality obligation module';
+$string['confidential:submit'] = 'Submit confidentiality obligation';
+$string['confidential:view'] = 'View confidentiality obligation';
+$string['confidentialname'] = 'Confidentiality obligation';
+$string['confidentialname_help'] = 'Use the confidentiality obligation module to uncover certain activities not before the participant has agreed.';
+$string['confidential'] = 'confidentiality obligation';
+$string['pluginadministration'] = 'Confidentiality obligation administration';
+$string['pluginname'] = 'Confidentiality obligation';
+$string['confirmationtext'] = 'Confidentiality Text to agree/disagree to';
+$string['modules'] = 'Activities and Ressources';
+$string['dependent'] = 'Controlled by this module';
+$string['noavailability'] = 'This module only works with availability feature on, which is not the case at your moodle site.';

@@ -25,7 +25,7 @@
  * Moodle is performing actions across all modules.
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -54,7 +54,7 @@ function confidential_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_GRADE_HAS_GRADE:
-            return true;
+            return false;
         case FEATURE_BACKUP_MOODLE2:
             return true;
         default:
@@ -83,7 +83,7 @@ function confidential_add_instance(stdClass $confidential, mod_confidential_mod_
 
     $confidential->id = $DB->insert_record('confidential', $confidential);
 
-    confidential_grade_item_update($confidential);
+    //confidential_grade_item_update($confidential);
 
     return $confidential->id;
 }
@@ -109,7 +109,7 @@ function confidential_update_instance(stdClass $confidential, mod_confidential_m
 
     $result = $DB->update_record('confidential', $confidential);
 
-    confidential_grade_item_update($confidential);
+    //confidential_grade_item_update($confidential);
 
     return $result;
 }

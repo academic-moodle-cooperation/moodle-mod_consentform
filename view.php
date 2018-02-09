@@ -21,7 +21,7 @@
  * if you like, and it can span multiple lines.
  *
  * @package    mod_confidential
- * @copyright  2016 Your Name <your@email.address>
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,6 +29,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
+require_once('locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // ... confidential instance ID - it should be named as the first character of the module.
@@ -47,6 +48,9 @@ if ($id) {
 
 require_login($course, true, $cm);
 
+$context = context_module::instance($cm->id);
+//$context = context_course::instance($cm->course);
+
 $event = \mod_confidential\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
     'context' => $PAGE->context,
@@ -61,13 +65,6 @@ $PAGE->set_url('/mod/confidential/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($confidential->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('confidential-'.$somevar);
- */
-
 // Output starts here.
 echo $OUTPUT->header();
 
@@ -76,8 +73,30 @@ if ($confidential->intro) {
     echo $OUTPUT->box(format_module_intro('confidential', $confidential, $cm->id), 'generalbox mod_introbox', 'confidentialintro');
 }
 
-// Replace the following lines with you own code.
-echo $OUTPUT->heading('Yay! It works!');
+if (!$CFG->enableavailability) {
+
+    echo $OUTPUT->heading(get_string("noavailability", "mod_confidential"));
+
+} else {
+    if (has_capability('mod/confidential:submit', $context, null, false)) {
+
+        $table = new html_table();
+        $table->id = 'coursemodulestable';
+        $table->attributes['class'] = 'generaltable boxaligncenter overview';
+        $table->head = confidential_generate_table_header();
+        $table->data = confidential_generate_table_content($course, $cm->id);
+        $table->align = array('center', 'left');
+
+        echo confidential_render_table($table);
+
+        $jsparams = array('nixxxx' => 'nix');
+        $PAGE->requires->js_call_amd('mod_confidential/checkboxclicked', 'init', array($jsparams));
+
+    } else {
+        echo $OUTPUT->heading('Student');
+    }
+
+}
 
 // Finish the page.
 echo $OUTPUT->footer();

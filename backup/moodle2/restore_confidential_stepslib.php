@@ -19,7 +19,7 @@
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2016 Your Name <your@email.address>
+ * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2016 Your Name <your@email.address>
+ * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_confidential_activity_structure_step extends restore_activity_structure_step {
