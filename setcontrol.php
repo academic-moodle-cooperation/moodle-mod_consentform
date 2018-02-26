@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+define('AJAX_SCRIPT', true);
+
 require_once(__DIR__ . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
@@ -37,16 +39,16 @@ $cmid = required_param('cmid', PARAM_INT);  // The ID of this confidential modul
 
 
 // Update
-$ok = "?";
-if ($ok = is_numeric($val)) {
+$ret = "?";
+if ($ret = is_numeric($val)) {
     if ($ischecked) {
-        if (!$ok = confidential_find_entry_availability($val, $cmid)) {
-            $ok = confidential_make_entry_availability($val, $cmid);
+        if (!$ret = confidential_find_entry_availability($val, $cmid)) {
+            $ret = confidential_make_entry_availability($val, $cmid);
         }
     } else {
         if (confidential_find_entry_availability($val, $cmid)) {
-            $ok = confidential_delete_entry_availability($val, $cmid);
+            $ret = confidential_delete_entry_availability($val, $cmid);
         }
     }
 }
-echo $ok;
+echo json_encode($ret);

@@ -53,7 +53,7 @@ define(
 
             function transmitcheckboxclicked(ischecked, value) {
                 var cfg = {
-                    method : 'POST',
+                    method : 'get',
                     url : config.wwwroot + '/mod/confidential/setcontrol.php',
                     data: {
                         sesskey: config.sesskey,
@@ -61,11 +61,12 @@ define(
                         value: encodeURI(value),
                         cmid: instance.cmid
                     },
-                    success: function(msg) {
-                        log.info(msg);
+                    dataType: 'json',
+                    success: function(ret) {
+                        log.info(ret);
                     },
-                    error: function() {
-                        log.error("transmit checkboxclicked FAILED", "confidential");
+                    error: function(jqXHR, error) {
+                        log.error(error);
                     }
                 };
 
