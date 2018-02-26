@@ -25,11 +25,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Replace confidential with the name of your module and remove this line.
-
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once('locallib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/confidential_agreement_form.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // ... confidential instance ID - it should be named as the first character of the module.
@@ -68,14 +66,21 @@ $PAGE->set_heading(format_string($course->fullname));
 // Output starts here.
 echo $OUTPUT->header();
 
-// Conditions to show the intro can change to look for own settings or whatever.
-if ($confidential->intro) {
-    echo $OUTPUT->box(format_module_intro('confidential', $confidential, $cm->id), 'generalbox mod_introbox', 'confidentialintro');
-}
-
+$nogostring = "";
 if (!$CFG->enableavailability) {
 
-    echo $OUTPUT->heading(get_string("noavailability", "mod_confidential"));
+    $nogostring = get_string("noavailability", "mod_confidential");
+
+}
+if (!$CFG->enablecompletion) {
+
+    $nogostring .= " " . get_string("nocompletion", "mod_confidential");
+}
+if ($nogostring) {
+
+    echo $OUTPUT->heading("Sorry, but...");
+
+    echo $nogostring;
 
 } else {
     if (has_capability('mod/confidential:submit', $context, null, false)) {
@@ -89,11 +94,14 @@ if (!$CFG->enableavailability) {
 
         echo confidential_render_table($table);
 
-        $jsparams = array('nixxxx' => 'nix');
+        $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_confidential/checkboxclicked', 'init', array($jsparams));
 
     } else {
-        echo $OUTPUT->heading('Student');
+        $mform = new confidential_agreement_form(null, array('text' => $confidential->confirmationtext));
+        echo $OUTPUT->box_start('', 'confidential_main_cointainer');
+        $mform->display();
+        echo $OUTPUT->box_end();
     }
 
 }

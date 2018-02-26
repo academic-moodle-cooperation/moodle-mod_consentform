@@ -27,54 +27,39 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once(dirname(__FILE__) . '/../../lib/formslib.php');
 
 /**
- * Module instance settings form
+ * Agreement form
  *
  * @package    mod_confidential
  * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_confidential_mod_form extends moodleform_mod {
+class confidential_agreement_form extends moodleform {
 
     /**
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
 
         $mform = $this->_form;
+        $data = &$this->_customdata;
 
-        // Adding the "general" fieldset, where all the common settings are showed.
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+        $confirmationtexthtml = '<div id="confidential_confirmationtext">' . $data['text'] . '</div>';
+        $separator = '<span id="confidential_button_separator">&nbsp;</span>';
 
-        // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('confidentialname', 'confidential'), array('size' => '64'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('name', PARAM_TEXT);
-        } else {
-            $mform->setType('name', PARAM_CLEANHTML);
-        }
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'confidentialname', 'confidential');
+        $mform->addElement('html', $confirmationtexthtml);
 
-        $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_confidential'));
-        if (isset($this->current->confirmationtext)) {
-            $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
-        }
-        $mform->setType('confirmationtext', PARAM_RAW); // no XSS prevention here, users must be trusted
-        $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
+        $group = array();
+        $group[] = $mform->createElement(
+            'submit', 'agreement', get_string('agree', 'confidential')
+        );
+        $group[] = $mform->createElement(
+            'submit', 'agreement', get_string('disagree', 'confidential')
+        );
+        $mform->addGroup($group, 'agreementgroup', get_string('choice', 'confidential'), $separator);
 
-        // Add standard grading elements.
-        //$this->standard_grading_coursemodule_elements();
-
-        // Add standard elements, common to all modules.
-        $this->standard_coursemodule_elements();
-
-        // Add standard buttons, common to all modules.
-        $this->add_action_buttons();
     }
 
     /**

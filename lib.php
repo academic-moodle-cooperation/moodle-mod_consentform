@@ -31,10 +31,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Example constant, you probably want to remove this :-)
- */
-define('NEWMODULE_ULTIMATE_ANSWER', 42);
+
+define('INSERT_AVAILABILITY_PATTERN', '{"op":"&","c":[{"type":"completion","cm":xxx,"e":1}],"showc":[true]}');
 
 /* Moodle core API */
 
@@ -50,11 +48,11 @@ function confidential_supports($feature) {
 
     switch($feature) {
         case FEATURE_MOD_INTRO:
-            return true;
+            return false;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_GRADE_HAS_GRADE:
-            return false;
+            return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
         default:
@@ -83,7 +81,7 @@ function confidential_add_instance(stdClass $confidential, mod_confidential_mod_
 
     $confidential->id = $DB->insert_record('confidential', $confidential);
 
-    //confidential_grade_item_update($confidential);
+    confidential_grade_item_update($confidential);
 
     return $confidential->id;
 }
@@ -109,7 +107,7 @@ function confidential_update_instance(stdClass $confidential, mod_confidential_m
 
     $result = $DB->update_record('confidential', $confidential);
 
-    //confidential_grade_item_update($confidential);
+    confidential_grade_item_update($confidential);
 
     return $result;
 }

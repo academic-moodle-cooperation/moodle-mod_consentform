@@ -1,0 +1,39 @@
+/**
+// This file is part of mod_organizer for Moodle - http://moodle.org/
+//
+// It is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// It is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// If not, see <http://www.gnu.org/licenses/>.
+*/
+/**
+ * styles.css
+ *
+ * @package    mod_confidential
+ * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+#confidential_confirmationtext {
+    background-color: #F0F0F0 !important;
+    width: 80% !important;
+    border: 1px solid #BBB !important;
+    padding: 3em !important;
+}
+
+#confidential_button_separator {
+    width: 5em;
+    display: inline-block;
+}
+
+#mform1 .col-md-3 {
+    width: 10% !important;
+}

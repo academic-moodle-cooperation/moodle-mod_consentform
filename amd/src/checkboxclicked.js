@@ -33,14 +33,14 @@ define(
      * @alias module:mod_confidential/checkboxclicked
      */
         var Checkboxclicked = function() {
-            this.nixxxx = "";
+            this.cmid = "";
         };
 
         var instance = new Checkboxclicked();
 
         instance.init = function (param) {
 
-            instance.nixxxx = param.nixxxx;
+            instance.cmid = param.cmid;
 
             // What happens when a course module checkbox is clicked.
             function checkboxclicked() {
@@ -53,25 +53,16 @@ define(
 
             function transmitcheckboxclicked(ischecked, value) {
                 var cfg = {
-                    method : 'get',
+                    method : 'POST',
                     url : config.wwwroot + '/mod/confidential/setcontrol.php',
                     data: {
-                        'sesskey': config.sesskey,
-                        'ischecked': encodeURI(ischecked),
-                        'value': encodeURI(value)
+                        sesskey: config.sesskey,
+                        ischecked: encodeURI(ischecked),
+                        value: encodeURI(value),
+                        cmid: instance.cmid
                     },
-                    dataType: 'json',
-                    beforeSend: function() {
-                        log.info("before transmit checkboxclicked isclicked: " + ischecked + " value: " + value, "confidential");
-                    },
-                    success: function(ret) {
-                        var retjs = JSON.parse(ret);
-                        log.info(retjs.status);
-                        if (ret.status=="OK") {
-                            log.info("transmit checkboxclicked OK", "confidential");
-                        } else {
-                            log.error("transmit checkboxclicked - DB UPDATE - FAILED", "confidential");
-                        }
+                    success: function(msg) {
+                        log.info(msg);
                     },
                     error: function() {
                         log.error("transmit checkboxclicked FAILED", "confidential");

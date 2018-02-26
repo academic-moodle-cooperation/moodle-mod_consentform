@@ -36,12 +36,13 @@ function confidential_generate_table_content($course, $thiscmid) {
     $modinfo = get_fast_modinfo($course);
     $coursemodules = $modinfo->get_cms();
     $sections = $modinfo->get_section_info_all();
+    $context = $PAGE->cm->context;
 
     $rows = array();
     $sectionibefore = "";
     $usercanviewsection = true;
     foreach($coursemodules as $cmid => $cminfo) {
-        if ($cmid != $thiscmid) {
+        if ($cmid != $thiscmid && !$cminfo->deletioninprogress) {
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
                 if (!($sectioninfo = $modinfo->get_section_info($sectioni))) { // If this section doesn't exist.
@@ -64,16 +65,16 @@ function confidential_generate_table_content($course, $thiscmid) {
             }
             if ($usercanviewsection) {
                 $modname = $cminfo->modname;
-                if (has_capability("mod/$modname:addinstance", $PAGE->cm->context)) {
+                if (has_capability("mod/$modname:addinstance", $context)) {
                     $row = new html_table_row();
-                    $checked = confidential_checkmodul($cminfo);
+                    $checked = confidential_find_entry_availability($cmid, $thiscmid);
                     $row->cells[] = new html_table_cell(
                         html_writer::checkbox('selectcoursemodule' . (string)$cmid, $cmid, $checked, '', array('class' => 'selectcoursemodule'))
                     );
                     $viewurl = new moodle_url('/course/modedit.php', array('update' => $cmid));
                     $activitylink = html_writer::empty_tag('img', array('src' => $cminfo->get_icon_url(),
                             'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname, 'title' => $cminfo->modfullname, 'role' => 'presentation')) .
-                        html_writer::tag('span', $cminfo->name, array('class' => 'instancename'));
+                            html_writer::tag('span', $cminfo->name, array('class' => 'instancename'));
                     $row->cells[] = new html_table_cell(
                         html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) . html_writer::end_div()
                     );
@@ -99,11 +100,6 @@ function confidential_generate_table_header() {
     $header[] = $cell;
 
     return $header;
-}
-
-
-function confidential_checkmodul($cminfo) {
-    return false;
 }
 
 
@@ -341,3 +337,90 @@ function confidential_render_table(html_table $table, $printfooter = true, $over
     $output = html_writer::tag('div', $output, array('style' => 'overflow: auto; width: 100%'));
     return $output;
 }
+
+function confidential_find_entry_availability($val, $cmid) {
+    global $DB;
+
+    $found = false;
+
+    $conditions = $DB->get_field('course_modules', 'availability', array('id' => $val));
+    $conditions = json_decode($conditions);
+
+    foreach($conditions->c as $condition) {
+        if ($condition->type == 'completion') {
+            if ($condition->cm == $cmid) {
+                $found = true;
+                break;
+            }
+        }
+    }
+    return $found;
+}
+
+function confidential_make_entry_availability($val, $cmid) {
+    global $DB;
+
+    if ($conditions = $DB->get_field('course_modules', 'availability', array('id' => $val))) {
+        $conditions = json_decode($conditions);
+    } else {
+        $conditions = new stdClass();
+        $conditions->op = "&";
+        $conditions->c = array();
+        $conditions->showc = array();
+    }
+
+    $newcondition = new stdClass();
+    $newcondition->type = 'completion';
+    $newcondition->cm = $cmid;
+    $newcondition->e = 1;
+
+    $conditions->c[] = $newcondition;
+    $conditions->showc[] = true;
+
+    $conditions = json_encode($conditions);
+
+    $updaterecord = new stdClass();
+    $updaterecord->id = $val;
+    $updaterecord->availability = $conditions;
+
+    $ok = $DB->update_record('course_modules', $updaterecord);
+
+    return $ok;
+}
+
+function confidential_delete_entry_availability($val, $cmid) {
+    global $DB;
+
+    $found = -1;
+    if ($conditions = $DB->get_field('course_modules', 'availability', array('id' => $val))) {
+        $conditions = json_decode($conditions);
+
+        $indx = 0;
+        foreach($conditions->c as $condition) {
+            if ($condition->type == 'completion') {
+                if ($condition->cm == $cmid) {
+                    $found = $indx;
+                    break;
+                }
+                $indx++;
+            }
+        }
+    }
+
+    if ($found >= 0) {
+        unset($conditions->c[$found]);
+        unset($conditions->showc[$found]);
+
+        $conditions = json_encode($conditions);
+
+        $updaterecord = new stdClass();
+        $updaterecord->id = $val;
+        $updaterecord->availability = $conditions;
+
+        $ok = $DB->update_record('course_modules', $updaterecord);
+        return $ok;
+    } else {
+        return false;
+    }
+}
+

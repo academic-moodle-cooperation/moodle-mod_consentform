@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 // Check access.
 if (!confirm_sesskey()) {
@@ -31,17 +32,21 @@ if (!confirm_sesskey()) {
 
 // Get the params.
 $ischecked = required_param('ischecked', PARAM_BOOL);  // Is the checkbox clicked or not?
-$cmid = required_param('value', PARAM_INT);  // The ID of the coursemodule.
+$val = required_param('value', PARAM_INT);  // The ID of the dependent coursemodule.
+$cmid = required_param('cmid', PARAM_INT);  // The ID of this confidential module.
 
 
 // Update
-if (is_numeric($cmid)) {
-    if ($dbok = $DB->set_field('course_modules', 'score', $ischecked ? "1" : "0", array('id' => $cmid))) {
-        echo json_encode(array('status' => 'OK'));
+$ok = "?";
+if ($ok = is_numeric($val)) {
+    if ($ischecked) {
+        if (!$ok = confidential_find_entry_availability($val, $cmid)) {
+            $ok = confidential_make_entry_availability($val, $cmid);
+        }
     } else {
-        echo json_encode(array('status' => 'NOT OK'));
+        if (confidential_find_entry_availability($val, $cmid)) {
+            $ok = confidential_delete_entry_availability($val, $cmid);
+        }
     }
-} else {
-    echo json_encode(array('status' => 'NOT OK'));
 }
-
+echo $ok;
