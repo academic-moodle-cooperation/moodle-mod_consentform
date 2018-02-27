@@ -346,14 +346,17 @@ function confidential_find_entry_availability($val, $cmid) {
     $conditions = $DB->get_field('course_modules', 'availability', array('id' => $val));
     $conditions = json_decode($conditions);
 
-    foreach($conditions->c as $condition) {
-        if ($condition->type == 'completion') {
-            if ($condition->cm == $cmid) {
-                $found = true;
-                break;
+    if (isset($conditions->c)) {
+        foreach($conditions->c as $condition) {
+            if ($condition->type == 'completion') {
+                if ($condition->cm == $cmid) {
+                    $found = true;
+                    break;
+                }
             }
         }
     }
+
     return $found;
 }
 
