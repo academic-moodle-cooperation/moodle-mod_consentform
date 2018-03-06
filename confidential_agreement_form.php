@@ -46,6 +46,9 @@ class confidential_agreement_form extends moodleform {
         $mform = $this->_form;
         $data = &$this->_customdata;
 
+        $mform->addElement('hidden', 'id', $data['id']);
+        $mform->setType('id', PARAM_INT);
+
         $confirmationtexthtml = '<div id="confidential_confirmationtext">' . $data['text'] . '</div>';
         $separator = '<span id="confidential_button_separator">&nbsp;</span>';
 

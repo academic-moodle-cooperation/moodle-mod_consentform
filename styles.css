@@ -37,3 +37,28 @@
 #mform1 .col-md-3 {
     width: 10% !important;
 }
+
+#confidential_activitytable {
+    width: 90%;
+}
+
+.confidential_activitytable_activityrow {
+    line-height: 1.3em;
+}
+.confidential_activitytable_sectionrow {
+    font-weight: bold;
+    background-color: lightsteelblue !important;
+    text-align: left;
+    color: white;
+    line-height: 1.3em;
+}
+
+.confidential_activitytable_checkboxcolumn {
+    white-space: nowrap;
+    width: 5%;
+    text-align: center;
+}
+
+.confidential_activitytable_activitycolumn {
+    text-align: left;
+}

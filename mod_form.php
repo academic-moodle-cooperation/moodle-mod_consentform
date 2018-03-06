@@ -68,7 +68,7 @@ class mod_confidential_mod_form extends moodleform_mod {
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
         // Add standard grading elements.
-        //$this->standard_grading_coursemodule_elements();
+        $this->standard_grading_coursemodule_elements();
 
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();

@@ -52,25 +52,25 @@ define(
             $('.selectcoursemodule').on('click', checkboxclicked);
 
             function transmitcheckboxclicked(ischecked, value) {
-                var cfg = {
-                    method : 'get',
-                    url : config.wwwroot + '/mod/confidential/setcontrol.php',
-                    data: {
-                        sesskey: config.sesskey,
-                        ischecked: encodeURI(ischecked),
-                        value: encodeURI(value),
-                        cmid: instance.cmid
-                    },
-                    dataType: 'json',
-                    success: function(ret) {
-                        log.info(ret);
-                    },
-                    error: function(jqXHR, error) {
-                        log.error(error);
-                    }
-                };
 
-                $.ajax(cfg);
+                $.get( config.wwwroot + '/mod/confidential/setcontrol.php', {
+                    sesskey: config.sesskey,
+                    ischecked: encodeURI(ischecked),
+                    value: encodeURI(value),
+                    cmid: instance.cmid
+                    } , 'json').done(function( data ) {
+                        var checkboxname = 'selectcoursemodule' + value;
+                        if (data == true) {
+                            $('input[name=' + checkboxname + ']').parent().parent().css('background-color', 'lightgreen');
+                        } else {
+                            if (ischecked) {
+                                $('input[name=' + checkboxname + ']').prop('checked', false);
+                            } else {
+                                $('input[name=' + checkboxname + ']').prop('checked', true);
+                            }
+                            $('input[name=' + checkboxname + ']').parent().parent().css('background-color', 'lightgrey');
+                        }
+                    });
             }
         };
 

@@ -57,6 +57,8 @@ $event->add_record_snapshot('course', $PAGE->course);
 $event->add_record_snapshot($PAGE->cm->modname, $confidential);
 $event->trigger();
 
+$redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
+
 // Print the page header.
 
 $PAGE->set_url('/mod/confidential/view.php', array('id' => $cm->id));
@@ -86,11 +88,10 @@ if ($nogostring) {
     if (has_capability('mod/confidential:submit', $context, null, false)) {
 
         $table = new html_table();
-        $table->id = 'coursemodulestable';
-        $table->attributes['class'] = 'generaltable boxaligncenter overview';
+        $table->id = 'confidential_activitytable';
+        $table->attributes['class'] = 'generaltable boxaligncenter';
         $table->head = confidential_generate_table_header();
         $table->data = confidential_generate_table_content($course, $cm->id);
-        $table->align = array('center', 'left');
 
         echo confidential_render_table($table);
 
@@ -98,10 +99,41 @@ if ($nogostring) {
         $PAGE->requires->js_call_amd('mod_confidential/checkboxclicked', 'init', array($jsparams));
 
     } else {
-        $mform = new confidential_agreement_form(null, array('text' => $confidential->confirmationtext));
-        echo $OUTPUT->box_start('', 'confidential_main_cointainer');
-        $mform->display();
-        echo $OUTPUT->box_end();
+        $mform = new confidential_agreement_form(null, array('id' => $id, 'text' => $confidential->confirmationtext));
+        if ($data = $mform->get_data()) {
+            $messages = array();
+            if ($data->agreementgroup['agreement'] == get_string('agree', 'confidential')) {
+                $ok = confidential_save_agreement(true, $confidential);
+                $messages[] = get_string('msgagreed', 'confidential');
+                $event = \mod_confidential\event\agreement_agree::create(
+                    array(
+                        'objectid' => $PAGE->cm->id,
+                        'context' => $PAGE->context
+                    )
+                );
+            } else {
+                $ok = confidential_save_agreement(false, $confidential);
+                $messages[] = get_string('msgdisagreed', 'confidential');
+                $event = \mod_confidential\event\agreement_disagree::create(
+                    array(
+                        'objectid' => $PAGE->cm->id,
+                        'context' => $PAGE->context
+                    )
+                );
+            }
+            $event->trigger();
+
+            if ($messages) {
+                redirect($redirecturl, $messages, 7);
+            } else {
+                redirect($redirecturl);
+            }
+
+        } else {
+            echo $OUTPUT->box_start('', 'confidential_main_cointainer');
+            $mform->display();
+            echo $OUTPUT->box_end();
+        }
     }
 
 }

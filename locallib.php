@@ -42,7 +42,7 @@ function confidential_generate_table_content($course, $thiscmid) {
     $sectionibefore = "";
     $usercanviewsection = true;
     foreach($coursemodules as $cmid => $cminfo) {
-        if ($cmid != $thiscmid && !$cminfo->deletioninprogress) {
+        if ($cminfo->modname != 'confidential' && !$cminfo->deletioninprogress) {
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
                 if (!($sectioninfo = $modinfo->get_section_info($sectioni))) { // If this section doesn't exist.
@@ -52,14 +52,16 @@ function confidential_generate_table_content($course, $thiscmid) {
                 if (!$sectioninfo->uservisible) {
                     $usercanviewsection = false;
                 } else {
-                    $usercanviewsection = true;
-                    $row = new html_table_row();
-                    $sectionname = $sections[$sectioni]->name;
-                    $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
-                    $cell = $row->cells[] = new html_table_cell($sectionname);
-                    $cell->colspan="2";
-                    $cell->style="text-align:left;";
-                    $rows[] = $row;
+                    if ($sectioni != 0) {
+                        $usercanviewsection = true;
+                        $row = new html_table_row();
+                        $sectionname = $sections[$sectioni]->name;
+                        $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
+                        $cell = $row->cells[] = new html_table_cell($sectionname);
+                        $cell->colspan="2";
+                        $row->attributes['class'] = "confidential_activitytable_sectionrow";
+                        $rows[] = $row;
+                    }
                 }
                 $sectionibefore = $sectioni;
             }
@@ -68,9 +70,11 @@ function confidential_generate_table_content($course, $thiscmid) {
                 if (has_capability("mod/$modname:addinstance", $context)) {
                     $row = new html_table_row();
                     $checked = confidential_find_entry_availability($cmid, $thiscmid);
-                    $row->cells[] = new html_table_cell(
+                    $cell = new html_table_cell(
                         html_writer::checkbox('selectcoursemodule' . (string)$cmid, $cmid, $checked, '', array('class' => 'selectcoursemodule'))
                     );
+                    $cell->attributes['class'] = 'confidential_activitytable_checkboxcolumn';
+                    $row->cells[] = $cell;
                     $viewurl = new moodle_url('/course/modedit.php', array('update' => $cmid));
                     $activitylink = html_writer::empty_tag('img', array('src' => $cminfo->get_icon_url(),
                             'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname, 'title' => $cminfo->modfullname, 'role' => 'presentation')) .
@@ -78,6 +82,7 @@ function confidential_generate_table_content($course, $thiscmid) {
                     $row->cells[] = new html_table_cell(
                         html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) . html_writer::end_div()
                     );
+                    $row->attributes['class'] = "confidential_activitytable_activityrow";
                     $rows[] = $row;
                 }
             } // End if user can view.
@@ -93,9 +98,11 @@ function confidential_generate_table_header() {
 
     $header = array();
     $cell = new html_table_cell(get_string("dependent", 'confidential'));
+    $cell->attributes['class'] = "confidential_activitytable_checkboxcolumn";
     $cell->header = true;
     $header[] = $cell;
     $cell = new html_table_cell(get_string("modules", 'confidential'));
+    $cell->attributes['class'] = "confidential_activitytable_activitycolumn";
     $cell->header = true;
     $header[] = $cell;
 
@@ -427,3 +434,14 @@ function confidential_delete_entry_availability($val, $cmid) {
     }
 }
 
+function confidential_save_agreement($agreed, $confidential) {
+    global $USER;
+
+    if ($agreed) {
+        $ok = confidential_set_user_grade($confidential, $USER->id, true);
+    } else {
+        $ok = confidential_set_user_grade($confidential, $USER->id, false);
+    }
+
+    return $ok;
+}

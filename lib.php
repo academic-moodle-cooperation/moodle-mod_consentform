@@ -325,31 +325,18 @@ function confidential_scale_used_anywhere($scaleid) {
  * @param bool $reset reset grades in the gradebook
  * @return void
  */
-function confidential_grade_item_update(stdClass $confidential, $reset=false) {
+function confidential_grade_item_update(stdClass $confidential, $grades=null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
     $item = array();
     $item['itemname'] = clean_param($confidential->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
-
-    if ($confidential->grade > 0) {
-        $item['gradetype'] = GRADE_TYPE_VALUE;
-        $item['grademax']  = $confidential->grade;
-        $item['grademin']  = 0;
-    } else if ($confidential->grade < 0) {
-        $item['gradetype'] = GRADE_TYPE_SCALE;
-        $item['scaleid']   = -$confidential->grade;
-    } else {
-        $item['gradetype'] = GRADE_TYPE_NONE;
-    }
-
-    if ($reset) {
-        $item['reset'] = true;
-    }
+    $item['grademax']  = 1;
+    $item['grademin']  = 0;
 
     grade_update('mod/confidential', $confidential->course, 'mod', 'confidential',
-            $confidential->id, 0, null, $item);
+            $confidential->id, 0, $grades, $item);
 }
 
 /**
@@ -382,6 +369,28 @@ function confidential_update_grades(stdClass $confidential, $userid = 0) {
     $grades = array();
 
     grade_update('mod/confidential', $confidential->course, 'mod', 'confidential', $confidential->id, 0, $grades);
+}
+
+function confidential_set_user_grade($confidential, $userid, $agreed=true) {
+
+    if ($userid) {
+
+        $grade = new stdClass();
+        $grade->userid = $userid;
+        if ($agreed) {
+            $grade->rawgrade = 1;
+        } else {
+            $grade->rawgrade = 0;
+        }
+        $time = time();
+        $grade->dategraded = $time;
+        $grade->datesubmitted = $time;
+
+        return confidential_grade_item_update($confidential, $grade);
+
+    } else {
+        return false;
+    }
 }
 
 /* File API */
