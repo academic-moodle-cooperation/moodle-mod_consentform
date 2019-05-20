@@ -51,9 +51,11 @@ define(['jquery', 'core/log'], function($, log) {
         log.info('Update checkboxes (type = ' + type + ')');
 
         if (type == 'all') {
-            $(e.data.inst.table + ' input[type="checkbox"]').prop('checked', true);
+            $('td input:checkbox', e.data.inst.table).prop('checked', true);
+            //$(e.data.inst.table + ' input[type="checkbox"]').prop('checked', true);
         } else if (type == 'none') {
-            $(e.data.inst.table + ' input[type="checkbox"]').prop('checked', false);
+            $('td input:checkbox', e.data.inst.table).prop('checked', false);
+            //$(e.data.inst.table + ' input[type="checkbox"]').prop('checked', false);
         } else {
             var checkboxes = $(e.data.inst.table + ' input[type="checkbox"]');
 
