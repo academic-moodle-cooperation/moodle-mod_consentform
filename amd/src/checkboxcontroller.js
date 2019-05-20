@@ -54,13 +54,13 @@ define(['jquery', 'core/log'], function($, log) {
 
         if (type == 'all') {
             checkboxes.each(function(idx, current) {
-                if ($(current).data(type) != 1) {
+                if ($(current).prop('checked') == false) {
                     $(current).click();
                 }
             });
         } else if (type == 'none') {
             checkboxes.each(function(idx, current) {
-                if ($(current).data(type) == 1) {
+                if ($(current).prop('checked') == true) {
                     $(current).click();
                 }
             });
