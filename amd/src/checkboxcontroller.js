@@ -50,20 +50,18 @@ define(['jquery', 'core/log'], function($, log) {
 
         log.info('Update checkboxes (type = ' + type + ')');
 
-        if (type == 'all') {
-            $('td input:checkbox', e.data.inst.table).prop('checked', true);
-            //$(e.data.inst.table + ' input[type="checkbox"]').prop('checked', true);
-        } else if (type == 'none') {
-            $('td input:checkbox', e.data.inst.table).prop('checked', false);
-            //$(e.data.inst.table + ' input[type="checkbox"]').prop('checked', false);
-        } else {
-            var checkboxes = $(e.data.inst.table + ' input[type="checkbox"]');
+        var checkboxes = $('td input:checkbox', e.data.inst.table);
 
+        if (type == 'all') {
+            checkboxes.each(function(idx, current) {
+                if ($(current).data(type) != 1) {
+                    $(current).click();
+                }
+            });
+        } else if (type == 'none') {
             checkboxes.each(function(idx, current) {
                 if ($(current).data(type) == 1) {
-                    $(current).prop('checked', true);
-                } else {
-                    $(current).prop('checked', false);
+                    $(current).click();
                 }
             });
         }
