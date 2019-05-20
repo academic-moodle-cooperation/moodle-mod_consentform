@@ -99,7 +99,7 @@ function confidential_generate_table_header() {
 
     $header = array();
     $nourl = $PAGE->url . "#";
-    $cell = new html_table_cell(get_string("dependent", 'confidential') .
+    $cell = new html_table_cell(get_string("dependent", 'confidential') . '<br>' .
         \html_writer::link($nourl, get_string('all', 'moodle'), ['class' => 'co_all']).' / '.
         \html_writer::link($nourl, get_string('none', 'moodle'), ['class' => 'co_none']));
     $cell->attributes['class'] = "confidential_activitytable_checkboxcolumn";
