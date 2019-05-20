@@ -77,12 +77,8 @@ define(['jquery', 'core/log'], function($, log) {
      * @param {array} params contains table
      * @return {bool} true if everything's ok (no error-handling implemented)
      */
-    instance.initializer = function(params) {
+    instance.init = function(params) {
         log.debug("Init checkboxcontroller for table " + params.table, 'confidential');
-
-        if (params.table !== '') {
-            instance.table = params.table;
-        }
 
         $('.co_all').on('click', null, {inst: this, type: 'all'}, this.updateCheckboxes);
         $('.co_none').on('click', null, {inst: this, type: 'none'}, this.updateCheckboxes);
