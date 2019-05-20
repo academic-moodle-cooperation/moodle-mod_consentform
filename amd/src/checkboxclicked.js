@@ -53,6 +53,8 @@ define(
 
             function transmitcheckboxclicked(ischecked, value) {
 
+                log.info('Transmit checkbox clicked (ischecked = ' + ischecked + ' value = ' + value + ')');
+
                 $.get( config.wwwroot + '/mod/confidential/setcontrol.php', {
                     sesskey: config.sesskey,
                     ischecked: encodeURI(ischecked),
