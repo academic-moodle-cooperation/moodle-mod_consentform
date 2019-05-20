@@ -49,7 +49,7 @@ define(
                 transmitcheckboxclicked(ischecked, value);
             }
 
-            $('.selectcoursemodule').on('clicked', checkboxclicked);
+            $('.selectcoursemodule').on('click', checkboxclicked);
 
             function transmitcheckboxclicked(ischecked, value) {
 

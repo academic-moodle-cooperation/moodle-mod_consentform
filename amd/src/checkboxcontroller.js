@@ -43,7 +43,7 @@ define(['jquery', 'core/log'], function($, log) {
      * @return {bool} true if everything's alright (no error handling by now)
      */
     Checkboxcontroller.prototype.updateCheckboxes = function(e) {
-        //e.preventDefault();
+        e.preventDefault();
         //e.stopPropagation();
 
         var type = e.data.type;
