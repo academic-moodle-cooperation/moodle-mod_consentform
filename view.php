@@ -86,7 +86,7 @@ if ($nogostring) {
 
 } else {
     if (has_capability('mod/confidential:submit', $context, null, false)) {
-
+        // Table for teacher's view.
         $table = new html_table();
         $table->id = 'confidential_activitytable';
         $table->attributes['class'] = 'generaltable boxaligncenter';
@@ -97,8 +97,10 @@ if ($nogostring) {
 
         $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_confidential/checkboxclicked', 'init', array($jsparams));
+        $PAGE->requires->js_call_amd('mod_confidential/checkboxcontroller', 'init');
 
     } else {
+        // Form for student's view.
         $mform = new confidential_agreement_form(null, array('id' => $id, 'text' => $confidential->confirmationtext));
         if ($data = $mform->get_data()) {
             $messages = array();
