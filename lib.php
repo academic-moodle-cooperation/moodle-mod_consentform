@@ -31,9 +31,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-
-define('INSERT_AVAILABILITY_PATTERN', '{"op":"&","c":[{"type":"completion","cm":xxx,"e":1}],"showc":[true]}');
-
 /* Moodle core API */
 
 /**
@@ -48,12 +45,18 @@ function confidential_supports($feature) {
 
     switch($feature) {
         case FEATURE_MOD_INTRO:
-            return false;
+            return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_GRADE_HAS_GRADE:
-            return true;
+            return false;
         case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_GROUPS:
+            return true;
+        case FEATURE_GROUPINGS:
             return true;
         default:
             return null;
@@ -152,6 +155,8 @@ function confidential_refresh_events($courseid = 0) {
  *
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
+ * @throws dml_exception
+ * @throws coding_exception
  */
 function confidential_delete_instance($id) {
     global $DB;
@@ -160,11 +165,29 @@ function confidential_delete_instance($id) {
         return false;
     }
 
-    // Delete any dependent records here.
+    $cm = get_coursemodule_from_instance('confidential', $id);
 
     $DB->delete_records('confidential', array('id' => $confidential->id));
 
-    confidential_grade_item_delete($confidential);
+    // Delete any completions of this confidential module instance.
+    $records = $DB->get_records('course_modules', array('course' => $confidential->course));
+    foreach ($records as $record) {
+        $conditions = json_decode($record->availability);
+        $i = 0;
+        foreach($conditions->c as $conditionc) {
+            if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
+                unset($conditions->c[$i]);
+                unset($conditions->showc[$i]);
+            }
+            $i++;
+        }
+        $conditions = json_encode($conditions);
+
+        $updaterecord = new stdClass();
+        $updaterecord->id = $record->id;
+        $updaterecord->availability = $conditions;
+        $DB->update_record('course_modules', $updaterecord);
+    }
 
     return true;
 }
@@ -484,4 +507,23 @@ function confidential_extend_navigation(navigation_node $navref, stdClass $cours
  */
 function confidential_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $confidentialnode=null) {
     // TODO Delete this function and its docblock, or implement it.
+}
+
+/**
+ * Obtains the automatic completion state for this confidential obligation instance for this user
+ *
+ * @param object $cm Course-module
+ * @param int $userid User ID
+ * @return bool|mixed
+ * @throws dml_exception
+ */
+function confidential_get_completion_state($course, $cmid, $userid, $type) {
+    global $DB;
+
+    if ($state = $DB->get_field(
+        'confidential_state', 'state', array('confidentialcmid' => $cmid, 'userid' => $userid))) {
+        return $state;
+    } else {
+        return false;
+    }
 }

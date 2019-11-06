@@ -48,21 +48,24 @@ class confidential_agreement_form extends moodleform {
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'cmid', $data['cmid']);
+        $mform->setType('cmid', PARAM_INT);
+        $mform->addElement('hidden', 'sesskey', sesskey());
+        $mform->setType('sesskey', PARAM_ALPHANUM);
 
         $confirmationtexthtml = '<div id="confidential_confirmationtext">' . $data['text'] . '</div>';
-        $separator = '<span id="confidential_button_separator">&nbsp;</span>';
 
         $mform->addElement('html', $confirmationtexthtml);
 
-        $group = array();
-        $group[] = $mform->createElement(
-            'submit', 'agreement', get_string('agree', 'confidential')
-        );
-        $group[] = $mform->createElement(
-            'submit', 'agreement', get_string('disagree', 'confidential')
-        );
-        $mform->addGroup($group, 'agreementgroup', get_string('choice', 'confidential'), $separator);
-
+        $state = confidential_get_completion_state(null, $data['cmid'], $data['userid'], null);
+        $mform->addElement('html', $this->get_agreementlogentry($data['cmid'], $data['userid'], $state));
+        if ($state == 1) { // Already agreed.
+            if (get_config('confidential', 'optiondisagree')) {
+                $mform->addElement('submit', 'agreement', get_string('revocation', 'confidential'));
+            }
+        } else {
+            $mform->addElement('submit', 'agreement', get_string('agree', 'confidential'));
+        }
     }
 
     /**
@@ -77,5 +80,27 @@ class confidential_agreement_form extends moodleform {
         return $data;
     }
 
+    /**
+     * Get log entry of last agreement/revocation of this user.
+     *
+     * @param $cmid    coursemodule id
+     * @param $userid  user id
+     * @param $agreed  agreed (1) or disagreed (0)
+     * @return bool    returns false if no logentry (=timestamp) was found.
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    private function get_agreementlogentry($cmid, $userid, $agreed) {
+        global $DB, $OUTPUT;
 
+        if ($timestamp = $DB->get_field('confidential_state', 'timestamp', array('confidentialcmid' => $cmid, 'userid' => $userid))) {
+            if ($agreed == 1) {
+                return $OUTPUT->notification(get_string('agreementlogentry', 'confidential', userdate($timestamp)));
+            } else {
+                return $OUTPUT->notification(get_string('disagreementlogentry', 'confidential', userdate($timestamp)));
+            }
+        }
+
+        return false;
+    }
 }

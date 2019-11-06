@@ -34,21 +34,35 @@ if (!confirm_sesskey()) {
 
 // Get the params.
 $ischecked = required_param('ischecked', PARAM_BOOL);  // Is the checkbox clicked or not?
-$val = required_param('value', PARAM_INT);  // The ID of the dependent coursemodule.
-$cmid = required_param('cmid', PARAM_INT);  // The ID of this confidential module.
+$cmid_controlled = required_param('value', PARAM_INT);  // The ID of the dependent coursemodule.
+$cmid_controller = required_param('cmid', PARAM_INT);  // The ID of this confidential module.
 
+$course = get_course_and_cm_from_cmid($cmid_controlled)[0];
 
-// Update
-$ret = "?";
-if ($ret = is_numeric($val)) {
-    if ($ischecked) {
-        if (!$ret = confidential_find_entry_availability($val, $cmid)) {
-            $ret = confidential_make_entry_availability($val, $cmid);
+// Update database entry.
+
+// $ret... 1 if db-entry was made, 2 if db-entry was removed (or not found), 3 if nothing was done.
+$ret = 3;
+if (is_numeric($cmid_controlled)) {
+    if ($ischecked) {  // Checkbox is clicked.
+        // If NO db-entry yet make it.
+        if (!confidential_find_entry_availability($cmid_controlled, $cmid_controller)) {
+            if ($ok = confidential_make_entry_availability($course->id, $cmid_controlled, $cmid_controller)) {
+                $ret = 1;
+            }  else {
+                $ret = 3;
+            }
         }
-    } else {
-        if (confidential_find_entry_availability($val, $cmid)) {
-            $ret = confidential_delete_entry_availability($val, $cmid);
+    } else { // Checkbox is deselected.
+        // If DB-entry exists remove it.
+        if (confidential_find_entry_availability($cmid_controlled, $cmid_controller)) {
+            if ($ok = confidential_delete_entry_availability($course->id, $cmid_controlled, $cmid_controller)) {
+                $ret = 2;
+            }
+        } else {
+            $ret = 3;
         }
     }
 }
-echo json_encode($ret);
+
+echo $ret;

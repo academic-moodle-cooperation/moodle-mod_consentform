@@ -28,5 +28,7 @@
  * Custom uninstallation procedure
  */
 function xmldb_confidential_uninstall() {
+
+
     return true;
 }

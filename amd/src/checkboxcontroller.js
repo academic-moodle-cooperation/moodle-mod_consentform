@@ -36,19 +36,12 @@ define(['jquery', 'core/log'], function($, log) {
         this.table = $('#confidential_activitytable');
     };
 
-    /**
-     * Function updateSummary() updates the displayed summary during submission edit
-     *
-     * @param {Event} e event object
-     * @return {bool} true if everything's alright (no error handling by now)
-     */
     Checkboxcontroller.prototype.updateCheckboxes = function(e) {
         e.preventDefault();
-        //e.stopPropagation();
 
         var type = e.data.type;
 
-        log.info('Update checkboxes (type = ' + type + ')');
+        log.debug('Update checkboxes (type = ' + type + ')');
 
         var checkboxes = $('td input:checkbox', e.data.inst.table);
 
@@ -77,10 +70,13 @@ define(['jquery', 'core/log'], function($, log) {
      * @return {bool} true if everything's ok (no error-handling implemented)
      */
     instance.init = function() {
-        log.debug("Init checkboxcontroller for table " + this.table, 'confidential');
+
+        log.debug('Init checkboxcontroller for table confidential');
 
         $('.co_all').on('click', null, {inst: this, type: 'all'}, this.updateCheckboxes);
         $('.co_none').on('click', null, {inst: this, type: 'none'}, this.updateCheckboxes);
+
+        $('#confidential_activitytable').css('visibility', 'visible');
 
         return true;
     };

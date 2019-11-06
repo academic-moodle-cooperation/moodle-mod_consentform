@@ -38,9 +38,28 @@ define(
 
         var instance = new Checkboxclicked();
 
-        instance.init = function (param) {
+        instance.init = function(param) {
 
             instance.cmid = param.cmid;
+
+
+            function transmitcheckboxclicked(ischecked, value) {
+
+                $.get(config.wwwroot + '/mod/confidential/setcontrol.php', {
+                    sesskey: config.sesskey,
+                    ischecked: encodeURI(ischecked),
+                    value: encodeURI(value),
+                    cmid: instance.cmid
+                    }, 'json').done(function(data) {
+                        if (data == 1 && ischecked) {
+                            log.debug("1");
+                        } else if (data == 2 && !ischecked) {
+                            log.debug("2");
+                        } else {
+                            log.debug(data);
+                        }
+                    });
+            }
 
             // What happens when a course module checkbox is clicked.
             function checkboxclicked() {
@@ -51,29 +70,6 @@ define(
 
             $('.selectcoursemodule').on('click', checkboxclicked);
 
-            function transmitcheckboxclicked(ischecked, value) {
-
-                log.info('Transmit checkbox clicked (ischecked = ' + ischecked + ' value = ' + value + ')');
-
-                $.get( config.wwwroot + '/mod/confidential/setcontrol.php', {
-                    sesskey: config.sesskey,
-                    ischecked: encodeURI(ischecked),
-                    value: encodeURI(value),
-                    cmid: instance.cmid
-                    } , 'json').done(function( data ) {
-                        var checkboxname = 'selectcoursemodule' + value;
-                        if (data == true) {
-                            $('input[name=' + checkboxname + ']').parent().parent().css('background-color', 'lightgreen');
-                        } else {
-                            if (ischecked) {
-                                $('input[name=' + checkboxname + ']').prop('checked', false);
-                            } else {
-                                $('input[name=' + checkboxname + ']').prop('checked', true);
-                            }
-                            $('input[name=' + checkboxname + ']').parent().parent().css('background-color', 'lightgrey');
-                        }
-                    });
-            }
         };
 
         return instance;

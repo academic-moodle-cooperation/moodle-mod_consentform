@@ -41,7 +41,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $confidential->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('confidential', $confidential->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    die('You must specify a course_module ID or an instance ID');
 }
 
 require_login($course, true, $cm);
@@ -65,9 +65,6 @@ $PAGE->set_url('/mod/confidential/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($confidential->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-// Output starts here.
-echo $OUTPUT->header();
-
 $nogostring = "";
 if (!$CFG->enableavailability) {
 
@@ -80,16 +77,18 @@ if (!$CFG->enablecompletion) {
 }
 if ($nogostring) {
 
+    echo $OUTPUT->header();
     echo $OUTPUT->heading("Sorry, but...");
-
     echo $nogostring;
 
 } else {
+
     if (has_capability('mod/confidential:submit', $context, null, false)) {
-        // Table for teacher's view.
+        // List of course modules, teacher's view.
+        echo $OUTPUT->header();
         $table = new html_table();
         $table->id = 'confidential_activitytable';
-        $table->attributes['class'] = 'generaltable boxaligncenter';
+        $table->attributes['class'] = 'flexible generaltable generalbox';
         $table->head = confidential_generate_table_header();
         $table->data = confidential_generate_table_content($course, $cm->id);
 
@@ -100,13 +99,20 @@ if ($nogostring) {
         $PAGE->requires->js_call_amd('mod_confidential/checkboxcontroller', 'init');
 
     } else {
-        // Form for student's view.
-        $mform = new confidential_agreement_form(null, array('id' => $id, 'text' => $confidential->confirmationtext));
+        // Agreement form, participant's view.
+        $mform = new confidential_agreement_form(null,
+            array('id' => $id,
+                'text' => $confidential->confirmationtext,
+                'cmid' => $cm->id,
+                'courseid' => $course->id,
+                'confidential' => $confidential,
+                'userid' => $USER->id
+            ));
+        // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {
-            $messages = array();
-            if ($data->agreementgroup['agreement'] == get_string('agree', 'confidential')) {
-                $ok = confidential_save_agreement(true, $confidential);
-                $messages[] = get_string('msgagreed', 'confidential');
+            if ($data->agreement == get_string('agree', 'confidential')) {
+                $ok = confidential_save_agreement(1, $USER->id, $cm->id);
+                $message = get_string('msgagreed', 'confidential');
                 $event = \mod_confidential\event\agreement_agree::create(
                     array(
                         'objectid' => $PAGE->cm->id,
@@ -114,8 +120,8 @@ if ($nogostring) {
                     )
                 );
             } else {
-                $ok = confidential_save_agreement(false, $confidential);
-                $messages[] = get_string('msgdisagreed', 'confidential');
+                $ok = confidential_save_agreement(0, $USER->id, $cm->id);
+                $message = get_string('msgdisagreed', 'confidential');
                 $event = \mod_confidential\event\agreement_disagree::create(
                     array(
                         'objectid' => $PAGE->cm->id,
@@ -124,20 +130,21 @@ if ($nogostring) {
                 );
             }
             $event->trigger();
-
-            if ($messages) {
-                redirect($redirecturl, $messages, 7);
+            // Redirect after form processing.
+            if ($message) {
+                redirect($redirecturl, $message, 5);
             } else {
                 redirect($redirecturl);
             }
-
+        // Display agreement form to participant.
         } else {
+            // Output starts here.
+            echo $OUTPUT->header();
             echo $OUTPUT->box_start('', 'confidential_main_cointainer');
             $mform->display();
             echo $OUTPUT->box_end();
         }
     }
-
 }
 
 // Finish the page.

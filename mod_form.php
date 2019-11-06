@@ -46,6 +46,9 @@ class mod_confidential_mod_form extends moodleform_mod {
 
         $mform = $this->_form;
 
+        $mform->addElement('hidden', 'sesskey', sesskey());
+        $mform->setType('sesskey', PARAM_ALPHANUM);
+
         // Adding the "general" fieldset, where all the common settings are showed.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
@@ -60,15 +63,18 @@ class mod_confidential_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'confidentialname', 'confidential');
 
+        $this->standard_intro_elements(get_string('description', 'checkmark'));
+
+        $mform->addElement('checkbox', 'optiondisagree', get_string('optiondisagree', 'confidential'));
+        $mform->addHelpButton('optiondisagree', 'optiondisagreedesc', 'confidential');
+        $mform->setDefault('optiondisagree', 1);
+
         $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_confidential'));
         if (isset($this->current->confirmationtext)) {
             $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
         }
         $mform->setType('confirmationtext', PARAM_RAW); // no XSS prevention here, users must be trusted
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
-
-        // Add standard grading elements.
-        $this->standard_grading_coursemodule_elements();
 
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
