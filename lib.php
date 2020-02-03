@@ -25,7 +25,7 @@
  * Moodle is performing actions across all modules.
  *
  * @package    mod_confidential
- * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -168,21 +168,22 @@ function confidential_delete_instance($id) {
     // Delete any completions of this confidential module instance.
     $records = $DB->get_records('course_modules', array('course' => $confidential->course));
     foreach ($records as $record) {
-        $conditions = json_decode($record->availability);
-        $i = 0;
-        foreach ($conditions->c as $conditionc) {
-            if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
-                unset($conditions->c[$i]);
-                unset($conditions->showc[$i]);
+        if ($conditions = json_decode($record->availability)) {
+            $i = 0;
+            foreach ($conditions->c as $conditionc) {
+                if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
+                    unset($conditions->c[$i]);
+                    unset($conditions->showc[$i]);
+                }
+                $i++;
             }
-            $i++;
-        }
-        $conditions = json_encode($conditions);
+            $conditions = json_encode($conditions);
 
-        $updaterecord = new stdClass();
-        $updaterecord->id = $record->id;
-        $updaterecord->availability = $conditions;
-        $DB->update_record('course_modules', $updaterecord);
+            $updaterecord = new stdClass();
+            $updaterecord->id = $record->id;
+            $updaterecord->availability = $conditions;
+            $DB->update_record('course_modules', $updaterecord);
+        }
     }
 
     return true;

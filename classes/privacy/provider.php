@@ -15,23 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_confidential instance list viewed event.
+ * Confidentiality Obligation - Tool to hide/show modules
  *
- * @package    mod_confidential
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_confidential
+ * @author      Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright   2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_confidential\event;
+namespace mod_confidential\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * The mod_confidential instance list viewed event class.
- *
- * @package    mod_confidential
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:null_reason';
+    }
 }

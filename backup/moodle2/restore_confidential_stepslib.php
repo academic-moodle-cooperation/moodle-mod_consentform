@@ -19,7 +19,7 @@
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_confidential_activity_structure_step extends restore_activity_structure_step {

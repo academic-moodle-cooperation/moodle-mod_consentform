@@ -21,7 +21,7 @@
  * visit: http://docs.moodle.org/en/Development:lib/formslib.php
  *
  * @package    mod_confidential
- * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,7 @@ require_once(dirname(__FILE__) . '/../../lib/formslib.php');
  * Agreement form
  *
  * @package    mod_confidential
- * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class confidential_agreement_form extends moodleform {

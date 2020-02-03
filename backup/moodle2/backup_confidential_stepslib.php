@@ -19,7 +19,7 @@
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @package   mod_confidential
  * @category  backup
- * @copyright 2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_confidential_activity_structure_step extends backup_activity_structure_step {
@@ -49,7 +49,7 @@ class backup_confidential_activity_structure_step extends backup_activity_struct
 
         // Define the root element describing the confidential instance.
         $confidential = new backup_nested_element('confidential', array('id'), array(
-            'name', 'intro', 'introformat', 'grade'));
+            'name', 'intro', 'introformat', 'confirmationtext', 'optiondisagree'));
 
         // If we had more elements, we would build the tree here.
 

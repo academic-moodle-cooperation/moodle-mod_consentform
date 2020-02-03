@@ -22,7 +22,7 @@
  * if you like, and it can span multiple lines.
  *
  * @package    mod_confidential
- * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,6 +36,7 @@ $string['confidential:addinstance'] = 'Add a new confidentiality obligation modu
 $string['confidential:submit'] = 'Edit confidentiality obligation';
 $string['confidential:view'] = 'View confidentiality obligation';
 $string['confidentialname'] = 'Name';
+$string['confidentialname_help'] = 'Give this instance a name.';
 $string['confidential'] = 'confidentiality obligation';
 $string['pluginadministration'] = 'Confidentiality obligation administration';
 $string['pluginname'] = 'Confidentiality obligation';
@@ -61,3 +62,4 @@ $string['optiondisagreedesc'] = 'Allow participants to revoke their agreement.';
 $string['optiondisagreedesc_help'] = 'Allow participants to revoke their agreement.';
 $string['agreementlogentry'] = 'You have agreed at {$a}.';
 $string['disagreementlogentry'] = 'You have revoked your agreement at {$a}.';
+$string['privacy:null_reason'] = 'This plugin does not store any personal information. It merely controlls the visibility of course modules dependant of an confidentiality obligation.';

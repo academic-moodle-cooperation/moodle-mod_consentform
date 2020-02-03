@@ -22,7 +22,7 @@
  * if you like, and it can span multiple lines.
  *
  * @package    mod_confidential
- * @copyright  2018 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -61,3 +61,4 @@ $string['optiondisagreedesc'] = 'Erlauben Sie Benutzern, Ihre Einverständniserk
 $string['optiondisagreedesc_help'] = 'Erlauben Sie Benutzern, die bereits zugestimmt haben, Ihre Einverständniserklärung wieder zurückzuziehen.';
 $string['agreementlogentry'] = 'Sie haben am {$a} zugestimmt.';
 $string['disagreementlogentry'] = 'Sie haben am {$a} NICHT zugestimmt.';
+$string['privacy:null_reason'] = 'Dieses Plugin speichert keine Userdaten. Es steuert lediglich die Sichtbarkeit von Modulen abhängig von einer Einverständniserklärung.';
