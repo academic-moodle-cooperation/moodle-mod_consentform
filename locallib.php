@@ -82,8 +82,8 @@ function confidential_generate_table_content($course, $cmidcontroller) {
                     $cmidcontrolled = $cmid;
                     $checked = confidential_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $cell = new html_table_cell(
-                        html_writer::checkbox("selectcoursemodule$cmindex", $cmid, $checked, '',
-                            array('class' => "selectcoursemodule section$sectioni"))
+                        html_writer::checkbox("selectcoursemodule", $cmid, $checked, '',
+                        array('class' => "selectcoursemodule section$sectioni", 'id' => "selectcoursemodule$cmindex"))
                     );
                     $cell->attributes['class'] = 'confidential_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
