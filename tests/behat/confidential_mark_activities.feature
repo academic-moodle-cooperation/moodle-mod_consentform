@@ -42,7 +42,7 @@ Feature: In a course, a teacher should be able to add the control of an activity
     When I am on "Course 1" course homepage
     And I follow "My Confidentiality Obligation"
     Then I should see "Test quiz name"
-    And I click on "selectcoursemodule[]" "checkbox"
+    And I click on "selectcoursemodule0" "checkbox"
 
     When I am on "Course 1" course homepage
     Then I should see "Not available unless: The activity"

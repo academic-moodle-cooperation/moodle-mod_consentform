@@ -41,6 +41,7 @@ function confidential_generate_table_content($course, $cmidcontroller) {
     $rows = array();
     $sectionibefore = "";
     $usercanviewsection = true;
+    $cm_index = 0;
     foreach ($coursemodules as $cmid => $cminfo) {
         if ($cminfo->modname != 'confidential' && !$cminfo->deletioninprogress) {
             $sectioni = $cminfo->sectionnum;
@@ -81,7 +82,7 @@ function confidential_generate_table_content($course, $cmidcontroller) {
                     $cmidcontrolled = $cmid;
                     $checked = confidential_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $cell = new html_table_cell(
-                        html_writer::checkbox('selectcoursemodule[]', $cmid, $checked, '',
+                        html_writer::checkbox("selectcoursemodule$cm_index", $cmid, $checked, '',
                             array('class' => "selectcoursemodule section$sectioni"))
                     );
                     $cell->attributes['class'] = 'confidential_activitytable_checkboxcolumn';
@@ -97,6 +98,7 @@ function confidential_generate_table_content($course, $cmidcontroller) {
                     );
                     $row->attributes['class'] = "confidential_activitytable_activityrow";
                     $rows[] = $row;
+                    $cm_index++;
                 }
             } // End if user can view.
 
