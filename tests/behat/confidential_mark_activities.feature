@@ -19,8 +19,8 @@ Feature: In a course, a teacher should be able to add the control of an activity
     And I am on "Course 1" course homepage
     And I turn editing mode on
     When I add a "Confidentiality obligation" to section "1" and I fill the form with:
-      | Confidentiality obligation                | My Confidentiality Obligation  |
-      | Description                               | my co                          |
+      | Name                                      | My Confidentiality Obligation  |
+      | Module description                        | my co                          |
       | Confidentiality text to agree/disagree to | Text.....                      |
     And I follow "My Confidentiality Obligation"
     Then I should see "My Confidentiality Obligation"
