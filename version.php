@@ -28,9 +28,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_confidential';
-$plugin->version = 2019080500;
-$plugin->release = 'v1.0';
-$plugin->requires = 2014051200;
+$plugin->version = 2020020300;
+$plugin->release = 'v3.7.0';
+$plugin->requires = 2019052000;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->cron = 0;
 $plugin->dependencies = array();

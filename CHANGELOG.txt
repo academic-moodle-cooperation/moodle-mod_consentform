@@ -1,0 +1,7 @@
+CHANGELOG
+=========
+
+3.7 (2020-02-03)
+----------------
+
+* First release for Moodle 3.7
