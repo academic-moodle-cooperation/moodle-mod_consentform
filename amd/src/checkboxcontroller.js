@@ -40,10 +40,18 @@ define(['jquery', 'core/log'], function($, log) {
         e.preventDefault();
 
         var type = e.data.type;
+        var subtype = e.data.subtype;
+        var checkboxes;
 
-        log.debug('Update checkboxes (type = ' + type + ')');
-
-        var checkboxes = $('td input:checkbox', e.data.inst.table);
+        if (subtype == 'section') {
+            var classes = e.currentTarget.className.toString();
+            var idx = classes.replace("co_section_all", "").replace("co_section_none", "").replace("section", "").replace(" ", "");
+            var selector = 'input.section' + idx + ':checkbox';
+            checkboxes = $(selector, e.data.inst.table);
+            log.debug(selector);
+        } else {
+            checkboxes = $('td input:checkbox', e.data.inst.table);
+        }
 
         if (type == 'all') {
             checkboxes.each(function(idx, current) {
@@ -71,10 +79,15 @@ define(['jquery', 'core/log'], function($, log) {
      */
     instance.init = function() {
 
-        log.debug('Init checkboxcontroller for table confidential');
+        $('.co_all').on('click', null, {inst: this, type: 'all', subtype: 'all'}, this.updateCheckboxes);
+        $('.co_none').on('click', null, {inst: this, type: 'none', subtype: 'all'}, this.updateCheckboxes);
 
-        $('.co_all').on('click', null, {inst: this, type: 'all'}, this.updateCheckboxes);
-        $('.co_none').on('click', null, {inst: this, type: 'none'}, this.updateCheckboxes);
+        $('.co_section_all').on(
+            'click', null, {inst: this, type: 'all', subtype: 'section'},
+            this.updateCheckboxes);
+        $('.co_section_none').on(
+            'click', null, {inst: this, type: 'none', subtype: 'section'},
+            this.updateCheckboxes);
 
         $('#confidential_activitytable').css('visibility', 'visible');
 

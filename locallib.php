@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__) . '/lib.php');
 require_once($CFG->libdir . '/completionlib.php');
 
-function confidential_generate_table_content($course, $cmid_controller) {
+function confidential_generate_table_content($course, $cmidcontroller) {
     global $PAGE;
 
     $modinfo = get_fast_modinfo($course);
@@ -41,7 +41,7 @@ function confidential_generate_table_content($course, $cmid_controller) {
     $rows = array();
     $sectionibefore = "";
     $usercanviewsection = true;
-    foreach($coursemodules as $cmid => $cminfo) {
+    foreach ($coursemodules as $cmid => $cminfo) {
         if ($cminfo->modname != 'confidential' && !$cminfo->deletioninprogress) {
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
@@ -57,8 +57,17 @@ function confidential_generate_table_content($course, $cmid_controller) {
                         $row = new html_table_row();
                         $sectionname = $sections[$sectioni]->name;
                         $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
-                        $cell = $row->cells[] = new html_table_cell($sectionname);
-                        $cell->colspan="2";
+
+                        $nourl = $PAGE->url . "#";
+                        $cell = new html_table_cell($sectionname . '&nbsp;&nbsp;' .
+                            \html_writer::link($nourl, get_string('all', 'moodle'),
+                                ['class' => "co_section_all section$sectioni"]).' / '.
+                            \html_writer::link($nourl, get_string('none', 'moodle'),
+                                ['class' => "co_section_none section$sectioni"]));
+                        $cell->attributes['class'] = "confidential_activitytable_checkboxcolumn$sectioni";
+                        $cell->colspan = "2";
+
+                        $row->cells[] = $cell;
                         $row->attributes['class'] = "confidential_activitytable_sectionrow";
                         $rows[] = $row;
                     }
@@ -69,19 +78,22 @@ function confidential_generate_table_content($course, $cmid_controller) {
                 $modname = $cminfo->modname;
                 if (has_capability("mod/$modname:addinstance", $context)) {
                     $row = new html_table_row();
-                    $cmid_controlled = $cmid;
-                    $checked = confidential_find_entry_availability($cmid_controlled, $cmid_controller);
+                    $cmidcontrolled = $cmid;
+                    $checked = confidential_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $cell = new html_table_cell(
-                        html_writer::checkbox('selectcoursemodule', $cmid, $checked, '', array('class' => 'selectcoursemodule'))
+                        html_writer::checkbox('selectcoursemodule', $cmid, $checked, '',
+                            array('class' => "selectcoursemodule section$sectioni"))
                     );
                     $cell->attributes['class'] = 'confidential_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
                     $viewurl = new moodle_url('/course/modedit.php', array('update' => $cmid));
                     $activitylink = html_writer::empty_tag('img', array('src' => $cminfo->get_icon_url(),
-                            'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname, 'title' => $cminfo->modfullname, 'role' => 'presentation')) .
+                            'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname,
+                            'title' => $cminfo->modfullname, 'role' => 'presentation')) .
                             html_writer::tag('span', $cminfo->name, array('class' => 'instancename'));
                     $row->cells[] = new html_table_cell(
-                        html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) . html_writer::end_div()
+                        html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) .
+                        html_writer::end_div()
                     );
                     $row->attributes['class'] = "confidential_activitytable_activityrow";
                     $rows[] = $row;
@@ -103,12 +115,8 @@ function confidential_generate_table_header() {
     $cell = new html_table_cell(get_string("dependent", 'confidential') . '<br>' .
         \html_writer::link($nourl, get_string('all', 'moodle'), ['class' => 'co_all']).' / '.
         \html_writer::link($nourl, get_string('none', 'moodle'), ['class' => 'co_none']));
-    $cell->attributes['class'] = "confidential_activitytable_checkboxcolumn";
     $cell->header = true;
-    $header[] = $cell;
-    $cell = new html_table_cell(get_string("modules", 'confidential') . '<br>&nbsp;');
-    $cell->attributes['class'] = "confidential_activitytable_activitycolumn";
-    $cell->header = true;
+    $cell->colspan = "2";
     $header[] = $cell;
 
     return $header;
@@ -354,23 +362,23 @@ function confidential_render_table(html_table $table, $printfooter = true, $over
 /**
  * Find completion entry in course_modules.
  *
- * @param $cmid_controlled  course module id of this CO instance.
- * @param $cmid_controller  id of course module which relies on this CO instance.
+ * @param $cmidcontrolled  course module id of this CO instance.
+ * @param $cmidcontroller  id of course module which relies on this CO instance.
  * @return bool $found      if entry is found.
  * @throws dml_exception
  */
-function confidential_find_entry_availability($cmid_controlled, $cmid_controller) {
+function confidential_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $found = false;
 
-    $conditions = $DB->get_field('course_modules', 'availability', array('id' => $cmid_controlled));
+    $conditions = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled));
     $conditions = json_decode($conditions);
 
     if (isset($conditions->c)) {
-        foreach($conditions->c as $condition) {
+        foreach ($conditions->c as $condition) {
             if ($condition->type == 'completion') {
-                if ($condition->cm == $cmid_controller) {
+                if ($condition->cm == $cmidcontroller) {
                     $found = true;
                     break;
                 }
@@ -385,18 +393,18 @@ function confidential_find_entry_availability($cmid_controlled, $cmid_controller
  * Make condition entry in course_modules.
  *
  * @param $courseid         id of this course
- * @param $cmid_controlled  course module id of this CO instance.
- * @param $cmid_controller  id of course module which relies on this CO instance.
+ * @param $cmidcontrolled  course module id of this CO instance.
+ * @param $cmidcontroller  id of course module which relies on this CO instance.
  * @return bool
  * @throws dml_exception
  */
-function confidential_make_entry_availability($courseid, $cmid_controlled, $cmid_controller) {
+function confidential_make_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $restriction = \core_availability\tree::get_root_json(
-        [\availability_completion\condition::get_json($cmid_controller, 1)]);
+        [\availability_completion\condition::get_json($cmidcontroller, 1)]);
     $DB->set_field('course_modules', 'availability',
-        json_encode($restriction), ['id' => $cmid_controlled]);
+        json_encode($restriction), ['id' => $cmidcontrolled]);
     confidential_update_caches($courseid);
 
     return true;
@@ -406,22 +414,22 @@ function confidential_make_entry_availability($courseid, $cmid_controlled, $cmid
  * Delete condition entry in course_modules.
  *
  * @param $courseid         id of this course
- * @param $cmid_controlled  course module id of this CO instance.
- * @param $cmid_controller  id of course module which relies on this CO instance.
+ * @param $cmidcontrolled  course module id of this CO instance.
+ * @param $cmidcontroller  id of course module which relies on this CO instance.
  * @return bool
  * @throws dml_exception
  */
-function confidential_delete_entry_availability($courseid, $cmid_controlled, $cmid_controller) {
+function confidential_delete_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $found = -1;
-    if ($conditions = $DB->get_field('course_modules', 'availability', array('id' => $cmid_controlled))) {
+    if ($conditions = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
         $conditions = json_decode($conditions);
 
         $indx = 0;
-        foreach($conditions->c as $condition) {
+        foreach ($conditions->c as $condition) {
             if ($condition->type == 'completion') {
-                if ($condition->cm == $cmid_controller) {
+                if ($condition->cm == $cmidcontroller) {
                     $found = $indx;
                     break;
                 }
@@ -437,7 +445,7 @@ function confidential_delete_entry_availability($courseid, $cmid_controlled, $cm
         $conditions = json_encode($conditions);
 
         $updaterecord = new stdClass();
-        $updaterecord->id = $cmid_controlled;
+        $updaterecord->id = $cmidcontrolled;
         $updaterecord->availability = $conditions;
 
         if ($ok = $DB->update_record('course_modules', $updaterecord)) {
@@ -491,17 +499,22 @@ function confidential_completionstate_record($id, $userid, $agreed, $cmid) {
 function confidential_update_completionstate($cmid, $agreed) {
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
-    // Update completion state
+    // Update completion state.
     $completion = new completion_info($course);
-    if($completion->is_enabled($cm)) {
-        $completion->update_state($cm, $agreed);
-    }
+    $completion->update_state($cm, $agreed);
     return true;
+}
+
+function confidential_completionenabled($cmid) {
+    $course = get_course_and_cm_from_cmid($cmid)[0];
+    $cm = get_coursemodule_from_id(false, $cmid);
+    $completion = new completion_info($course);
+    if ($completion->is_enabled($cm)) {
+        return true;
+    }
+    return false;
 }
 
 function confidential_update_caches($courseid) {
     rebuild_course_cache($courseid, false);
-/*    $factory = cache_factory::instance();
-    $config = $factory->create_config_instance();
-    cache_helper::purge_store("default_session", $config);*/
 }

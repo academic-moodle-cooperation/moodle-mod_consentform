@@ -63,7 +63,7 @@ class mod_confidential_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'confidentialname', 'confidential');
 
-        $this->standard_intro_elements(get_string('description', 'checkmark'));
+        $this->standard_intro_elements(get_string('description', 'confidential'));
 
         $mform->addElement('checkbox', 'optiondisagree', get_string('optiondisagree', 'confidential'));
         $mform->addHelpButton('optiondisagree', 'optiondisagreedesc', 'confidential');
@@ -73,7 +73,7 @@ class mod_confidential_mod_form extends moodleform_mod {
         if (isset($this->current->confirmationtext)) {
             $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
         }
-        $mform->setType('confirmationtext', PARAM_RAW); // no XSS prevention here, users must be trusted
+        $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
         // Add standard elements, common to all modules.
@@ -88,7 +88,7 @@ class mod_confidential_mod_form extends moodleform_mod {
      */
     public function get_data($slashed = true) {
         if ($data = parent::get_data($slashed)) {
-            if(isset($data->confirmationtext)) {
+            if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
         }

@@ -47,7 +47,6 @@ if ($id) {
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
-//$context = context_course::instance($cm->course);
 
 $event = \mod_confidential\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
@@ -74,6 +73,10 @@ if (!$CFG->enableavailability) {
 if (!$CFG->enablecompletion) {
 
     $nogostring .= " " . get_string("nocompletion", "mod_confidential");
+}
+if (!confidential_completionenabled($cm->id)) {
+
+    $nogostring .= " " . get_string("nocompletioncourse", "mod_confidential");
 }
 if ($nogostring) {
 
@@ -136,8 +139,7 @@ if ($nogostring) {
             } else {
                 redirect($redirecturl);
             }
-        // Display agreement form to participant.
-        } else {
+        } else {  // Display agreement form to participant.
             // Output starts here.
             echo $OUTPUT->header();
             echo $OUTPUT->box_start('', 'confidential_main_cointainer');

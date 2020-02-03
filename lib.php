@@ -124,6 +124,7 @@ function confidential_update_instance(stdClass $confidential, mod_confidential_m
  *
  * @param int $courseid Course ID
  * @return bool
+ * @throws dml_exception
  */
 function confidential_refresh_events($courseid = 0) {
     global $DB;
@@ -136,11 +137,6 @@ function confidential_refresh_events($courseid = 0) {
         if (!$confidentials = $DB->get_records('confidential', array('course' => $courseid))) {
             return true;
         }
-    }
-
-    foreach ($confidentials as $confidential) {
-        // Create a function such as the one below to deal with updating calendar events.
-        // confidential_update_events($confidential);
     }
 
     return true;
@@ -174,7 +170,7 @@ function confidential_delete_instance($id) {
     foreach ($records as $record) {
         $conditions = json_decode($record->availability);
         $i = 0;
-        foreach($conditions->c as $conditionc) {
+        foreach ($conditions->c as $conditionc) {
             if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
                 unset($conditions->c[$i]);
                 unset($conditions->showc[$i]);

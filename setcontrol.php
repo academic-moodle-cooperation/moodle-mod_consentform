@@ -34,29 +34,31 @@ if (!confirm_sesskey()) {
 
 // Get the params.
 $ischecked = required_param('ischecked', PARAM_BOOL);  // Is the checkbox clicked or not?
-$cmid_controlled = required_param('value', PARAM_INT);  // The ID of the dependent coursemodule.
-$cmid_controller = required_param('cmid', PARAM_INT);  // The ID of this confidential module.
+$cmidcontrolled = required_param('value', PARAM_INT);  // The ID of the dependent coursemodule.
+$cmidcontroller = required_param('cmid', PARAM_INT);  // The ID of this confidential module.
 
-$course = get_course_and_cm_from_cmid($cmid_controlled)[0];
+$course = get_course_and_cm_from_cmid($cmidcontrolled)[0];
+
+require_course_login($course);
 
 // Update database entry.
 
-// $ret... 1 if db-entry was made, 2 if db-entry was removed (or not found), 3 if nothing was done.
+// Legend: $ret... 1 if db-entry was made, 2 if db-entry was removed (or not found), 3 if nothing was done.
 $ret = 3;
-if (is_numeric($cmid_controlled)) {
+if (is_numeric($cmidcontrolled)) {
     if ($ischecked) {  // Checkbox is clicked.
         // If NO db-entry yet make it.
-        if (!confidential_find_entry_availability($cmid_controlled, $cmid_controller)) {
-            if ($ok = confidential_make_entry_availability($course->id, $cmid_controlled, $cmid_controller)) {
+        if (!confidential_find_entry_availability($cmidcontrolled, $cmidcontroller)) {
+            if ($ok = confidential_make_entry_availability($course->id, $cmidcontrolled, $cmidcontroller)) {
                 $ret = 1;
-            }  else {
+            } else {
                 $ret = 3;
             }
         }
     } else { // Checkbox is deselected.
         // If DB-entry exists remove it.
-        if (confidential_find_entry_availability($cmid_controlled, $cmid_controller)) {
-            if ($ok = confidential_delete_entry_availability($course->id, $cmid_controlled, $cmid_controller)) {
+        if (confidential_find_entry_availability($cmidcontrolled, $cmidcontroller)) {
+            if ($ok = confidential_delete_entry_availability($course->id, $cmidcontrolled, $cmidcontroller)) {
                 $ret = 2;
             }
         } else {

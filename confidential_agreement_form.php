@@ -73,7 +73,7 @@ class confidential_agreement_form extends moodleform {
      */
     public function get_data($slashed = true) {
         if ($data = parent::get_data($slashed)) {
-            if(isset($data->confirmationtext)) {
+            if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
         }
@@ -93,7 +93,8 @@ class confidential_agreement_form extends moodleform {
     private function get_agreementlogentry($cmid, $userid, $agreed) {
         global $DB, $OUTPUT;
 
-        if ($timestamp = $DB->get_field('confidential_state', 'timestamp', array('confidentialcmid' => $cmid, 'userid' => $userid))) {
+        if ($timestamp = $DB->get_field('confidential_state', 'timestamp',
+            array('confidentialcmid' => $cmid, 'userid' => $userid))) {
             if ($agreed == 1) {
                 return $OUTPUT->notification(get_string('agreementlogentry', 'confidential', userdate($timestamp)));
             } else {

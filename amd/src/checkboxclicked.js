@@ -27,21 +27,20 @@
 
 define(
     ['jquery', 'core/config', 'core/log'], function($, config, log) {
+         /**
+          * @constructor
+          * @alias module:mod_confidential/checkboxclicked
+          */
 
-        /**
-     * @constructor
-     * @alias module:mod_confidential/checkboxclicked
-     */
-        var Checkboxclicked = function() {
+         var Checkboxclicked = function() {
             this.cmid = "";
-        };
+         };
 
-        var instance = new Checkboxclicked();
+         var instance = new Checkboxclicked();
 
-        instance.init = function(param) {
+         instance.init = function(param) {
 
             instance.cmid = param.cmid;
-
 
             function transmitcheckboxclicked(ischecked, value) {
 
@@ -70,7 +69,7 @@ define(
 
             $('.selectcoursemodule').on('click', checkboxclicked);
 
-        };
+         };
 
         return instance;
 

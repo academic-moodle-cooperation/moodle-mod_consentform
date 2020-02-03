@@ -25,6 +25,8 @@
 
 require_once(__DIR__ . "../../../config.php");
 
+require_course_login($course);
+
 $id = required_param('id', PARAM_INT);// Course module ID.
 // Item number may be != 0 for activities that allow more than one grade per user.
 $itemnumber = optional_param('itemnumber', 0, PARAM_INT);

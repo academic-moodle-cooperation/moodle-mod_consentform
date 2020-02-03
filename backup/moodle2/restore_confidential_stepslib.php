@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Structure step to restore one confidential activity
  *
@@ -51,12 +53,13 @@ class restore_confidential_activity_structure_step extends restore_activity_stru
      * Process the given restore path element data
      *
      * @param array $data parsed element data
+     * @throws base_step_exception
+     * @throws dml_exception
      */
     protected function process_confidential($data) {
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid();
 
         if (empty($data->timecreated)) {

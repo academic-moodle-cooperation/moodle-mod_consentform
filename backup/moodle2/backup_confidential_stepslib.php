@@ -39,6 +39,8 @@ class backup_confidential_activity_structure_step extends backup_activity_struct
      * Defines the backup structure of the module
      *
      * @return backup_nested_element
+     * @throws base_element_struct_exception
+     * @throws base_step_exception
      */
     protected function define_structure() {
 

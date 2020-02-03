@@ -36,6 +36,10 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @param int $oldversion
  * @return bool
+ * @throws ddl_exception
+ * @throws ddl_table_missing_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
  */
 function xmldb_confidential_upgrade($oldversion) {
     global $DB;
