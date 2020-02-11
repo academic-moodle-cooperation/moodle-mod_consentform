@@ -15,7 +15,7 @@
 
 /**
  * @package mod
- * @subpackage confidential
+ * @subpackage consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,7 @@ define(
     ['jquery', 'core/config', 'core/log'], function($, config, log) {
          /**
           * @constructor
-          * @alias module:mod_confidential/checkboxclicked
+          * @alias module:mod_consentform/checkboxclicked
           */
 
          var Checkboxclicked = function() {
@@ -44,7 +44,7 @@ define(
 
             function transmitcheckboxclicked(ischecked, value) {
 
-                $.get(config.wwwroot + '/mod/confidential/setcontrol.php', {
+                $.get(config.wwwroot + '/mod/consentform/setcontrol.php', {
                     sesskey: config.sesskey,
                     ischecked: encodeURI(ischecked),
                     value: encodeURI(value),

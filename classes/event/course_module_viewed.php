@@ -17,22 +17,22 @@
 /**
  * Defines the view event.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_confidential\event;
+namespace mod_consentform\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_confidential instance viewed event class
+ * The mod_consentform instance viewed event class
  *
  * If the view mode needs to be stored as well, you may need to
  * override methods get_url() and get_legacy_log_data(), too.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -42,7 +42,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * Initialize the event
      */
     protected function init() {
-        $this->data['objecttable'] = 'confidential';
+        $this->data['objecttable'] = 'consentform';
         parent::init();
     }
 }

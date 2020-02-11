@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of interface functions and constants for module confidential
+ * Library of interface functions and constants for module consentform
  *
  * All the core Moodle functions, neeeded to allow the module to work
  * integrated in Moodle should be placed here.
  *
- * All the confidential specific functions, needed to implement all the module
+ * All the consentform specific functions, needed to implement all the module
  * logic, should go to locallib.php. This will help to save some memory when
  * Moodle is performing actions across all modules.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,7 +41,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
-function confidential_supports($feature) {
+function consentform_supports($feature) {
 
     switch($feature) {
         case FEATURE_MOD_INTRO:
@@ -64,53 +64,53 @@ function confidential_supports($feature) {
 }
 
 /**
- * Saves a new instance of the confidential into the database
+ * Saves a new instance of the consentform into the database
  *
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will create a new instance and return the id number
  * of the new instance.
  *
- * @param stdClass $confidential Submitted data from the form in mod_form.php
- * @param mod_confidential_mod_form $mform The form instance itself (if needed)
- * @return int The id of the newly inserted confidential record
+ * @param stdClass $consentform Submitted data from the form in mod_form.php
+ * @param mod_consentform_mod_form $mform The form instance itself (if needed)
+ * @return int The id of the newly inserted consentform record
  */
-function confidential_add_instance(stdClass $confidential, mod_confidential_mod_form $mform = null) {
+function consentform_add_instance(stdClass $consentform, mod_consentform_mod_form $mform = null) {
     global $DB;
 
-    $confidential->timecreated = time();
+    $consentform->timecreated = time();
 
     // You may have to add extra stuff in here.
 
-    $confidential->id = $DB->insert_record('confidential', $confidential);
+    $consentform->id = $DB->insert_record('consentform', $consentform);
 
-    confidential_grade_item_update($confidential);
+    consentform_grade_item_update($consentform);
 
-    return $confidential->id;
+    return $consentform->id;
 }
 
 /**
- * Updates an instance of the confidential in the database
+ * Updates an instance of the consentform in the database
  *
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will update an existing instance with new data.
  *
- * @param stdClass $confidential An object from the form in mod_form.php
- * @param mod_confidential_mod_form $mform The form instance itself (if needed)
+ * @param stdClass $consentform An object from the form in mod_form.php
+ * @param mod_consentform_mod_form $mform The form instance itself (if needed)
  * @return boolean Success/Fail
  */
-function confidential_update_instance(stdClass $confidential, mod_confidential_mod_form $mform = null) {
+function consentform_update_instance(stdClass $consentform, mod_consentform_mod_form $mform = null) {
     global $DB;
 
-    $confidential->timemodified = time();
-    $confidential->id = $confidential->instance;
+    $consentform->timemodified = time();
+    $consentform->id = $consentform->instance;
 
     // You may have to add extra stuff in here.
 
-    $result = $DB->update_record('confidential', $confidential);
+    $result = $DB->update_record('consentform', $consentform);
 
-    confidential_grade_item_update($confidential);
+    consentform_grade_item_update($consentform);
 
     return $result;
 }
@@ -118,23 +118,23 @@ function confidential_update_instance(stdClass $confidential, mod_confidential_m
 /**
  * This standard function will check all instances of this module
  * and make sure there are up-to-date events created for each of them.
- * If courseid = 0, then every confidential event in the site is checked, else
- * only confidential events belonging to the course specified are checked.
+ * If courseid = 0, then every consentform event in the site is checked, else
+ * only consentform events belonging to the course specified are checked.
  * This is only required if the module is generating calendar events.
  *
  * @param int $courseid Course ID
  * @return bool
  * @throws dml_exception
  */
-function confidential_refresh_events($courseid = 0) {
+function consentform_refresh_events($courseid = 0) {
     global $DB;
 
     if ($courseid == 0) {
-        if (!$confidentials = $DB->get_records('confidential')) {
+        if (!$consentforms = $DB->get_records('consentform')) {
             return true;
         }
     } else {
-        if (!$confidentials = $DB->get_records('confidential', array('course' => $courseid))) {
+        if (!$consentforms = $DB->get_records('consentform', array('course' => $courseid))) {
             return true;
         }
     }
@@ -143,7 +143,7 @@ function confidential_refresh_events($courseid = 0) {
 }
 
 /**
- * Removes an instance of the confidential from the database
+ * Removes an instance of the consentform from the database
  *
  * Given an ID of an instance of this module,
  * this function will permanently delete the instance
@@ -154,19 +154,19 @@ function confidential_refresh_events($courseid = 0) {
  * @throws dml_exception
  * @throws coding_exception
  */
-function confidential_delete_instance($id) {
+function consentform_delete_instance($id) {
     global $DB;
 
-    if (! $confidential = $DB->get_record('confidential', array('id' => $id))) {
+    if (! $consentform = $DB->get_record('consentform', array('id' => $id))) {
         return false;
     }
 
-    $cm = get_coursemodule_from_instance('confidential', $id);
+    $cm = get_coursemodule_from_instance('consentform', $id);
 
-    $DB->delete_records('confidential', array('id' => $confidential->id));
+    $DB->delete_records('consentform', array('id' => $consentform->id));
 
-    // Delete any completions of this confidential module instance.
-    $records = $DB->get_records('course_modules', array('course' => $confidential->course));
+    // Delete any completions of this consentform module instance.
+    $records = $DB->get_records('course_modules', array('course' => $consentform->course));
     foreach ($records as $record) {
         if ($conditions = json_decode($record->availability)) {
             $i = 0;
@@ -200,10 +200,10 @@ function confidential_delete_instance($id) {
  * @param stdClass $course The course record
  * @param stdClass $user The user record
  * @param cm_info|stdClass $mod The course module info object or record
- * @param stdClass $confidential The confidential instance record
+ * @param stdClass $consentform The consentform instance record
  * @return stdClass|null
  */
-function confidential_user_outline($course, $user, $mod, $confidential) {
+function consentform_user_outline($course, $user, $mod, $consentform) {
 
     $return = new stdClass();
     $return->time = 0;
@@ -220,21 +220,21 @@ function confidential_user_outline($course, $user, $mod, $confidential) {
  * @param stdClass $course the current course record
  * @param stdClass $user the record of the user we are generating report for
  * @param cm_info $mod course module info
- * @param stdClass $confidential the module instance record
+ * @param stdClass $consentform the module instance record
  */
-function confidential_user_complete($course, $user, $mod, $confidential) {
+function consentform_user_complete($course, $user, $mod, $consentform) {
 }
 
 /**
  * Given a course and a time, this module should find recent activity
- * that has occurred in confidential activities and print it out.
+ * that has occurred in consentform activities and print it out.
  *
  * @param stdClass $course The course record
  * @param bool $viewfullnames Should we display full names
  * @param int $timestart Print activity since this timestamp
  * @return boolean True if anything was printed, otherwise false
  */
-function confidential_print_recent_activity($course, $viewfullnames, $timestart) {
+function consentform_print_recent_activity($course, $viewfullnames, $timestart) {
     return false;
 }
 
@@ -243,7 +243,7 @@ function confidential_print_recent_activity($course, $viewfullnames, $timestart)
  *
  * This callback function is supposed to populate the passed array with
  * custom activity records. These records are then rendered into HTML via
- * {@link confidential_print_recent_mod_activity()}.
+ * {@link consentform_print_recent_mod_activity()}.
  *
  * Returns void, it adds items into $activities and increases $index.
  *
@@ -255,11 +255,11 @@ function confidential_print_recent_activity($course, $viewfullnames, $timestart)
  * @param int $userid check for a particular user's activity only, defaults to 0 (all users)
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  */
-function confidential_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
+function consentform_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
 }
 
 /**
- * Prints single activity item prepared by {@link confidential_get_recent_mod_activity()}
+ * Prints single activity item prepared by {@link consentform_get_recent_mod_activity()}
  *
  * @param stdClass $activity activity record with added 'cmid' property
  * @param int $courseid the id of the course we produce the report for
@@ -267,7 +267,7 @@ function confidential_get_recent_mod_activity(&$activities, &$index, $timestart,
  * @param array $modnames as returned by {@link get_module_types_names()}
  * @param bool $viewfullnames display users' full names
  */
-function confidential_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
+function consentform_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
 }
 
 /**
@@ -280,7 +280,7 @@ function confidential_print_recent_mod_activity($activity, $courseid, $detail, $
  *
  * @return boolean
  */
-function confidential_cron () {
+function consentform_cron () {
     return true;
 }
 
@@ -292,26 +292,26 @@ function confidential_cron () {
  *
  * @return array
  */
-function confidential_get_extra_capabilities() {
+function consentform_get_extra_capabilities() {
     return array();
 }
 
 /* Gradebook API */
 
 /**
- * Is a given scale used by the instance of confidential?
+ * Is a given scale used by the instance of consentform?
  *
- * This function returns if a scale is being used by one confidential
+ * This function returns if a scale is being used by one consentform
  * if it has support for grading and scales.
  *
- * @param int $confidentialid ID of an instance of this module
+ * @param int $consentformid ID of an instance of this module
  * @param int $scaleid ID of the scale
- * @return bool true if the scale is used by the given confidential instance
+ * @return bool true if the scale is used by the given consentform instance
  */
-function confidential_scale_used($confidentialid, $scaleid) {
+function consentform_scale_used($consentformid, $scaleid) {
     global $DB;
 
-    if ($scaleid and $DB->record_exists('confidential', array('id' => $confidentialid, 'grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('consentform', array('id' => $consentformid, 'grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -319,17 +319,17 @@ function confidential_scale_used($confidentialid, $scaleid) {
 }
 
 /**
- * Checks if scale is being used by any instance of confidential.
+ * Checks if scale is being used by any instance of consentform.
  *
  * This is used to find out if scale used anywhere.
  *
  * @param int $scaleid ID of the scale
- * @return boolean true if the scale is used by any confidential instance
+ * @return boolean true if the scale is used by any consentform instance
  */
-function confidential_scale_used_anywhere($scaleid) {
+function consentform_scale_used_anywhere($scaleid) {
     global $DB;
 
-    if ($scaleid and $DB->record_exists('confidential', array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('consentform', array('grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -337,61 +337,61 @@ function confidential_scale_used_anywhere($scaleid) {
 }
 
 /**
- * Creates or updates grade item for the given confidential instance
+ * Creates or updates grade item for the given consentform instance
  *
  * Needed by {@link grade_update_mod_grades()}.
  *
- * @param stdClass $confidential instance object with extra cmidnumber and modname property
+ * @param stdClass $consentform instance object with extra cmidnumber and modname property
  * @param bool $reset reset grades in the gradebook
  * @return void
  */
-function confidential_grade_item_update(stdClass $confidential, $grades=null) {
+function consentform_grade_item_update(stdClass $consentform, $grades=null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
     $item = array();
-    $item['itemname'] = clean_param($confidential->name, PARAM_NOTAGS);
+    $item['itemname'] = clean_param($consentform->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
     $item['grademax']  = 1;
     $item['grademin']  = 0;
 
-    grade_update('mod/confidential', $confidential->course, 'mod', 'confidential',
-            $confidential->id, 0, $grades, $item);
+    grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
+            $consentform->id, 0, $grades, $item);
 }
 
 /**
- * Delete grade item for given confidential instance
+ * Delete grade item for given consentform instance
  *
- * @param stdClass $confidential instance object
+ * @param stdClass $consentform instance object
  * @return grade_item
  */
-function confidential_grade_item_delete($confidential) {
+function consentform_grade_item_delete($consentform) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    return grade_update('mod/confidential', $confidential->course, 'mod', 'confidential',
-            $confidential->id, 0, null, array('deleted' => 1));
+    return grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
+            $consentform->id, 0, null, array('deleted' => 1));
 }
 
 /**
- * Update confidential grades in the gradebook
+ * Update consentform grades in the gradebook
  *
  * Needed by {@link grade_update_mod_grades()}.
  *
- * @param stdClass $confidential instance object with extra cmidnumber and modname property
+ * @param stdClass $consentform instance object with extra cmidnumber and modname property
  * @param int $userid update grade of specific user only, 0 means all participants
  */
-function confidential_update_grades(stdClass $confidential, $userid = 0) {
+function consentform_update_grades(stdClass $consentform, $userid = 0) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/gradelib.php');
 
     // Populate array of grade objects indexed by userid.
     $grades = array();
 
-    grade_update('mod/confidential', $confidential->course, 'mod', 'confidential', $confidential->id, 0, $grades);
+    grade_update('mod/consentform', $consentform->course, 'mod', 'consentform', $consentform->id, 0, $grades);
 }
 
-function confidential_set_user_grade($confidential, $userid, $agreed=true) {
+function consentform_set_user_grade($consentform, $userid, $agreed=true) {
 
     if ($userid) {
 
@@ -406,7 +406,7 @@ function confidential_set_user_grade($confidential, $userid, $agreed=true) {
         $grade->dategraded = $time;
         $grade->datesubmitted = $time;
 
-        return confidential_grade_item_update($confidential, $grade);
+        return consentform_grade_item_update($consentform, $grade);
 
     } else {
         return false;
@@ -426,14 +426,14 @@ function confidential_set_user_grade($confidential, $userid, $agreed=true) {
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function confidential_get_file_areas($course, $cm, $context) {
+function consentform_get_file_areas($course, $cm, $context) {
     return array();
 }
 
 /**
- * File browsing support for confidential file areas
+ * File browsing support for consentform file areas
  *
- * @package mod_confidential
+ * @package mod_consentform
  * @category files
  *
  * @param file_browser $browser
@@ -447,25 +447,25 @@ function confidential_get_file_areas($course, $cm, $context) {
  * @param string $filename
  * @return file_info instance or null if not found
  */
-function confidential_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function consentform_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     return null;
 }
 
 /**
- * Serves the files from the confidential file areas
+ * Serves the files from the consentform file areas
  *
- * @package mod_confidential
+ * @package mod_consentform
  * @category files
  *
  * @param stdClass $course the course object
  * @param stdClass $cm the course module object
- * @param stdClass $context the confidential's context
+ * @param stdClass $context the consentform's context
  * @param string $filearea the name of the file area
  * @param array $args extra arguments (itemid, path)
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function confidential_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
+function consentform_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
     global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -480,45 +480,45 @@ function confidential_pluginfile($course, $cm, $context, $filearea, array $args,
 /* Navigation API */
 
 /**
- * Extends the global navigation tree by adding confidential nodes if there is a relevant content
+ * Extends the global navigation tree by adding consentform nodes if there is a relevant content
  *
  * This can be called by an AJAX request so do not rely on $PAGE as it might not be set up properly.
  *
- * @param navigation_node $navref An object representing the navigation tree node of the confidential module instance
+ * @param navigation_node $navref An object representing the navigation tree node of the consentform module instance
  * @param stdClass $course current course record
- * @param stdClass $module current confidential instance record
+ * @param stdClass $module current consentform instance record
  * @param cm_info $cm course module information
  */
-function confidential_extend_navigation(navigation_node $navref, stdClass $course, stdClass $module, cm_info $cm) {
+function consentform_extend_navigation(navigation_node $navref, stdClass $course, stdClass $module, cm_info $cm) {
     // TODO Delete this function and its docblock, or implement it.
 }
 
 /**
- * Extends the settings navigation with the confidential settings
+ * Extends the settings navigation with the consentform settings
  *
- * This function is called when the context for the page is a confidential module. This is not called by AJAX
+ * This function is called when the context for the page is a consentform module. This is not called by AJAX
  * so it is safe to rely on the $PAGE.
  *
  * @param settings_navigation $settingsnav complete settings navigation tree
- * @param navigation_node $confidentialnode confidential administration node
+ * @param navigation_node $consentformnode consentform administration node
  */
-function confidential_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $confidentialnode=null) {
+function consentform_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $consentformnode=null) {
     // TODO Delete this function and its docblock, or implement it.
 }
 
 /**
- * Obtains the automatic completion state for this confidential obligation instance for this user
+ * Obtains the automatic completion state for this consentform instance for this user
  *
  * @param object $cm Course-module
  * @param int $userid User ID
  * @return bool|mixed
  * @throws dml_exception
  */
-function confidential_get_completion_state($course, $cmid, $userid, $type) {
+function consentform_get_completion_state($course, $cmid, $userid, $type) {
     global $DB;
 
     if ($state = $DB->get_field(
-        'confidential_state', 'state', array('confidentialcmid' => $cmid, 'userid' => $userid))) {
+        'consentform_state', 'state', array('consentformcmid' => $cmid, 'userid' => $userid))) {
         return $state;
     } else {
         return false;

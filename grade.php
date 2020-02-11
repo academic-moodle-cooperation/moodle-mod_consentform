@@ -17,7 +17,7 @@
 /**
  * Redirect the user to the appropriate submission related page
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @category  grade
  * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

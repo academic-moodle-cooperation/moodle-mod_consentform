@@ -19,7 +19,7 @@
  *
  * @see uninstall_plugin()
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Custom uninstallation procedure
  */
-function xmldb_confidential_uninstall() {
+function xmldb_consentform_uninstall() {
 
     return true;
 }

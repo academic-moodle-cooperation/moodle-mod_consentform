@@ -17,13 +17,13 @@
 /**
  * event/agreement_disagree.php
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @copyright 2020 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_confidential\event;
+namespace mod_consentform\event;
 defined('MOODLE_INTERNAL') || die();
 /**
  * The agreement_disagree event class.
@@ -37,23 +37,23 @@ class agreement_disagree extends \core\event\base
     }
 
     public static function get_name() {
-        return get_string('eventagreementdisagree', 'mod_confidential');
+        return get_string('eventagreementdisagree', 'mod_consentform');
     }
 
     public function get_description() {
         $a = new \stdClass();
         $a->userid = $this->userid;
         $a->contextinstanceid = $this->contextinstanceid;
-        return get_string('eventagreementdisagreedesc', 'mod_confidential', $a);
+        return get_string('eventagreementdisagreedesc', 'mod_consentform', $a);
     }
 
     public function get_url() {
-        return new \moodle_url('/mod/confidential/view.php', array('id' => $this->objectid));
+        return new \moodle_url('/mod/consentform/view.php', array('id' => $this->objectid));
     }
 
     public function get_legacy_logdata() {
         // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_confidential', 'add',
+        return array($this->courseid, 'mod_consentform', 'add',
             $this->objectid, $this->contextinstanceid);
     }
 }

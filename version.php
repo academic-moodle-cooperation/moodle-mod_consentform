@@ -20,15 +20,15 @@
  * Setting the $plugin->version to 0 prevents the plugin from being installed.
  * See https://docs.moodle.org/dev/version.php for more info.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_confidential';
-$plugin->version = 2020020300;
+$plugin->component = 'mod_consentform';
+$plugin->version = 2020021100;
 $plugin->release = 'v3.7.0';
 $plugin->requires = 2019052000;
 $plugin->maturity = MATURITY_ALPHA;

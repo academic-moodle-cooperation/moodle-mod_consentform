@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Confidentiality Obligation - Tool to hide/show modules
+ * Consentform - Tool to hide/show modules
  *
- * @package     mod_confidential
+ * @package     mod_consentform
  * @author      Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @copyright   2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_confidential\privacy;
+namespace mod_consentform\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 

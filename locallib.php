@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Internal library of functions for module confidential
+ * Internal library of functions for module consentform
  *
- * All the confidential specific functions, needed to implement the module
+ * All the consentform specific functions, needed to implement the module
  * logic, should go here. Never include this file from your lib.php!
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__) . '/lib.php');
 require_once($CFG->libdir . '/completionlib.php');
 
-function confidential_generate_table_content($course, $cmidcontroller) {
+function consentform_generate_table_content($course, $cmidcontroller) {
     global $PAGE;
 
     $modinfo = get_fast_modinfo($course);
@@ -43,7 +43,7 @@ function confidential_generate_table_content($course, $cmidcontroller) {
     $usercanviewsection = true;
     $cmindex = 0;
     foreach ($coursemodules as $cmid => $cminfo) {
-        if ($cminfo->modname != 'confidential' && !$cminfo->deletioninprogress) {
+        if ($cminfo->modname != 'consentform' && !$cminfo->deletioninprogress) {
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
                 if (!($sectioninfo = $modinfo->get_section_info($sectioni))) { // If this section doesn't exist.
@@ -65,11 +65,11 @@ function confidential_generate_table_content($course, $cmidcontroller) {
                                 ['class' => "co_section_all section$sectioni"]).' / '.
                             \html_writer::link($nourl, get_string('none', 'moodle'),
                                 ['class' => "co_section_none section$sectioni"]));
-                        $cell->attributes['class'] = "confidential_activitytable_checkboxcolumn$sectioni";
+                        $cell->attributes['class'] = "consentform_activitytable_checkboxcolumn$sectioni";
                         $cell->colspan = "2";
 
                         $row->cells[] = $cell;
-                        $row->attributes['class'] = "confidential_activitytable_sectionrow";
+                        $row->attributes['class'] = "consentform_activitytable_sectionrow";
                         $rows[] = $row;
                     }
                 }
@@ -80,12 +80,12 @@ function confidential_generate_table_content($course, $cmidcontroller) {
                 if (has_capability("mod/$modname:addinstance", $context)) {
                     $row = new html_table_row();
                     $cmidcontrolled = $cmid;
-                    $checked = confidential_find_entry_availability($cmidcontrolled, $cmidcontroller);
+                    $checked = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $cell = new html_table_cell(
                         html_writer::checkbox("selectcoursemodule", $cmid, $checked, '',
                         array('class' => "selectcoursemodule section$sectioni", 'id' => "selectcoursemodule$cmindex"))
                     );
-                    $cell->attributes['class'] = 'confidential_activitytable_checkboxcolumn';
+                    $cell->attributes['class'] = 'consentform_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
                     $viewurl = new moodle_url('/course/modedit.php', array('update' => $cmid));
                     $activitylink = html_writer::empty_tag('img', array('src' => $cminfo->get_icon_url(),
@@ -96,7 +96,7 @@ function confidential_generate_table_content($course, $cmidcontroller) {
                         html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) .
                         html_writer::end_div()
                     );
-                    $row->attributes['class'] = "confidential_activitytable_activityrow";
+                    $row->attributes['class'] = "consentform_activitytable_activityrow";
                     $rows[] = $row;
                     $cmindex++;
                 }
@@ -109,12 +109,12 @@ function confidential_generate_table_content($course, $cmidcontroller) {
 }
 
 
-function confidential_generate_table_header() {
+function consentform_generate_table_header() {
     global $PAGE;
 
     $header = array();
     $nourl = $PAGE->url . "#";
-    $cell = new html_table_cell(get_string("dependent", 'confidential') . '<br>' .
+    $cell = new html_table_cell(get_string("dependent", 'consentform') . '<br>' .
         \html_writer::link($nourl, get_string('all', 'moodle'), ['class' => 'co_all']).' / '.
         \html_writer::link($nourl, get_string('none', 'moodle'), ['class' => 'co_none']));
     $cell->header = true;
@@ -125,7 +125,7 @@ function confidential_generate_table_header() {
 }
 
 
-function confidential_render_table(html_table $table, $printfooter = true, $overrideevenodd = false) {
+function consentform_render_table(html_table $table, $printfooter = true, $overrideevenodd = false) {
     // Prepare table data and populate missing properties with reasonable defaults.
     if (!empty($table->align)) {
         foreach ($table->align as $key => $aa) {
@@ -369,7 +369,7 @@ function confidential_render_table(html_table $table, $printfooter = true, $over
  * @return bool $found      if entry is found.
  * @throws dml_exception
  */
-function confidential_find_entry_availability($cmidcontrolled, $cmidcontroller) {
+function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $found = false;
@@ -400,14 +400,14 @@ function confidential_find_entry_availability($cmidcontrolled, $cmidcontroller) 
  * @return bool
  * @throws dml_exception
  */
-function confidential_make_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
+function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $restriction = \core_availability\tree::get_root_json(
         [\availability_completion\condition::get_json($cmidcontroller, 1)]);
     $DB->set_field('course_modules', 'availability',
         json_encode($restriction), ['id' => $cmidcontrolled]);
-    confidential_update_caches($courseid);
+    consentform_update_caches($courseid);
 
     return true;
 }
@@ -421,7 +421,7 @@ function confidential_make_entry_availability($courseid, $cmidcontrolled, $cmidc
  * @return bool
  * @throws dml_exception
  */
-function confidential_delete_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
+function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $found = -1;
@@ -451,26 +451,26 @@ function confidential_delete_entry_availability($courseid, $cmidcontrolled, $cmi
         $updaterecord->availability = $conditions;
 
         if ($ok = $DB->update_record('course_modules', $updaterecord)) {
-            confidential_update_caches($courseid);
+            consentform_update_caches($courseid);
         }
 
     }
     return true;
 }
 
-function confidential_save_agreement($agreed, $userid, $cmid) {
+function consentform_save_agreement($agreed, $userid, $cmid) {
     global $DB;
 
     if ($id = $DB->get_field(
-        'confidential_state', 'id', array('confidentialcmid' => $cmid, 'userid' => $userid))) {
-        $record = confidential_completionstate_record($id, $userid, $agreed, $cmid);
-        $DB->update_record('confidential_state', $record);
+        'consentform_state', 'id', array('consentformcmid' => $cmid, 'userid' => $userid))) {
+        $record = consentform_completionstate_record($id, $userid, $agreed, $cmid);
+        $DB->update_record('consentform_state', $record);
     } else {
-        $record = confidential_completionstate_record(null, $userid, $agreed, $cmid);
-        $DB->insert_record('confidential_state', $record);
+        $record = consentform_completionstate_record(null, $userid, $agreed, $cmid);
+        $DB->insert_record('consentform_state', $record);
     }
 
-    confidential_update_completionstate($cmid, $agreed);
+    consentform_update_completionstate($cmid, $agreed);
 
     return true;
 }
@@ -484,7 +484,7 @@ function confidential_save_agreement($agreed, $userid, $cmid) {
  * @param $cmid     course module id
  * @return stdClass record object for inser or update db
  */
-function confidential_completionstate_record($id, $userid, $agreed, $cmid) {
+function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
 
     $record = new stdClass();
     if ($id) {
@@ -492,13 +492,13 @@ function confidential_completionstate_record($id, $userid, $agreed, $cmid) {
     }
     $record->state = $agreed;
     $record->userid = $userid;
-    $record->confidentialcmid = $cmid;
+    $record->consentformcmid = $cmid;
     $record->timestamp = time();
 
     return $record;
 }
 
-function confidential_update_completionstate($cmid, $agreed) {
+function consentform_update_completionstate($cmid, $agreed) {
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
     // Update completion state.
@@ -507,7 +507,7 @@ function confidential_update_completionstate($cmid, $agreed) {
     return true;
 }
 
-function confidential_completionenabled($cmid) {
+function consentform_completionenabled($cmid) {
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
     $completion = new completion_info($course);
@@ -517,6 +517,6 @@ function confidential_completionenabled($cmid) {
     return false;
 }
 
-function confidential_update_caches($courseid) {
+function consentform_update_caches($courseid) {
     rebuild_course_cache($courseid, false);
 }

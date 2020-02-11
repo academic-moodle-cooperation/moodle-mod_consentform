@@ -15,31 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of confidential
+ * Prints a particular instance of consentform
  *
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
-require_once(dirname(__FILE__) . '/confidential_agreement_form.php');
+require_once(dirname(__FILE__) . '/consentform_agreement_form.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // ... confidential instance ID - it should be named as the first character of the module.
+$n  = optional_param('n', 0, PARAM_INT);  // ... consentform instance ID - it should be named as the first character of the module.
 
 if ($id) {
-    $cm         = get_coursemodule_from_id('confidential', $id, 0, false, MUST_EXIST);
+    $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $confidential  = $DB->get_record('confidential', array('id' => $cm->instance), '*', MUST_EXIST);
+    $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
 } else if ($n) {
-    $confidential  = $DB->get_record('confidential', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $confidential->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('confidential', $confidential->id, $course->id, false, MUST_EXIST);
+    $consentform  = $DB->get_record('consentform', array('id' => $n), '*', MUST_EXIST);
+    $course     = $DB->get_record('course', array('id' => $consentform->course), '*', MUST_EXIST);
+    $cm         = get_coursemodule_from_instance('consentform', $consentform->id, $course->id, false, MUST_EXIST);
 } else {
     die('You must specify a course_module ID or an instance ID');
 }
@@ -48,35 +48,35 @@ require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 
-$event = \mod_confidential\event\course_module_viewed::create(array(
+$event = \mod_consentform\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
     'context' => $PAGE->context,
 ));
 $event->add_record_snapshot('course', $PAGE->course);
-$event->add_record_snapshot($PAGE->cm->modname, $confidential);
+$event->add_record_snapshot($PAGE->cm->modname, $consentform);
 $event->trigger();
 
 $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
 
 // Print the page header.
 
-$PAGE->set_url('/mod/confidential/view.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($confidential->name));
+$PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
+$PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 $nogostring = "";
 if (!$CFG->enableavailability) {
 
-    $nogostring = get_string("noavailability", "mod_confidential");
+    $nogostring = get_string("noavailability", "mod_consentform");
 
 }
 if (!$CFG->enablecompletion) {
 
-    $nogostring .= " " . get_string("nocompletion", "mod_confidential");
+    $nogostring .= " " . get_string("nocompletion", "mod_consentform");
 }
-if (!confidential_completionenabled($cm->id)) {
+if (!consentform_completionenabled($cm->id)) {
 
-    $nogostring .= " " . get_string("nocompletioncourse", "mod_confidential");
+    $nogostring .= " " . get_string("nocompletioncourse", "mod_consentform");
 }
 if ($nogostring) {
 
@@ -86,46 +86,46 @@ if ($nogostring) {
 
 } else {
 
-    if (has_capability('mod/confidential:submit', $context, null, false)) {
+    if (has_capability('mod/consentform:submit', $context, null, false)) {
         // List of course modules, teacher's view.
         echo $OUTPUT->header();
         $table = new html_table();
-        $table->id = 'confidential_activitytable';
+        $table->id = 'consentform_activitytable';
         $table->attributes['class'] = 'flexible generaltable generalbox';
-        $table->head = confidential_generate_table_header();
-        $table->data = confidential_generate_table_content($course, $cm->id);
+        $table->head = consentform_generate_table_header();
+        $table->data = consentform_generate_table_content($course, $cm->id);
 
-        echo confidential_render_table($table);
+        echo consentform_render_table($table);
 
         $jsparams = array('cmid' => $cm->id);
-        $PAGE->requires->js_call_amd('mod_confidential/checkboxclicked', 'init', array($jsparams));
-        $PAGE->requires->js_call_amd('mod_confidential/checkboxcontroller', 'init');
+        $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));
+        $PAGE->requires->js_call_amd('mod_consentform/checkboxcontroller', 'init');
 
     } else {
         // Agreement form, participant's view.
-        $mform = new confidential_agreement_form(null,
+        $mform = new consentform_agreement_form(null,
             array('id' => $id,
-                'text' => $confidential->confirmationtext,
+                'text' => $consentform->confirmationtext,
                 'cmid' => $cm->id,
                 'courseid' => $course->id,
-                'confidential' => $confidential,
+                'consentform' => $consentform,
                 'userid' => $USER->id
             ));
         // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {
-            if ($data->agreement == get_string('agree', 'confidential')) {
-                $ok = confidential_save_agreement(1, $USER->id, $cm->id);
-                $message = get_string('msgagreed', 'confidential');
-                $event = \mod_confidential\event\agreement_agree::create(
+            if ($data->agreement == get_string('agree', 'consentform')) {
+                $ok = consentform_save_agreement(1, $USER->id, $cm->id);
+                $message = get_string('msgagreed', 'consentform');
+                $event = \mod_consentform\event\agreement_agree::create(
                     array(
                         'objectid' => $PAGE->cm->id,
                         'context' => $PAGE->context
                     )
                 );
             } else {
-                $ok = confidential_save_agreement(0, $USER->id, $cm->id);
-                $message = get_string('msgdisagreed', 'confidential');
-                $event = \mod_confidential\event\agreement_disagree::create(
+                $ok = consentform_save_agreement(0, $USER->id, $cm->id);
+                $message = get_string('msgdisagreed', 'consentform');
+                $event = \mod_consentform\event\agreement_disagree::create(
                     array(
                         'objectid' => $PAGE->cm->id,
                         'context' => $PAGE->context
@@ -142,7 +142,7 @@ if ($nogostring) {
         } else {  // Display agreement form to participant.
             // Output starts here.
             echo $OUTPUT->header();
-            echo $OUTPUT->box_start('', 'confidential_main_cointainer');
+            echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();
             echo $OUTPUT->box_end();
         }

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * settings.php contains admin-Settings for confidential
+ * settings.php contains admin-Settings for consentform
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
 
-    $settings->add(new admin_setting_configcheckbox('confidential/optiondisagree',
-                                                get_string('optiondisagree', 'confidential'),
-                                                get_string('optiondisagreedesc', 'confidential'),
+    $settings->add(new admin_setting_configcheckbox('consentform/optiondisagree',
+                                                get_string('optiondisagree', 'consentform'),
+                                                get_string('optiondisagreedesc', 'consentform'),
                                                 1));
 }

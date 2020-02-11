@@ -1,4 +1,4 @@
-// This file is part of mod_confidential for Moodle - http://moodle.org/
+// This file is part of mod_consentform for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,23 +17,23 @@
  * checkboxcontroller.js
  *
  * @package mod
- * @subpackage confidential
+ * @subpackage consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
  /**
-  * @module mod_confidential/checkboxcontroller
+  * @module mod_consentform/checkboxcontroller
   */
 define(['jquery', 'core/log'], function($, log) {
 
     /**
      * @constructor
-     * @alias module:mod_confidential/checkboxcontroller
+     * @alias module:mod_consentform/checkboxcontroller
      */
     var Checkboxcontroller = function() {
         // Table ID!
-        this.table = $('#confidential_activitytable');
+        this.table = $('#consentform_activitytable');
     };
 
     Checkboxcontroller.prototype.updateCheckboxes = function(e) {
@@ -89,7 +89,7 @@ define(['jquery', 'core/log'], function($, log) {
             'click', null, {inst: this, type: 'none', subtype: 'section'},
             this.updateCheckboxes);
 
-        $('#confidential_activitytable').css('visibility', 'visible');
+        $('#consentform_activitytable').css('visibility', 'visible');
 
         return true;
     };

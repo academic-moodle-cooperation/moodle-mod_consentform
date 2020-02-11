@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file keeps track of upgrades to the confidential module
+ * This file keeps track of upgrades to the consentform module
  *
  * Sometimes, changes between versions involve alterations to database
  * structures and other major things that may break installations. The upgrade
@@ -24,7 +24,7 @@
  * it cannot do itself, it will tell you what you need to do.  The commands in
  * here will all be database-neutral, using the functions defined in DLL libraries.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Execute confidential upgrade from the given old version
+ * Execute consentform upgrade from the given old version
  *
  * @param int $oldversion
  * @return bool
@@ -41,15 +41,15 @@ defined('MOODLE_INTERNAL') || die();
  * @throws downgrade_exception
  * @throws upgrade_exception
  */
-function xmldb_confidential_upgrade($oldversion) {
+function xmldb_consentform_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
     if ($oldversion < 2018013000) {
 
-        // Define field text to be added to confidential.
-        $table = new xmldb_table('confidential');
+        // Define field text to be added to consentform.
+        $table = new xmldb_table('consentform');
         $field = new xmldb_field('confirmationtext', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'grade');
 
         // Add field intro.
@@ -57,7 +57,7 @@ function xmldb_confidential_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018013000, 'confidential');
+        upgrade_mod_savepoint(true, 2018013000, 'consentform');
     }
 
     return true;

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines backup_confidential_activity_task class
+ * Defines backup_consentform_activity_task class
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @category  backup
  * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,17 +25,17 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/mod/confidential/backup/moodle2/backup_confidential_stepslib.php');
+require_once($CFG->dirroot . '/mod/consentform/backup/moodle2/backup_consentform_stepslib.php');
 
 /**
- * Provides the steps to perform one complete backup of the confidential instance
+ * Provides the steps to perform one complete backup of the consentform instance
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @category  backup
  * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_confidential_activity_task extends backup_activity_task {
+class backup_consentform_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -44,10 +44,10 @@ class backup_confidential_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the confidential.xml file
+     * Defines a backup step to store the instance data in the consentform.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_confidential_activity_structure_step('confidential_structure', 'confidential.xml'));
+        $this->add_step(new backup_consentform_activity_structure_step('consentform_structure', 'consentform.xml'));
     }
 
     /**
@@ -61,12 +61,12 @@ class backup_confidential_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot, '/');
 
-        // Link to the list of confidentials.
-        $search = '/('.$base.'\/mod\/confidential\/index.php\?id\=)([0-9]+)/';
+        // Link to the list of consentforms.
+        $search = '/('.$base.'\/mod\/consentform\/index.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@NEWMODULEINDEX*$2@$', $content);
 
-        // Link to confidential view by moduleid.
-        $search = '/('.$base.'\/mod\/confidential\/view.php\?id\=)([0-9]+)/';
+        // Link to consentform view by moduleid.
+        $search = '/('.$base.'\/mod\/consentform\/view.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@NEWMODULEVIEWBYID*$2@$', $content);
 
         return $content;

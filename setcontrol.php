@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Code to update if a course module is controlled by a confidential module or not in response to an ajax call.
+ * Code to update if a course module is controlled by a consentform module or not in response to an ajax call.
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,7 +35,7 @@ if (!confirm_sesskey()) {
 // Get the params.
 $ischecked = required_param('ischecked', PARAM_BOOL);  // Is the checkbox clicked or not?
 $cmidcontrolled = required_param('value', PARAM_INT);  // The ID of the dependent coursemodule.
-$cmidcontroller = required_param('cmid', PARAM_INT);  // The ID of this confidential module.
+$cmidcontroller = required_param('cmid', PARAM_INT);  // The ID of this consentform module.
 
 $course = get_course_and_cm_from_cmid($cmidcontrolled)[0];
 
@@ -48,8 +48,8 @@ $ret = 3;
 if (is_numeric($cmidcontrolled)) {
     if ($ischecked) {  // Checkbox is clicked.
         // If NO db-entry yet make it.
-        if (!confidential_find_entry_availability($cmidcontrolled, $cmidcontroller)) {
-            if ($ok = confidential_make_entry_availability($course->id, $cmidcontrolled, $cmidcontroller)) {
+        if (!consentform_find_entry_availability($cmidcontrolled, $cmidcontroller)) {
+            if ($ok = consentform_make_entry_availability($course->id, $cmidcontrolled, $cmidcontroller)) {
                 $ret = 1;
             } else {
                 $ret = 3;
@@ -57,8 +57,8 @@ if (is_numeric($cmidcontrolled)) {
         }
     } else { // Checkbox is deselected.
         // If DB-entry exists remove it.
-        if (confidential_find_entry_availability($cmidcontrolled, $cmidcontroller)) {
-            if ($ok = confidential_delete_entry_availability($course->id, $cmidcontrolled, $cmidcontroller)) {
+        if (consentform_find_entry_availability($cmidcontrolled, $cmidcontroller)) {
+            if ($ok = consentform_delete_entry_availability($course->id, $cmidcontrolled, $cmidcontroller)) {
                 $ret = 2;
             }
         } else {

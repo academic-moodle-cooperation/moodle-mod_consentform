@@ -17,12 +17,12 @@
 /**
  * styles.css
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-#confidential_confirmationtext {
+#consentform_confirmationtext {
     background-color: #F0F0F0 !important;
     width: 80% !important;
     border: 1px solid #BBB !important;
@@ -30,7 +30,7 @@
     margin-bottom: 1.5em;
 }
 
-#confidential_button_separator {
+#consentform_button_separator {
     width: 5em;
     display: inline-block;
 }
@@ -39,34 +39,34 @@
     width: 10% !important;
 }
 
-#confidential_activitytable {
+#consentform_activitytable {
     width: 90%;
     visibility: hidden;
 }
 
-.confidential_activitytable_activityrow {
+.consentform_activitytable_activityrow {
     line-height: 1.7em;
 }
-.confidential_activitytable_sectionrow {
+.consentform_activitytable_sectionrow {
     line-height: 2.0em;
 }
 
-.confidential_activitytable_checkboxcolumn {
+.consentform_activitytable_checkboxcolumn {
     white-space: nowrap;
     width: 5%;
     text-align: center;
 }
 
-.confidential_activitytable_checkboxcolumn.header {
+.consentform_activitytable_checkboxcolumn.header {
     padding: 0.5em;
     background-color: white;
 }
 
-.confidential_activitytable_activitycolumn {
+.consentform_activitytable_activitycolumn {
     text-align: left;
 }
 
-.confidential_activitytable_activitycolumn.header {
+.consentform_activitytable_activitycolumn.header {
     padding: 0.5em;
     background-color: white;
 }

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Define all the restore steps that will be used by the restore_confidential_activity_task
+ * Define all the restore steps that will be used by the restore_consentform_activity_task
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @category  backup
  * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,14 +26,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Structure step to restore one confidential activity
+ * Structure step to restore one consentform activity
  *
- * @package   mod_confidential
+ * @package   mod_consentform
  * @category  backup
  * @copyright 2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_confidential_activity_structure_step extends restore_activity_structure_step {
+class restore_consentform_activity_structure_step extends restore_activity_structure_step {
 
     /**
      * Defines structure of path elements to be processed during the restore
@@ -43,7 +43,7 @@ class restore_confidential_activity_structure_step extends restore_activity_stru
     protected function define_structure() {
 
         $paths = array();
-        $paths[] = new restore_path_element('confidential', '/activity/confidential');
+        $paths[] = new restore_path_element('consentform', '/activity/consentform');
 
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
@@ -56,7 +56,7 @@ class restore_confidential_activity_structure_step extends restore_activity_stru
      * @throws base_step_exception
      * @throws dml_exception
      */
-    protected function process_confidential($data) {
+    protected function process_consentform($data) {
         global $DB;
 
         $data = (object)$data;
@@ -75,8 +75,8 @@ class restore_confidential_activity_structure_step extends restore_activity_stru
             $data->grade = -($this->get_mappingid('scale', abs($data->grade)));
         }
 
-        // Create the confidential instance.
-        $newitemid = $DB->insert_record('confidential', $data);
+        // Create the consentform instance.
+        $newitemid = $DB->insert_record('consentform', $data);
         $this->apply_activity_instance($newitemid);
     }
 
@@ -84,7 +84,7 @@ class restore_confidential_activity_structure_step extends restore_activity_stru
      * Post-execution actions
      */
     protected function after_execute() {
-        // Add confidential related files, no need to match by itemname (just internally handled context).
-        $this->add_related_files('mod_confidential', 'intro', null);
+        // Add consentform related files, no need to match by itemname (just internally handled context).
+        $this->add_related_files('mod_consentform', 'intro', null);
     }
 }

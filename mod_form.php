@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The main confidential configuration form
+ * The main consentform configuration form
  *
  * It uses the standard core Moodle formslib. For more info about them, please
  * visit: http://docs.moodle.org/en/Development:lib/formslib.php
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,11 +32,11 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 /**
  * Module instance settings form
  *
- * @package    mod_confidential
+ * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_confidential_mod_form extends moodleform_mod {
+class mod_consentform_mod_form extends moodleform_mod {
 
     /**
      * Defines forms elements
@@ -53,7 +53,7 @@ class mod_confidential_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('confidentialname', 'confidential'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('consentformname', 'consentform'), array('size' => '64'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -61,15 +61,15 @@ class mod_confidential_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'confidentialname', 'confidential');
+        $mform->addHelpButton('name', 'consentformname', 'consentform');
 
-        $this->standard_intro_elements(get_string('description', 'confidential'));
+        $this->standard_intro_elements(get_string('description', 'consentform'));
 
-        $mform->addElement('checkbox', 'optiondisagree', get_string('optiondisagree', 'confidential'));
-        $mform->addHelpButton('optiondisagree', 'optiondisagreedesc', 'confidential');
+        $mform->addElement('checkbox', 'optiondisagree', get_string('optiondisagree', 'consentform'));
+        $mform->addHelpButton('optiondisagree', 'optiondisagreedesc', 'consentform');
         $mform->setDefault('optiondisagree', 1);
 
-        $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_confidential'));
+        $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
         if (isset($this->current->confirmationtext)) {
             $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
         }
