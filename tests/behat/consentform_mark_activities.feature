@@ -6,9 +6,12 @@ Feature: In a course, a teacher should be able to add the control of an activity
 
   @javascript
   Scenario: Add a consentform and a quiz instance to the course
-    Given the following "courses" exist:
-      | fullname | shortname | category | groupmode |
-      | Course 1 | C1        | 0        | 0         |
+    Given the following config values are set as admin:
+      | config           | value |
+      | enablecompletion | 1     |
+    And the following "courses" exist:
+      | fullname | shortname | category | groupmode | completion |
+      | Course 1 | C1        | 0        | 0         | 2          |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | 1        | teacher1@teacher.com |
@@ -39,7 +42,6 @@ Feature: In a course, a teacher should be able to add the control of an activity
     Then I should see "Test quiz name"
     When I am on "Course 1" course homepage
     And I follow "My Consentform"
-    Then I should see "Test quiz name"
-    And I click on "selectcoursemodule"
+    And I click on "selectcoursemodule[]" "checkbox"
     When I am on "Course 1" course homepage
     Then I should see "Not available unless: The activity"

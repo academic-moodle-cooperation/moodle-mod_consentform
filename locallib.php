@@ -82,8 +82,8 @@ function consentform_generate_table_content($course, $cmidcontroller) {
                     $cmidcontrolled = $cmid;
                     $checked = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $cell = new html_table_cell(
-                        html_writer::checkbox("selectcoursemodule", $cmid, $checked, '',
-                        array('class' => "selectcoursemodule section$sectioni", 'id' => "selectcoursemodule$cmindex"))
+                        html_writer::checkbox("selectcoursemodule[]", $cmid, $checked, '',
+                        array('class' => "selectcoursemodule section$sectioni"))
                     );
                     $cell->attributes['class'] = 'consentform_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
