@@ -31,7 +31,7 @@ If he/she agrees, the hidden elements of the course will be revealed.
 Requirements
 ------------
 
-The plugin is available for Moodle 3.8+. This version is for Moodle 3.8
+The plugin is available for Moodle 3.7+. This version is for Moodle 3.7
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1.
 Otherwise consentform will not work!
