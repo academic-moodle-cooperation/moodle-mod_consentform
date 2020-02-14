@@ -19,7 +19,6 @@ Feature: In a course, a teacher should be able to add the control of an activity
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I log in as "teacher1"
-    And I pause scenario execution
     And I am on "Course 1" course homepage
     And I turn editing mode on
     When I add a "Consentform" to section "1" and I fill the form with:
