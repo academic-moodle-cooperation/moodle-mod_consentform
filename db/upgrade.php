@@ -44,21 +44,5 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_consentform_upgrade($oldversion) {
     global $DB;
 
-    $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
-
-    if ($oldversion < 2018013000) {
-
-        // Define field text to be added to consentform.
-        $table = new xmldb_table('consentform');
-        $field = new xmldb_field('confirmationtext', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'grade');
-
-        // Add field intro.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        upgrade_mod_savepoint(true, 2018013000, 'consentform');
-    }
-
     return true;
 }

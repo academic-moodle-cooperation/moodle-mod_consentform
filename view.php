@@ -59,7 +59,6 @@ $event->trigger();
 $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
 
 // Print the page header.
-
 $PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -95,6 +94,7 @@ if ($nogostring) {
         $table->head = consentform_generate_table_header();
         $table->data = consentform_generate_table_content($course, $cm->id);
 
+        echo $OUTPUT->action_link($redirecturl, get_string("backbutton", "consentform"));
         echo consentform_render_table($table);
 
         $jsparams = array('cmid' => $cm->id);

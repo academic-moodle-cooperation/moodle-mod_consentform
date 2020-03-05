@@ -62,3 +62,4 @@ $string['optiondisagreedesc_help'] = 'Erlauben Sie Benutzern, die bereits zugest
 $string['agreementlogentry'] = 'Sie haben am {$a} zugestimmt.';
 $string['disagreementlogentry'] = 'Sie haben am {$a} NICHT zugestimmt.';
 $string['privacy:null_reason'] = 'Dieses Plugin speichert keine Userdaten. Es steuert lediglich die Sichtbarkeit von Modulen abhängig von einer Einverständniserklärung.';
+$string['backbutton'] = 'Zurück zur Kursübersicht';

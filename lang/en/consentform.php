@@ -63,3 +63,4 @@ $string['optiondisagreedesc_help'] = 'Allow participants to revoke their agreeme
 $string['agreementlogentry'] = 'You have agreed at {$a}.';
 $string['disagreementlogentry'] = 'You have revoked your agreement at {$a}.';
 $string['privacy:null_reason'] = 'This plugin does not store any personal information. It merely controlls the visibility of course modules dependant of a consentform.';
+$string['backbutton'] = 'Back to course overview';

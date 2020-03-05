@@ -42,7 +42,7 @@ class mod_consentform_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $COURSE;
 
         $mform = $this->_form;
 
@@ -76,8 +76,39 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
-        // Add standard elements, common to all modules.
-        $this->standard_coursemodule_elements();
+        // Acitivity visible status.
+        $section = get_fast_modinfo($COURSE)->get_section_info($this->_section);
+        $allowstealth = !empty($CFG->allowstealth) && $this->courseformat->allow_stealth_module_visibility($this->_cm, $section);
+        if ($allowstealth && $section->visible) {
+            $modvisiblelabel = 'modvisiblewithstealth';
+        } else if ($section->visible) {
+            $modvisiblelabel = 'modvisible';
+        } else {
+            $modvisiblelabel = 'modvisiblehiddensection';
+        }
+        $mform->addElement('modvisible', 'visible', get_string($modvisiblelabel), null,
+            array('allowstealth' => $allowstealth, 'sectionvisible' => $section->visible, 'cm' => $this->_cm));
+        $mform->addHelpButton('visible', $modvisiblelabel);
+        if (!empty($this->_cm)) {
+            $context = context_module::instance($this->_cm->id);
+            if (!has_capability('moodle/course:activityvisibility', $context)) {
+                $mform->hardFreeze('visible');
+            }
+        }
+
+
+        // Add standard hidden elements, common to all modules.
+        $this->standard_hidden_coursemodule_elements();
+
+        // Completion hidden elements used witch this module.
+        $mform->addElement('hidden', 'completion', COMPLETION_TRACKING_AUTOMATIC);
+        $mform->setType('completion', PARAM_INT);
+        $mform->addElement('hidden', 'completionunlocked', 0);
+        $mform->setType('completionunlocked', PARAM_INT);
+        $mform->addElement('hidden', 'completionview', 0);
+        $mform->setType('completionview', PARAM_INT);
+        $mform->addElement('hidden', 'availabilityconditionsjson', '');
+        $mform->setType('availabilityconditionsjson', PARAM_ALPHANUMEXT);
 
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
@@ -91,6 +122,9 @@ class mod_consentform_mod_form extends moodleform_mod {
             if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
+            $data->completion = 2;
+            $data->completionview = 0;
+            $data->completionunlocked = 0;
         }
         return $data;
     }

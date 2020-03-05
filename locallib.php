@@ -470,6 +470,9 @@ function consentform_save_agreement($agreed, $userid, $cmid) {
         $DB->insert_record('consentform_state', $record);
     }
 
+    if ($agreed == 1) {
+        $agreed = 2;
+    }
     consentform_update_completionstate($cmid, $agreed);
 
     return true;
@@ -480,7 +483,7 @@ function consentform_save_agreement($agreed, $userid, $cmid) {
  *
  * @param $id       record id
  * @param $userid   user id of participant
- * @param $agreed   1 agreed, 0 disagreed
+ * @param $agreed   2 agreed, 0 disagreed
  * @param $cmid     course module id
  * @return stdClass record object for inser or update db
  */

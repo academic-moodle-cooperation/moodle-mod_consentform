@@ -42,6 +42,17 @@ define(
 
             instance.cmid = param.cmid;
 
+             // Response indicator.
+             function response(val, checked) {
+                 if (checked) {
+                     $(":checkbox[value=" + val +"]").parent().parent().css("background-color", "lightgreen");
+                 } else {
+                     $(":checkbox[value=" + val +"]").parent().parent().css("background-color", "lightgrey");
+                 }
+             }
+
+            // Make ajax call to setcontrol.php page to store if the activity shall be controlled by
+            // this consentform instance.
             function transmitcheckboxclicked(ischecked, value) {
 
                 $.get(config.wwwroot + '/mod/consentform/setcontrol.php', {
@@ -51,9 +62,9 @@ define(
                     cmid: instance.cmid
                     }, 'json').done(function(data) {
                         if (data == 1 && ischecked) {
-                            log.debug("1");
+                            response(value, 1);
                         } else if (data == 2 && !ischecked) {
-                            log.debug("2");
+                            response(value, 0);
                         } else {
                             log.debug(data);
                         }
