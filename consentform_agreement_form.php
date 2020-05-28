@@ -60,7 +60,7 @@ class consentform_agreement_form extends moodleform {
         $state = consentform_get_completion_state(null, $data['cmid'], $data['userid'], null);
         $mform->addElement('html', $this->get_agreementlogentry($data['cmid'], $data['userid'], $state));
         if ($state == 1) { // Already agreed.
-            if (get_config('consentform', 'optiondisagree')) {
+            if ($data['consentform']->optiondisagree) {
                 $mform->addElement('submit', 'agreement', get_string('revocation', 'consentform'));
             }
         } else {

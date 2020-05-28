@@ -24,7 +24,6 @@
 
 #consentform_confirmationtext {
     background-color: #F0F0F0 !important;
-    width: 80% !important;
     border: 1px solid #BBB !important;
     padding: 3em !important;
     margin-bottom: 1.5em;
@@ -69,4 +68,10 @@
 .consentform_activitytable_activitycolumn.header {
     padding: 0.5em;
     background-color: white;
+}
+
+.consentformwarning {
+    background-color: red;
+    color: white;
+    padding: 3px;
 }

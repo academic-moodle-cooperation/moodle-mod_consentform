@@ -114,7 +114,7 @@ if ($nogostring) {
         // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {
             if ($data->agreement == get_string('agree', 'consentform')) {
-                $ok = consentform_save_agreement(1, $USER->id, $cm->id);
+                $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
                 $message = get_string('msgagreed', 'consentform');
                 $event = \mod_consentform\event\agreement_agree::create(
                     array(

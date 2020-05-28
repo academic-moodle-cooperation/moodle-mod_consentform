@@ -31,6 +31,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+define('EXPECTEDCOMPLETIONVALUE', 1);
+define('GRADEVALUETOWRITE', 1);
+
 /* Moodle core API */
 
 /**
@@ -49,13 +52,13 @@ function consentform_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_GRADE_HAS_GRADE:
+            return true;
+        case FEATURE_GRADE_OUTCOMES:
             return false;
         case FEATURE_BACKUP_MOODLE2:
             return true;
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
-        case FEATURE_COMPLETION_TRACKS_VIEWS:
-            return false;
         case FEATURE_GROUPS:
             return true;
         case FEATURE_GROUPINGS:

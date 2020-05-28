@@ -42,8 +42,20 @@ function consentform_generate_table_content($course, $cmidcontroller) {
     $sectionibefore = "";
     $usercanviewsection = true;
     $cmindex = 0;
+    $a = new stdClass();
+    $a->consentform = get_string("modulename", "consentform");
     foreach ($coursemodules as $cmid => $cminfo) {
+        $msg = "";
         if ($cminfo->modname != 'consentform' && !$cminfo->deletioninprogress) {
+            if ($availabilityjson = $cminfo->availability) {
+                $availability = json_decode($availabilityjson);
+                if (isset($availability->op)) {
+                    if ($availability->op <> "&") {
+                        $msg = "&nbsp;&nbsp;" . html_writer::start_span("warning") .
+                            get_string("wrongoperator", "consentform", $a) . html_writer::end_span();
+                    }
+                }
+            }
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
                 if (!($sectioninfo = $modinfo->get_section_info($sectioni))) { // If this section doesn't exist.
@@ -94,6 +106,7 @@ function consentform_generate_table_content($course, $cmidcontroller) {
                             html_writer::tag('span', $cminfo->name, array('class' => 'instancename'));
                     $row->cells[] = new html_table_cell(
                         html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) .
+                        $msg .
                         html_writer::end_div()
                     );
                     $row->attributes['class'] = "consentform_activitytable_activityrow";
@@ -395,18 +408,30 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
  * Make condition entry in course_modules.
  *
  * @param $courseid         id of this course
- * @param $cmidcontrolled  course module id of this CO instance.
- * @param $cmidcontroller  id of course module which relies on this CO instance.
+ * @param $cmidcontrolled  course module id of this CF instance.
+ * @param $cmidcontroller  id of course module which relies on this CF instance.
  * @return bool
  * @throws dml_exception
  */
 function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
-    $restriction = \core_availability\tree::get_root_json(
-        [\availability_completion\condition::get_json($cmidcontroller, 1)]);
+/*    $restriction = \core_availability\tree::get_root_json(
+        [\availability_completion\condition::get_json($cmidcontroller, 2)]); */
+    $availabilityjson = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
+    $newrestriction = new stdClass();
+    $newrestriction->type = "completion";
+    $newrestriction->cm = $cmidcontroller;
+    $newrestriction->e = EXPECTEDCOMPLETIONVALUE;
+    $availability = json_decode($availabilityjson);
+    if (!isset($availability->op)) {
+        $availability->op = "&";
+    }
+    $availability->c[] = $newrestriction;
+    $availability->showc[] = true;
+    $availabilityjson = json_encode($availability);
     $DB->set_field('course_modules', 'availability',
-        json_encode($restriction), ['id' => $cmidcontrolled]);
+        $availabilityjson, ['id' => $cmidcontrolled]);
     consentform_update_caches($courseid);
 
     return true;
@@ -416,8 +441,8 @@ function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidco
  * Delete condition entry in course_modules.
  *
  * @param $courseid         id of this course
- * @param $cmidcontrolled  course module id of this CO instance.
- * @param $cmidcontroller  id of course module which relies on this CO instance.
+ * @param $cmidcontrolled  course module id of this CF instance.
+ * @param $cmidcontroller  id of course module which relies on this CF instance.
  * @return bool
  * @throws dml_exception
  */
@@ -470,10 +495,17 @@ function consentform_save_agreement($agreed, $userid, $cmid) {
         $DB->insert_record('consentform_state', $record);
     }
 
-    if ($agreed == 1) {
-        $agreed = 2;
-    }
     consentform_update_completionstate($cmid, $agreed);
+
+    $consentform = consentform_getinstance($cmid);
+
+    if ($consentform->usegrade) {
+        if ($agreed) {
+            consentform_set_user_grade($consentform, $userid, GRADEVALUETOWRITE);
+        } else {
+            consentform_set_user_grade($consentform, $userid, null);
+        }
+    }
 
     return true;
 }
@@ -522,4 +554,13 @@ function consentform_completionenabled($cmid) {
 
 function consentform_update_caches($courseid) {
     rebuild_course_cache($courseid, false);
+}
+
+function consentform_getinstance($cmid) {
+    global $DB;
+    if ($instanceid = $DB->get_field('course_modules','instance', array('id' => $cmid))) {
+        $consentform = $DB->get_record('consentform', array('id' => $instanceid));
+        return $consentform;
+    }
+    return false;
 }

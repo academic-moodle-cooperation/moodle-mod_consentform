@@ -65,16 +65,23 @@ class mod_consentform_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements(get_string('description', 'consentform'));
 
-        $mform->addElement('checkbox', 'optiondisagree', get_string('optiondisagree', 'consentform'));
-        $mform->addHelpButton('optiondisagree', 'optiondisagreedesc', 'consentform');
-        $mform->setDefault('optiondisagree', 1);
-
         $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
         if (isset($this->current->confirmationtext)) {
             $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
         }
         $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
+
+        $mform->addElement('advcheckbox', 'optiondisagree', null, get_string('optiondisagree', 'consentform'), null, array(0, 1));
+        $mform->setType('optiondisagree', PARAM_INT);
+        $mform->setDefault('optiondisagree', 0);
+        $mform->addHelpButton('optiondisagree', 'optiondisagree', 'consentform');
+
+        $mform->addElement('advcheckbox', 'usegrade', null, get_string('usegrade', 'consentform'), null, array(0, 1));
+        $mform->setType('usegrade', PARAM_INT);
+        $mform->setDefault('usegrade', 0);
+        $mform->addHelpButton('usegrade', 'usegrade', 'consentform');
+
 
         // Acitivity visible status.
         $section = get_fast_modinfo($COURSE)->get_section_info($this->_section);
@@ -96,19 +103,7 @@ class mod_consentform_mod_form extends moodleform_mod {
             }
         }
 
-
-        // Add standard hidden elements, common to all modules.
-        $this->standard_hidden_coursemodule_elements();
-
-        // Completion hidden elements used witch this module.
-        $mform->addElement('hidden', 'completion', COMPLETION_TRACKING_AUTOMATIC);
-        $mform->setType('completion', PARAM_INT);
-        $mform->addElement('hidden', 'completionunlocked', 0);
-        $mform->setType('completionunlocked', PARAM_INT);
-        $mform->addElement('hidden', 'completionview', 0);
-        $mform->setType('completionview', PARAM_INT);
-        $mform->addElement('hidden', 'availabilityconditionsjson', '');
-        $mform->setType('availabilityconditionsjson', PARAM_ALPHANUMEXT);
+        $this->standard_coursemodule_elements();
 
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
@@ -118,16 +113,23 @@ class mod_consentform_mod_form extends moodleform_mod {
      * Split form editor field array of confirmationtext into two fields
      */
     public function get_data($slashed = true) {
+
         if ($data = parent::get_data($slashed)) {
             if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
-            $data->completion = 2;
-            $data->completionview = 0;
-            $data->completionunlocked = 0;
         }
         return $data;
     }
 
 
+    /**
+     * Called during validation to see whether some module-specific completion rules are selected.
+     *
+     * @param array $data Input data not yet validated.
+     * @return bool True if one or more rules is enabled, false if none are.
+     */
+    public function completion_rule_enabled($data) {
+        return true;
+    }
 }

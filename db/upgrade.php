@@ -44,5 +44,22 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_consentform_upgrade($oldversion) {
     global $DB;
 
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2020052700) {
+
+        // Define field usegrade to be added to consentform.
+        $table = new xmldb_table('consentform');
+        $field = new xmldb_field('usegrade', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'optiondisagree');
+
+        // Conditionally launch add field usegrade.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2020052700, 'consentform');
+    }
+
     return true;
 }
