@@ -416,8 +416,6 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
 function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
-/*    $restriction = \core_availability\tree::get_root_json(
-        [\availability_completion\condition::get_json($cmidcontroller, 2)]); */
     $availabilityjson = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
     $newrestriction = new stdClass();
     $newrestriction->type = "completion";
@@ -450,35 +448,37 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
     global $DB;
 
     $found = -1;
-    if ($conditions = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
-        $conditions = json_decode($conditions);
-
+    if ($conditionsjson = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
+        $conditionscreturn = array();
+        $showreturn = array();
+        $conditions = json_decode($conditionsjson);
         $indx = 0;
         foreach ($conditions->c as $condition) {
             if ($condition->type == 'completion') {
                 if ($condition->cm == $cmidcontroller) {
                     $found = $indx;
-                    break;
                 }
-                $indx++;
+            } else {
+                $conditionscreturn[] = $condition;
+                $showreturn[] = $conditions->showc[$indx];
             }
+            $indx++;
         }
     }
 
     if ($found >= 0) {
-        unset($conditions->c[$found]);
-        unset($conditions->showc[$found]);
-
-        $conditions = json_encode($conditions);
+        $obj = new stdClass();
+        $obj->op = $conditions->op;
+        $obj->c = $conditionscreturn;
+        $obj->showc = $showreturn;
+        $conditions = json_encode($obj);
 
         $updaterecord = new stdClass();
         $updaterecord->id = $cmidcontrolled;
         $updaterecord->availability = $conditions;
-
         if ($ok = $DB->update_record('course_modules', $updaterecord)) {
             consentform_update_caches($courseid);
         }
-
     }
     return true;
 }
@@ -542,9 +542,7 @@ function consentform_update_completionstate($cmid, $agreed) {
     return true;
 }
 
-function consentform_completionenabled($cmid) {
-    $course = get_course_and_cm_from_cmid($cmid)[0];
-    $cm = get_coursemodule_from_id(false, $cmid);
+function consentform_completionenabled($cm, $course) {
     $completion = new completion_info($course);
     if ($completion->is_enabled($cm)) {
         return true;

@@ -64,19 +64,13 @@ $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 $nogostring = "";
-if (!$CFG->enableavailability) {
-
-    $nogostring = get_string("noavailability", "mod_consentform");
-
-}
 if (!$CFG->enablecompletion) {
-
     $nogostring .= " " . get_string("nocompletion", "mod_consentform");
 }
-if (!consentform_completionenabled($cm->id)) {
-
+if (!consentform_completionenabled($cm, $course)) {
     $nogostring .= " " . get_string("nocompletioncourse", "mod_consentform");
 }
+
 if ($nogostring) {
 
     echo $OUTPUT->header();

@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Consentform';
 $string['modulenameplural'] = 'Consentforms';
 $string['modulename_help'] = 'Use the consentform module to uncover certain activities not before the participant has agreed.';
-$string['description'] = 'Module description';
+$string['description'] = 'Description';
 $string['consentform:addinstance'] = 'Add a new consentform module';
 $string['consentform:submit'] = 'Edit consentform';
 $string['consentform:view'] = 'View consentform';

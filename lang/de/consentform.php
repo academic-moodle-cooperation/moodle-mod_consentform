@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Einverständniserklärung';
 $string['modulenameplural'] = 'Einverständniserklärungen';
 $string['modulename_help'] = 'Mit diesem Modul machen Sie den Zugang zu anderen Aktivitäten und Arbeitsmaterialien dieses Kurses von einer Einverständniserklärung abhängig, welche Sie in diesem Modul in den Moduleigenschaften definieren.';
-$string['description'] = 'Modulbeschreibung';
+$string['description'] = 'Beschreibung';
 $string['consentform:addinstance'] = 'Einverständniserklärung hinzufügen';
 $string['consentform:submit'] = 'Einverständniserklärung bearbeiten';
 $string['consentform:view'] = 'Einverständniserklärung ansehen';
