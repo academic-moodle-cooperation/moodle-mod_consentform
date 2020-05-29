@@ -542,14 +542,6 @@ function consentform_update_completionstate($cmid, $agreed) {
     return true;
 }
 
-function consentform_completionenabled($cm, $course) {
-    $completion = new completion_info($course);
-    if ($completion->is_enabled($cm)) {
-        return true;
-    }
-    return false;
-}
-
 function consentform_update_caches($courseid) {
     rebuild_course_cache($courseid, false);
 }

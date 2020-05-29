@@ -67,8 +67,9 @@ $nogostring = "";
 if (!$CFG->enablecompletion) {
     $nogostring .= " " . get_string("nocompletion", "mod_consentform");
 }
-if (!consentform_completionenabled($cm, $course)) {
+if (!$cm->completion) {
     $nogostring .= " " . get_string("nocompletioncourse", "mod_consentform");
+var_dump($cm);
 }
 
 if ($nogostring) {
