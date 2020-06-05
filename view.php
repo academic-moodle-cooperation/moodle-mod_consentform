@@ -75,7 +75,7 @@ var_dump($cm);
 if ($nogostring) {
 
     echo $OUTPUT->header();
-    echo $OUTPUT->heading("Sorry, but...");
+    echo $OUTPUT->heading(get_string("nocompletiontitle", "mod_consentform"));
     echo $nogostring;
 
 } else {

@@ -68,3 +68,6 @@ $string['disagreementlogentry'] = 'You have revoked your agreement at {$a}.';
 $string['privacy:null_reason'] = 'This plugin does not store any personal information. It merely controlls the visibility of course modules dependant of a consentform.';
 $string['backbutton'] = 'Back to course overview';
 $string['wrongoperator'] = 'This module has NOT an AND-conjunction in its restrictions. This {$a->consentform} is possibly without effect on this module!';
+$string['nocempletiontitle'] = 'Completion not active';
+$string['resetconsentform'] = 'Clear all consentform data';
+$string['resetok'] = 'All data removed';

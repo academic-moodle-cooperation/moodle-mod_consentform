@@ -339,6 +339,11 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
     $item['grademax']  = 1;
     $item['grademin']  = 0;
 
+    if ($grades === 'reset') {
+        $params['reset'] = true;
+        $grades = null;
+    }
+
     grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
             $consentform->id, 0, $grades, $item);
 }
@@ -547,4 +552,36 @@ function consentform_clear_completions(stdClass $consentform, $cm) {
     rebuild_course_cache($consentform->course, false);
 
     return true;
+}
+
+/**
+ * Called by course/reset.php
+ */
+function consentform_reset_course_form_definition(&$mform) {
+    $mform->addElement('header', 'consentformheader', get_string('modulenameplural', 'consentform'));
+    $mform->addElement('checkbox', 'reset_consentform', get_string('resetconsentform','consentform'));
+}
+
+function consentform_reset_userdata($data) {
+    global $DB;
+
+    $componentstr = get_string('modulenameplural', 'consentform');
+    $status = array();
+
+    if (!empty($data->reset_consentform)) {
+        $consentformmoduleid = $DB->get_field('modules', 'id', array('name' => 'consentform'));
+        $cms = $DB->get_records('course_modules', array('course' => $data->courseid, 'module' => $consentformmoduleid));
+        foreach($cms as $cm) {
+            $DB->delete_records('consentform_state', array('consentformcmid'=> $cm->id));
+            $consentform = $DB->get_record('consentform', array('id' => $cm->instance), '*');
+            consentform_clear_completions($consentform, $cm);
+            consentform_grade_item_delete($consentform);
+        }
+        $status[] = array('component' => $componentstr, 'item' => get_string('resetok', 'consentform'), 'error' => false);
+    }
+    return $status;
+}
+
+function consentform_reset_course_form_defaults($course) {
+    return array('reset_consentform'=>1);
 }
