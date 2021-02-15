@@ -65,19 +65,14 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'consentformname', 'consentform');
 
-        // Module description fields. Only if not confirmincourseoveriew option is not active.
-        if (!isset($this->current->confirmincourseoverview) || $this->current->confirmincourseoverview == 0) {
-            $this->standard_intro_elements(get_string('description', 'consentform'));
+        if (!$this->_instance) {
+            $mform->addElement('hidden', 'showdescription', '1');
+            $mform->setType('showdescription', PARAM_INT);
         } else {
-            if (!$this->_instance) {
-                $mform->addElement('hidden', 'showdescription', '1');
+            if (!(isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1)) {
+                $mform->addElement('advcheckbox', 'showdescription', null, get_string('showdescription', 'moodle'), null, array(0, 1));
                 $mform->setType('showdescription', PARAM_INT);
-            } else {
-                if (!(isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1)) {
-                    $mform->addElement('advcheckbox', 'showdescription', null, get_string('showdescription', 'moodle'), null, array(0, 1));
-                    $mform->setType('showdescription', PARAM_INT);
-                    $mform->addHelpButton('showdescription', 'showdescription', 'moodle');
-                }
+                $mform->addHelpButton('showdescription', 'showdescription', 'moodle');
             }
         }
 
