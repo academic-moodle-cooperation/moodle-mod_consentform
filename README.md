@@ -21,11 +21,11 @@ Example
 
 A trainer wants to hide some elements of a moodle course as long as the course participants have not agreed with a
 consentform. First you insert an instance of this activity module to your course and you insert the text, which
-the participants have to agree/disagree with. Then you click at this consentform instance in course overview and
+the participants have to agree with. Then you click at this consentform instance in course overview and
 see a list of all visible moodle elements of this course. You can select here all the modules which
 shall be hidden as long as the participant has not agreed to the consentform. If - on the other hand - a course 
 participant clicks on this module in course overview, he/she will see the consentform text and a button
-"agree" or "disagree". He/she can now agree or disagree to this text by pressing the appropriate button.
+"agree" or "refuse". He/she can now agree or refuse to this text by pressing the appropriate button.
 If he/she agrees, the hidden elements of the course will be revealed.
 
 Requirements
@@ -55,7 +55,11 @@ Admin Settings
 As an administrator you can set the default values instance-wide on the settings page for
 administrators in the consentform module:
 
-* allow instance setting "disagreements possible" (checkbox)
+* default instance setting "Allow refusals" (checkbox)
+* default instance setting "Allow revocations" (checkbox)
+* default instance setting title agreement button (textfield)
+* default instance setting title refusal button (textfield)
+* default instance setting title revocation button (textfield)
 
 Documentation
 -------------

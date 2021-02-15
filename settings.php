@@ -27,8 +27,43 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
 
-    $settings->add(new admin_setting_configcheckbox('consentform/optiondisagree',
-                                                get_string('optiondisagree', 'consentform'),
-                                                get_string('optiondisagreedesc', 'consentform'),
+    // Option to revoke default.
+    $settings->add(new admin_setting_configcheckbox('consentform/optionrevoke',
+                                                get_string('optionrevoke', 'consentform'),
+                                                get_string('optionrevokedesc', 'consentform'),
                                                 1));
+
+    // Option to refuse default.
+    $settings->add(new admin_setting_configcheckbox('consentform/optionrefuse',
+        get_string('optionrefuse', 'consentform'),
+        get_string('optionrefusedesc', 'consentform'),
+        0));
+
+    // Confirmation in course overview page default.
+    $settings->add(new admin_setting_configcheckbox('consentform/confirmincourseoverview',
+        get_string('confirmincourseoverview', 'consentform'),
+        get_string('confirmincourseoverviewdesc', 'consentform'),
+        0));
+
+    // No course modules list default.
+    $settings->add(new admin_setting_configcheckbox('consentform/nocoursemoduleslist',
+        get_string('nocoursemoduleslist', 'consentform'),
+        get_string('nocoursemoduleslistdesc', 'consentform'),
+        0));
+
+    // Buttonlabels defaults.
+    $settings->add(new admin_setting_configtext('consentform/textagreementbutton',
+        get_string('textagreementbutton', 'consentform'),
+        get_string('textagreementbuttondesc','consentform'),
+        get_string('agree', 'consentform'), PARAM_TEXT));
+    $settings->add(new admin_setting_configtext('consentform/textrefusalbutton',
+        get_string('textrefusalbutton', 'consentform'),
+        get_string('textrefusalbuttondesc','consentform'),
+        get_string('refuse', 'consentform'), PARAM_TEXT));
+    $settings->add(new admin_setting_configtext('consentform/textrevocationbutton',
+        get_string('textrevocationbutton', 'consentform'),
+        get_string('textrevocationbuttondesc','consentform'),
+        get_string('revoke', 'consentform'), PARAM_TEXT));
+
 }
+

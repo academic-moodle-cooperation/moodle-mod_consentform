@@ -1,5 +1,5 @@
 /**
-// This file is part of mod_organizer for Moodle - http://moodle.org/
+// This file is part of mod_consentform for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,16 +22,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-#consentform_confirmationtext {
+.consentform_confirmationtext {
     background-color: #F0F0F0 !important;
     border: 1px solid #BBB !important;
     padding: 3em !important;
     margin-bottom: 1.5em;
 }
 
-#consentform_button_separator {
-    width: 5em;
-    display: inline-block;
+.consentform_confirmationtext_incourseoverview {
+    background-color: #F0F0F0 !important;
+    border: 1px solid #BBB !important;
+    padding: 0.3em !important;
+    margin-bottom: 0.5em;
 }
 
 #mform1 .col-md-3 {
@@ -74,4 +76,21 @@
     background-color: red;
     color: white;
     padding: 3px;
+}
+
+.agreed {
+    color: green;
+}
+
+.revoked {
+    color: red;
+}
+
+.refused {
+    color: red;
+}
+
+#consentform_export_form .row {
+    display: block !important;
+    margin-left: 0.0em !important;
 }

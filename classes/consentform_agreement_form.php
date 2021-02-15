@@ -25,9 +25,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_consentform;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/../../lib/formslib.php');
+// Global variable $CFG is always set, but with this little wrapper PHPStorm won't give wrong error messages!
+if (isset($CFG)) {
+    require_once($CFG->libdir . '/formslib.php');
+}
 
 /**
  * Agreement form
@@ -36,7 +41,7 @@ require_once(dirname(__FILE__) . '/../../lib/formslib.php');
  * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class consentform_agreement_form extends moodleform {
+class consentform_agreement_form extends \moodleform {
 
     /**
      * Defines forms elements
@@ -53,18 +58,26 @@ class consentform_agreement_form extends moodleform {
         $mform->addElement('hidden', 'sesskey', sesskey());
         $mform->setType('sesskey', PARAM_ALPHANUM);
 
-        $confirmationtexthtml = '<div id="consentform_confirmationtext">' . $data['text'] . '</div>';
-
+        // Display confirmation text.
+        $confirmationtexthtml = '<div class="' . $data['confirmationtextclass'] . '">' . $data['text'] . '</div>';
         $mform->addElement('html', $confirmationtexthtml);
 
+        // Show state of confirmation of this user.
         $state = consentform_get_completion_state(null, $data['cmid'], $data['userid'], null);
         $mform->addElement('html', $this->get_agreementlogentry($data['cmid'], $data['userid'], $state));
-        if ($state == 1) { // Already agreed.
-            if ($data['consentform']->optiondisagree) {
-                $mform->addElement('submit', 'agreement', get_string('revocation', 'consentform'));
+
+        // Display submit buttons.
+        if ($state == CONSENTFORM_STATUS_AGREED) { // Already agreed.
+            if ($data['consentform']->optionrevoke) {
+                $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
             }
         } else {
-            $mform->addElement('submit', 'agreement', get_string('agree', 'consentform'));
+            $buttonarray=array();
+            $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
+            if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
+                $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
+            }
+            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         }
     }
 
@@ -81,24 +94,28 @@ class consentform_agreement_form extends moodleform {
     }
 
     /**
-     * Get log entry of last agreement/revocation of this user.
+     * Get log entry of last agreement/refusal/revocation of this user.
      *
      * @param $cmid    coursemodule id
      * @param $userid  user id
-     * @param $agreed  agreed (1) or disagreed (0)
+     * @param $status  agreed or revoked or refused
      * @return bool    returns false if no logentry (=timestamp) was found.
      * @throws coding_exception
      * @throws dml_exception
      */
-    private function get_agreementlogentry($cmid, $userid, $agreed) {
+    private function get_agreementlogentry($cmid, $userid, $status) {
         global $DB, $OUTPUT;
 
         if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
             array('consentformcmid' => $cmid, 'userid' => $userid))) {
-            if ($agreed == 1) {
+            if ($status == CONSENTFORM_STATUS_AGREED) {
                 return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)));
             } else {
-                return $OUTPUT->notification(get_string('disagreementlogentry', 'consentform', userdate($timestamp)));
+                if ($status == CONSENTFORM_STATUS_REVOKED) {
+                    return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)));
+                } else if ($status == CONSENTFORM_STATUS_REFUSED) {
+                    return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)));
+                }
             }
         }
 

@@ -13,10 +13,15 @@
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="100" SEQUENCE="false" COMMENT="The maximum grade. Can be negative to indicate the use of a scale."/>
-        <FIELD NAME="confirmationtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Consentform text to agree/disagree to"/>
-        <FIELD NAME="optiondisagree" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="Provide option to disagree for this instance"/>
-        <FIELD NAME="usegrade" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Write a grade for every agreement"/>
+        <FIELD NAME="confirmationtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Consentform text to agree to"/>
+        <FIELD NAME="optionrevoke" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Provide option to revoke"/>
+        <FIELD NAME="optionrefuse" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Provide option to refuse"/>
+        <FIELD NAME="textagreementbutton" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of agreement button"/>
+        <FIELD NAME="textrefusalbutton" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of refusal button"/>
+        <FIELD NAME="textrevocationbutton" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of revocation button"/>
+        <FIELD NAME="usegrade" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Write a grade value of 1 for every agreement"/>
+        <FIELD NAME="confirmincourseoverview" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Confirmation takes place in course overview"/>
+        <FIELD NAME="nocoursemoduleslist" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="No course module list is used"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -25,12 +30,12 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="consentform_state" COMMENT="Confirmationstate of participants (agreed/revoked) is stored here">
+    <TABLE NAME="consentform_state" COMMENT="Confirmationstate of participants (agreed/refused/revoked) is stored here">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
         <FIELD NAME="consentformcmid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  COMMENT="id of consentform course module"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Userid of the participant"/>
-        <FIELD NAME="state" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="State: 0 - disagreed, 1 - agreed"/>
+        <FIELD NAME="state" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="State: 0 - revoked/refused, 1 - agreed"/>
         <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

@@ -51,7 +51,7 @@ function xmldb_consentform_upgrade($oldversion) {
         // Define field usegrade to be added to consentform.
         $table = new xmldb_table('consentform');
         $field = new xmldb_field('usegrade', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
-            'optiondisagree');
+            'optionrevoke');
 
         // Conditionally launch add field usegrade.
         if (!$dbman->field_exists($table, $field)) {
@@ -61,5 +61,78 @@ function xmldb_consentform_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020052700, 'consentform');
     }
 
-    return true;
+    if ($oldversion < 2021020500) {
+
+        $table = new xmldb_table('consentform');
+
+        // Define field optionrevoke to be added to consentform.
+        $field = new xmldb_field('optiondisagree', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'confirmationtext');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'optionrevoke');
+        }
+
+        // Define field optionrefuse to be added to consentform.
+        $field = new xmldb_field('optionrefuse', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'optionrevoke');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field textagreementbutton to be added to consentform.
+        $field = new xmldb_field('textagreementbutton', XMLDB_TYPE_TEXT, null, null, null, null, null,
+            'optionrefuse');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field textrefusalbutton to be added to consentform.
+        $field = new xmldb_field('textrefusalbutton', XMLDB_TYPE_TEXT, null, null, null, null, null,
+            'textagreementbutton');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field textrevocationbutton to be added to consentform.
+        $field = new xmldb_field('textrevocationbutton', XMLDB_TYPE_TEXT, null, null, null, null, null,
+            'textrefusalbutton');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field confirmincourseoverview to be added to consentform.
+        $field = new xmldb_field('confirmincourseoverview', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'usegrade');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $record = new stdClass();
+        $record->textagreementbutton = get_string('agree', 'consentform');
+        $record->textrevocationbutton = get_string('revoke', 'consentform');
+        $record->textrefusalbutton = get_string('refuse', 'consentform');
+        $ids = $DB->get_fieldset_select('consentform', 'id', '1 = 1');
+        foreach ($ids as $id) {
+            $record->id = $id;
+            $DB->update_record('consentform', $record);
+        }
+
+        upgrade_mod_savepoint(true, 2021020500, 'consentform');
+    }
+
+    if ($oldversion < 2021020503) {
+
+        $table = new xmldb_table('consentform');
+
+        // Define field optionrevoke to be added to consentform.
+        $field = new xmldb_field('nocoursemoduleslist', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'confirmincourseoverview');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2021020503, 'consentform');
+    }
+
+        return true;
 }

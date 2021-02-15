@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * event/agreement_disagree.php
+ * event/agreement_revoke.php
  *
  * @package   mod_consentform
  * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
@@ -26,9 +26,9 @@
 namespace mod_consentform\event;
 defined('MOODLE_INTERNAL') || die();
 /**
- * The agreement_disagree event class.
+ * The agreement_revoke event class.
  **/
-class agreement_disagree extends \core\event\base
+class agreement_revoke extends \core\event\base
 {
     protected function init() {
         $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
@@ -37,14 +37,14 @@ class agreement_disagree extends \core\event\base
     }
 
     public static function get_name() {
-        return get_string('eventagreementdisagree', 'mod_consentform');
+        return get_string('eventagreementrevoke', 'mod_consentform');
     }
 
     public function get_description() {
         $a = new \stdClass();
         $a->userid = $this->userid;
         $a->contextinstanceid = $this->contextinstanceid;
-        return get_string('eventagreementdisagreedesc', 'mod_consentform', $a);
+        return get_string('eventagreementrevokedesc', 'mod_consentform', $a);
     }
 
     public function get_url() {

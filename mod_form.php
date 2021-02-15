@@ -46,6 +46,8 @@ class mod_consentform_mod_form extends moodleform_mod {
 
         $mform = $this->_form;
 
+        $settings = get_config('consentform');
+
         $mform->addElement('hidden', 'sesskey', sesskey());
         $mform->setType('sesskey', PARAM_ALPHANUM);
 
@@ -63,8 +65,26 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'consentformname', 'consentform');
 
-        $this->standard_intro_elements(get_string('description', 'consentform'));
+        // Module description fields. Only if not confirmincourseoveriew option is not active.
+        if (!isset($this->current->confirmincourseoverview) || $this->current->confirmincourseoverview == 0) {
+            $this->standard_intro_elements(get_string('description', 'consentform'));
+        } else {
+            if (!$this->_instance) {
+                $mform->addElement('hidden', 'showdescription', '1');
+                $mform->setType('showdescription', PARAM_INT);
+            } else {
+                if (!(isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1)) {
+                    $mform->addElement('advcheckbox', 'showdescription', null, get_string('showdescription', 'moodle'), null, array(0, 1));
+                    $mform->setType('showdescription', PARAM_INT);
+                    $mform->addHelpButton('showdescription', 'showdescription', 'moodle');
+                }
+            }
+        }
 
+        // Adding the "text" fieldset, where all the text field options are configured.
+        $mform->addElement('header', 'textfields', get_string('textfields', 'consentform'));
+
+        // The confirmation Text.
         $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
         if (isset($this->current->confirmationtext)) {
             $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
@@ -72,36 +92,57 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('advcheckbox', 'optiondisagree', null, get_string('optiondisagree', 'consentform'), null, array(0, 1));
-        $mform->setType('optiondisagree', PARAM_INT);
-        $mform->setDefault('optiondisagree', 0);
-        $mform->addHelpButton('optiondisagree', 'optiondisagree', 'consentform');
+        // Agreement buttons labels.
+        $mform->addElement('text', 'textagreementbutton', get_string('textagreementbutton', 'consentform'), 'size="32"');
+        $mform->setType('textagreementbutton', PARAM_TEXT);
+        $mform->setDefault('textagreementbutton', $settings->textagreementbutton);
+        $mform->addRule('textagreementbutton', null, 'required', null, 'client');
+        $mform->addRule('textagreementbutton', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
 
-        $mform->addElement('advcheckbox', 'usegrade', null, get_string('usegrade', 'consentform'), null, array(0, 1));
+        $mform->addElement('text', 'textrefusalbutton', get_string('textrefusalbutton', 'consentform'), 'size="32"');
+        $mform->setType('textrefusalbutton', PARAM_TEXT);
+        $mform->setDefault('textrefusalbutton', $settings->textrefusalbutton);
+        $mform->addRule('textrefusalbutton', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
+
+        $mform->addElement('text', 'textrevocationbutton', get_string('textrevocationbutton', 'consentform'), 'size="32"');
+        $mform->setType('textrevocationbutton', PARAM_TEXT);
+        $mform->setDefault('textrevocationbutton', $settings->textrevocationbutton);
+        $mform->addRule('textrevocationbutton', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
+
+        // Adding the "configurations" fieldset, where all the consentform configuration options are configured.
+        $mform->addElement('header', 'textfields', get_string('configurations', 'consentform'));
+
+        // Option to refuse.
+        $mform->addElement('advcheckbox', 'optionrefuse', get_string('optionrefuse', 'consentform'), null, null, array(0, 1));
+        $mform->setType('optionrefuse', PARAM_INT);
+        $mform->setDefault('optionrefuse', $settings->optionrefuse);
+        $mform->addHelpButton('optionrefuse', 'optionrefuse', 'consentform');
+
+        // Option to revoke.
+        $mform->addElement('advcheckbox', 'optionrevoke', get_string('optionrevoke', 'consentform'), null, null, array(0, 1));
+        $mform->setType('optionrevoke', PARAM_INT);
+        $mform->setDefault('optionrevoke', $settings->optionrevoke);
+        $mform->addHelpButton('optionrevoke', 'optionrevoke', 'consentform');
+
+        // Option to write grade value for an agreement.
+        $mform->addElement('advcheckbox', 'usegrade', get_string('usegrade', 'consentform'), null, null, array(0, 1));
         $mform->setType('usegrade', PARAM_INT);
         $mform->setDefault('usegrade', 0);
         $mform->addHelpButton('usegrade', 'usegrade', 'consentform');
 
-
-        // Acitivity visible status.
-        $section = get_fast_modinfo($COURSE)->get_section_info($this->_section);
-        $allowstealth = !empty($CFG->allowstealth) && $this->courseformat->allow_stealth_module_visibility($this->_cm, $section);
-        if ($allowstealth && $section->visible) {
-            $modvisiblelabel = 'modvisiblewithstealth';
-        } else if ($section->visible) {
-            $modvisiblelabel = 'modvisible';
-        } else {
-            $modvisiblelabel = 'modvisiblehiddensection';
+        // Option to place confirmation in course overview.
+        $mform->addElement('advcheckbox', 'confirmincourseoverview', get_string('confirmincourseoverview', 'consentform'), null, null, array(0, 1));
+        $mform->setType('confirmincourseoverview', PARAM_INT);
+        $mform->setDefault('confirmincourseoverview', $settings->confirmincourseoverview);
+        $mform->addHelpButton('confirmincourseoverview', 'confirmincourseoverview', 'consentform');
+        if (isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1) {
+            $mform->disabledIf('confirmincourseoverview', 'sesskey', 'neq', '');
         }
-        $mform->addElement('modvisible', 'visible', get_string($modvisiblelabel), null,
-            array('allowstealth' => $allowstealth, 'sectionvisible' => $section->visible, 'cm' => $this->_cm));
-        $mform->addHelpButton('visible', $modvisiblelabel);
-        if (!empty($this->_cm)) {
-            $context = context_module::instance($this->_cm->id);
-            if (!has_capability('moodle/course:activityvisibility', $context)) {
-                $mform->hardFreeze('visible');
-            }
-        }
+        // Option not to use course module list for configuration of dependencies.
+        $mform->addElement('advcheckbox', 'nocoursemoduleslist', get_string('nocoursemoduleslist', 'consentform'), null, null, array(0, 1));
+        $mform->setType('nocoursemoduleslist', PARAM_INT);
+        $mform->setDefault('nocoursemoduleslist', $settings->nocoursemoduleslist);
+        $mform->addHelpButton('nocoursemoduleslist', 'nocoursemoduleslist', 'consentform');
 
         $this->standard_coursemodule_elements();
 
@@ -111,6 +152,8 @@ class mod_consentform_mod_form extends moodleform_mod {
 
     /**
      * Split form editor field array of confirmationtext into two fields
+     * Set completion to value 2
+     * Activate show description option if confirmincourseoverview option is on
      */
     public function get_data($slashed = true) {
 
@@ -119,10 +162,12 @@ class mod_consentform_mod_form extends moodleform_mod {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
             $data->completion=2;
+            if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
+                $data->showdescription = 1;
+            }
         }
         return $data;
     }
-
 
     /**
      * Called during validation to see whether some module-specific completion rules are selected.

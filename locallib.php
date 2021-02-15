@@ -127,16 +127,17 @@ function consentform_generate_table_header() {
 
     $header = array();
     $nourl = $PAGE->url . "#";
-    $cell = new html_table_cell(get_string("dependent", 'consentform') . '<br>' .
+    $cell = new html_table_cell(
         \html_writer::link($nourl, get_string('all', 'moodle'), ['class' => 'co_all']).' / '.
         \html_writer::link($nourl, get_string('none', 'moodle'), ['class' => 'co_none']));
     $cell->header = true;
-    $cell->colspan = "2";
+    $header[] = $cell;
+    $cell = new html_table_cell(get_string('dependent', 'consentform'));
+    $cell->header = true;
     $header[] = $cell;
 
     return $header;
 }
-
 
 function consentform_render_table(html_table $table, $printfooter = true, $overrideevenodd = false) {
     // Prepare table data and populate missing properties with reasonable defaults.
@@ -483,24 +484,28 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
     return true;
 }
 
-function consentform_save_agreement($agreed, $userid, $cmid) {
+function consentform_save_agreement($status, $userid, $cmid) {
     global $DB;
 
     if ($id = $DB->get_field(
         'consentform_state', 'id', array('consentformcmid' => $cmid, 'userid' => $userid))) {
-        $record = consentform_completionstate_record($id, $userid, $agreed, $cmid);
+        $record = consentform_completionstate_record($id, $userid, $status, $cmid);
         $DB->update_record('consentform_state', $record);
     } else {
-        $record = consentform_completionstate_record(null, $userid, $agreed, $cmid);
+        $record = consentform_completionstate_record(null, $userid, $status, $cmid);
         $DB->insert_record('consentform_state', $record);
     }
 
-    consentform_update_completionstate($cmid, $agreed);
+    if ($status == EXPECTEDCOMPLETIONVALUE) {
+        consentform_update_completionstate($cmid, $status);
+    } else {
+        consentform_update_completionstate($cmid, 0);
+    }
 
     $consentform = consentform_getinstance($cmid);
 
     if ($consentform->usegrade) {
-        if ($agreed) {
+        if ($status == CONSENTFORM_STATUS_AGREED) {
             consentform_set_user_grade($consentform, $userid, GRADEVALUETOWRITE);
         } else {
             consentform_set_user_grade($consentform, $userid, null);
@@ -511,11 +516,11 @@ function consentform_save_agreement($agreed, $userid, $cmid) {
 }
 
 /**
- * Build the record for saving the user's agreemnent/ disagreement
+ * Build the record for saving the user's agreemnent/ revocation
  *
  * @param $id       record id
  * @param $userid   user id of participant
- * @param $agreed   2 agreed, 0 disagreed
+ * @param $agreed   2 agreed, 0 revoked
  * @param $cmid     course module id
  * @return stdClass record object for inser or update db
  */

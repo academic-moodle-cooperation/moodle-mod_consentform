@@ -33,6 +33,11 @@ defined('MOODLE_INTERNAL') || die();
 
 define('EXPECTEDCOMPLETIONVALUE', 1);
 define('GRADEVALUETOWRITE', 1);
+define('CONSENTFORM_STATUS_AGREED', 1);
+define('CONSENTFORM_STATUS_REVOKED', 0);
+define('CONSENTFORM_STATUS_REFUSED', -1);
+define('CONSENTFORM_STATUS_NOACTION', 2);
+define('CONSENTFORM_NOTIMESTAMP', '-');
 
 /* Moodle core API */
 
@@ -48,7 +53,7 @@ function consentform_supports($feature) {
 
     switch($feature) {
         case FEATURE_MOD_INTRO:
-            return true;
+            return false;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_GRADE_HAS_GRADE:
@@ -81,13 +86,24 @@ function consentform_supports($feature) {
  * @return int The id of the newly inserted consentform record
  */
 function consentform_add_instance(stdClass $consentform, mod_consentform_mod_form $mform = null) {
-    global $DB;
+    global $DB, $CFG;
 
     $consentform->timecreated = time();
 
-    // You may have to add extra stuff in here.
-
     $consentform->id = $DB->insert_record('consentform', $consentform);
+
+    if ($consentform->confirmincourseoverview) {
+        $iframeparms = array();
+        $url = $CFG->wwwroot."/mod/consentform/confirmation.php?id=".$consentform->id;
+        $iframeparms["src"] = $url;
+        $iframeparms["scrolling"] = "no";
+        $iframeparms["onload"] = "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+        $iframeparms["frameborder"] = "0";
+        $iframeparms["style"] = "min-width:450px;";
+        $html = html_writer::tag("iframe", null, $iframeparms);
+        $consentformintro = $html;
+        $DB->set_field("consentform", "intro", $consentformintro, array("id" => $consentform->id));
+    }
 
     consentform_grade_item_update($consentform);
 
@@ -160,15 +176,37 @@ function consentform_refresh_events($courseid = 0) {
 function consentform_delete_instance($id) {
     global $DB;
 
+    // Get cm and consentform.
     $cm = get_coursemodule_from_instance('consentform', $id);
-
-    if (! $consentform = $DB->get_record('consentform', array('id' => $id))) {
+    if (!$consentform = $DB->get_record('consentform', array('id' => $id))) {
         return false;
     }
 
+    // Delete dataset in consentform and dependent entries in consentform_state.
     $DB->delete_records('consentform', array('id' => $consentform->id));
+    $DB->delete_records('consentform_state', array('consentformcmid' => $cm->id));
 
-    consentform_clear_completions($consentform, $cm);
+    // Search for and remove restrictions introduced by this consentform instance in other course modules.
+    $records = $DB->get_records('course_modules', array('course' => $consentform->course));
+    foreach ($records as $record) {
+        if ($conditions = json_decode($record->availability)) {
+            $i = 0;
+            foreach ($conditions->c as $conditionc) {
+                if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
+                    unset($conditions->c[$i]);
+                    unset($conditions->showc[$i]);
+                }
+                $i++;
+            }
+            $conditions = json_encode($conditions);
+            $updaterecord = new stdClass();
+            $updaterecord->id = $record->id;
+            $updaterecord->availability = $conditions;
+            $DB->update_record('course_modules', $updaterecord);
+        }
+    }
+
+    rebuild_course_cache($consentform->course, false);
 
     return true;
 }
@@ -517,41 +555,6 @@ function consentform_get_completion_state($course, $cm, $userid, $type) {
     } else {
         return false;
     }
-}
-
-/**
- *  Delete any completions dependant of the given consentform module instance.
- * @param stdClass $consentform
- * @return bool
- * @throws coding_exception
- * @throws dml_exception
- */
-function consentform_clear_completions(stdClass $consentform, $cm) {
-    global $DB;
-
-    $records = $DB->get_records('course_modules', array('course' => $consentform->course));
-    foreach ($records as $record) {
-        if ($conditions = json_decode($record->availability)) {
-            $i = 0;
-            foreach ($conditions->c as $conditionc) {
-                if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
-                    unset($conditions->c[$i]);
-                    unset($conditions->showc[$i]);
-                }
-                $i++;
-            }
-            $conditions = json_encode($conditions);
-
-            $updaterecord = new stdClass();
-            $updaterecord->id = $record->id;
-            $updaterecord->availability = $conditions;
-            $DB->update_record('course_modules', $updaterecord);
-        }
-    }
-
-    rebuild_course_cache($consentform->course, false);
-
-    return true;
 }
 
 /**
