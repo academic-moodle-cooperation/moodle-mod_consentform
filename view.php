@@ -58,26 +58,24 @@ $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 $nogostring = "";
+$nogostrcon = "";
 if (!$CFG->enablecompletion) {
-    $nogostring .= " " . get_string("nocompletion", "mod_consentform");
+    $nogostring .= get_string("nocompletion", "mod_consentform");
+    $nogostrcon = "<br>";
 }
 if (!$COURSE->enablecompletion) {
-    $nogostring .= " " . get_string("nocompletioncourse", "mod_consentform");
+    $nogostring .= $nogostrcon . get_string("nocompletioncourse", "mod_consentform");
+    $nogostrcon = "<br>";
 }
 if (!$cm->completion) {
-    $nogostring .= " " . get_string("nocompletionmodule", "mod_consentform");
+    $nogostring .= $nogostrcon . get_string("nocompletionmodule", "mod_consentform");
+    $nogostrcon = "<br>";
 }
 
 if ($nogostring) {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading(format_string($consentform->name));
-    if (!$consentform->confirmincourseoverview) {
-        if ($consentform->intro) {
-            echo $OUTPUT->box(format_module_intro(
-                'consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
-        }
-    }
     echo $OUTPUT->error_text(get_string("nocompletiontitle", "mod_consentform"));
     echo $nogostring;
 
