@@ -77,7 +77,8 @@ if ($nogostring) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(format_string($consentform->name));
     $nogostring = get_string("nocompletiontitle", "mod_consentform"). $nogostrcon . $nogostring;
-    echo $OUTPUT->fatal_error($nogostring);
+    echo $OUTPUT->fatal_error(
+        $nogostring, "https://docs.moodle.org/310/en/Activity_completion_settings", $redirecturl, null);
 
 } else {
 
