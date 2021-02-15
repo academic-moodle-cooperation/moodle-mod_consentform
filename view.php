@@ -61,15 +61,15 @@ $nogostring = "";
 $nogostrcon = "";
 if (!$CFG->enablecompletion) {
     $nogostring .= get_string("nocompletion", "mod_consentform");
-    $nogostrcon = "\n";
+    $nogostrcon = " ";
 }
 if (!$COURSE->enablecompletion) {
     $nogostring .= $nogostrcon . get_string("nocompletioncourse", "mod_consentform");
-    $nogostrcon = "\n";
+    $nogostrcon = " ";
 }
 if (!$cm->completion) {
     $nogostring .= $nogostrcon . get_string("nocompletionmodule", "mod_consentform");
-    $nogostrcon = "\n";
+    $nogostrcon = " ";
 }
 
 if ($nogostring) {
@@ -78,7 +78,7 @@ if ($nogostring) {
     echo $OUTPUT->heading(format_string($consentform->name));
     $nogostring = get_string("nocompletiontitle", "mod_consentform"). $nogostrcon . $nogostring;
     echo $OUTPUT->fatal_error(
-        $nogostring, "https://docs.moodle.org/310/en/Activity_completion_settings", $redirecturl, null);
+        $nogostring, "https://docs.moodle.org/en/Activity_completion_settings", $redirecturl, null);
 
 } else {
 
