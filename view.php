@@ -76,8 +76,8 @@ if ($nogostring) {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading(format_string($consentform->name));
-    echo $OUTPUT->error_text(get_string("nocompletiontitle", "mod_consentform"));
-    echo $nogostring;
+    $nogostring = get_string("nocompletiontitle", "mod_consentform"). $nogostrcon . $nogostring;
+    echo $OUTPUT->fatal_error($nogostring);
 
 } else {
 
