@@ -61,15 +61,15 @@ $nogostring = "";
 $nogostrcon = "";
 if (!$CFG->enablecompletion) {
     $nogostring .= get_string("nocompletion", "mod_consentform");
-    $nogostrcon = "<br>";
+    $nogostrcon = "\n";
 }
 if (!$COURSE->enablecompletion) {
     $nogostring .= $nogostrcon . get_string("nocompletioncourse", "mod_consentform");
-    $nogostrcon = "<br>";
+    $nogostrcon = "\n";
 }
 if (!$cm->completion) {
     $nogostring .= $nogostrcon . get_string("nocompletionmodule", "mod_consentform");
-    $nogostrcon = "<br>";
+    $nogostrcon = "\n";
 }
 
 if ($nogostring) {

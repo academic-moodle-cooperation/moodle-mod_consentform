@@ -65,7 +65,6 @@ $string['msgagreedfailure'] = 'Ihre Eingabe konnte nicht gespeichert werden. Bit
 $string['msgrefused'] = 'Sie haben dieser Einverständniserklärung NICHT zugestimmt.';
 $string['msgrevoked'] = 'Sie haben Ihre Zustimmung zurückgezogen.';
 $string['noaction'] = 'Keine Reaktion';
-$string['noavailability'] = 'Dieses Modul benötigt das Feature "Verfügbarkeit", welches in diesem Moodle nicht aktiviert ist. Wenden Sie sich an Ihre/n Moodle-Administrator/in.';
 $string['nocompletion'] = 'Die Einverständniserklärung benötigt das Feature "Abschlussverfolgung", welches in diesem Moodle nicht aktiviert ist. Wenden Sie sich an Ihre/n Moodle-Administrator/in.';
 $string['nocompletioncourse'] = 'Dieser KURS benötigt die Aktivierung des Features Abschlussverfolgung in den Kurseinstellungen, welche derzeit nicht gegeben ist.';
 $string['nocompletionmodule'] = 'Dieses MODUL benötigt die Aktivierung des Features Abschlussverfolgung in den Moduleinstellungen, welche derzeit nicht gegeben ist.';

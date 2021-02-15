@@ -65,7 +65,6 @@ $string['msgagreedfailure'] = 'Your choice could not be saved. Please try it aga
 $string['msgrefused'] = 'You have refused this consentform statement.';
 $string['msgrevoked'] = 'You have succesfully REVOKED this consentform statement.';
 $string['noaction'] = 'no reaction';
-$string['noavailability'] = 'This module needs the moodle feature "availability" turned on, which is momentarily not the case at this moodle installation.';
 $string['nocompletion'] = 'Consentform needs the moodle feature "completion tracking" turned on, which is momentarily not the case. Please contact your Moodle administrator.';
 $string['nocompletioncourse'] = 'This COURSE needs the moodle feature "completion tracking" turned on in the course settings, which is momentarily not the case.';
 $string['nocompletionmodule'] = 'This MODULE needs the moodle feature "completion tracking" turned on in the module settings, which is momentarily not the case.';
