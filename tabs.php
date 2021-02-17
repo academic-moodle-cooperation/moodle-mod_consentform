@@ -1,5 +1,5 @@
 <?php
-
+// Get sum agreed, refused (when acitivated) and revoked (when activated).
 $sumagreed = $DB->count_records("consentform_state", array ("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_AGREED));
 $sumagreed = $sumagreed ? $sumagreed : 0;
 if ($consentform->optionrefuse) {
@@ -14,11 +14,17 @@ if ($consentform->optionrevoke) {
 } else {
     $sumrevoked = 0;
 }
-$righttoview = count_enrolled_users($context, 'mod/consentform:view');
-$righttoview = $righttoview ? $righttoview : 0;
-$righttosubmit = count_enrolled_users($context, 'mod/consentform:submit');
-$righttosubmit = $righttosubmit ? $righttosubmit : 0;
-$sumnoaction = $righttoview - $righttosubmit - $sumagreed - $sumrevoked - $sumrefused;
+// Get no actions.
+$enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id'); // All participants.
+$enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0, 'u.id'); // All trainers etc.
+$enrolledview = array_diff_key($enrolledview, $enrolledsubmit); // All participants who are not trainers.
+$sqlselect = "SELECT u.id ";
+$sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
+$sqlwhere  = "WHERE (c.consentformcmid = $cm->id) ";
+$query = "$sqlselect $sqlfrom $sqlwhere";
+$userswithaction = $DB->get_records_sql($query); // All users with reaction.
+$usersnoactions = array_diff_key($enrolledview, $userswithaction); // Reduce participants who are not trainers by action users.
+$sumnoaction = count($usersnoactions);
 
 $tabrow = array();
 $tabrow[] = new tabobject(CONSENTFORM_STATUS_AGREED, $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_STATUS_AGREED,
@@ -41,3 +47,26 @@ echo html_writer::start_div('consentformdisplay');
 print_tabs($tabrows, $tab);
 echo html_writer::end_div();
 
+$download = false;
+switch ($tab) {
+    case CONSENTFORM_STATUS_AGREED:
+        if ($sumagreed) {
+            $download = true;
+        }
+        break;
+    case CONSENTFORM_STATUS_REFUSED:
+        if ($sumrefused) {
+            $download = true;
+        }
+        break;
+    case CONSENTFORM_STATUS_REVOKED:
+        if ($sumrevoked) {
+            $download = true;
+        }
+        break;
+    case CONSENTFORM_STATUS_NOACTION:
+        if ($sumnoaction) {
+            $download = true;
+        }
+        break;
+}

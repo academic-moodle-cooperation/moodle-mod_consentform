@@ -130,7 +130,7 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->setType('confirmincourseoverview', PARAM_INT);
         $mform->setDefault('confirmincourseoverview', $settings->confirmincourseoverview);
         $mform->addHelpButton('confirmincourseoverview', 'confirmincourseoverview', 'consentform');
-        if (isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1) {
+        if ($this->_instance) {
             $mform->disabledIf('confirmincourseoverview', 'sesskey', 'neq', '');
         }
         // Option not to use course module list for configuration of dependencies.

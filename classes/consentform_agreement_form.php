@@ -109,12 +109,12 @@ class consentform_agreement_form extends \moodleform {
         if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
             array('consentformcmid' => $cmid, 'userid' => $userid))) {
             if ($status == CONSENTFORM_STATUS_AGREED) {
-                return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)));
+                return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)), 'success');
             } else {
                 if ($status == CONSENTFORM_STATUS_REVOKED) {
-                    return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)));
+                    return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)), 'warning');
                 } else if ($status == CONSENTFORM_STATUS_REFUSED) {
-                    return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)));
+                    return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)), 'error');
                 }
             }
         }

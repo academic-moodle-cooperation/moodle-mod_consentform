@@ -24,6 +24,7 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID
+$deleteuseraction = optional_param('delete', null, PARAM_INT); // User-ID to delete own test action.
 
 if ($id) {
     $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
@@ -41,6 +42,15 @@ $coursecontext = context_course::instance($course->id);
 
 require_login($course, true, $cm);
 
+if ($deleteuseraction) {
+    $thisurl = new moodle_url('/mod/consentform/listusers.php', array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
+    if ($DB->delete_records('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
+        redirect($thisurl, get_string("deletetestmessage", "consentform"), 'notify');
+    } else {
+        redirect($thisurl, get_string("deletetesterrormessage", "consentform"), 'error');
+    }
+}
+
 $event = \mod_consentform\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
     'context' => $PAGE->context,
@@ -51,36 +61,41 @@ $event->trigger();
 
 // Print the page header.
 
-$PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 // Output starts here.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($consentform->name));
-if ($consentform->intro) {
-    echo $OUTPUT->box(format_module_intro('consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
-}
 
 $tab  = optional_param('tab', 1, PARAM_INT);
 
 require("tabs.php");
 
 $sqlresult = null;
-
 require("sql.php");
 
-$xform = new \mod_consentform\consentform_export_form('exportcsv.php?id=' . $cm->id,
-    null, null, null, array("id" => "consentform_export_form"));
-$data = new stdClass();
-$data->id = $cm->id;
-$data->tab = $tab;
-$data->sortkey = $sortkey;
-$data->sortorder = $sortorder;
-$xform->set_data($data);
-echo $OUTPUT->box_start();
-$xform->display();
-echo $OUTPUT->box_end();
+if ($download) {
+    $xform = new \mod_consentform\consentform_export_form('exportcsv.php?id=' . $cm->id,
+        null, null, null, array("id" => "consentform_export_form"));
+    $data = new stdClass();
+    $data->id = $cm->id;
+    $data->tab = $tab;
+    $data->sortkey = $sortkey;
+    $data->sortorder = $sortorder;
+    $xform->set_data($data);
+    echo $OUTPUT->box_start();
+    $xform->display();
+    echo $OUTPUT->box_end();
+}
+
+if (array_key_exists($USER->id, $userswithaction)) {
+    $deletelink = new moodle_url($PAGE->url, array("delete" => "1"));
+    echo $OUTPUT->box_start();
+    echo $OUTPUT->single_button($deletelink, get_string("deletetestaction", "consentform"));
+    echo $OUTPUT->box_end();
+}
 
 // Display users and their status.
 list($listnotempty, $htmltable) = consentform_display_participants($sqlresult, $cm->id, $sqlsortkey, $sortorder, $tab);
