@@ -27,8 +27,8 @@ $id = optional_param('id', 0, PARAM_INT); // Course_module ID
 $deleteuseraction = optional_param('delete', null, PARAM_INT); // User-ID to delete own test action.
 
 if ($id) {
-    $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
     die('You must specify a course_module ID');
@@ -102,8 +102,10 @@ list($listnotempty, $htmltable) = consentform_display_participants($sqlresult, $
 
 echo $htmltable;
 
-echo $OUTPUT->action_link(new moodle_url('view.php', array('id' => $cm->id)),
-    get_string("backbuttonlist", "consentform"));
+if (!$consentform->nocoursemoduleslist) {
+    echo $OUTPUT->single_button(new moodle_url('view.php', array('id' => $cm->id)),
+        get_string("backbuttonlist", "consentform"));
+}
 
 // Finish the page.
 echo $OUTPUT->footer();

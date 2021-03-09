@@ -538,6 +538,16 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
     return $record;
 }
 
+function consentform_get_completionstate($userid) {
+    global $DB;
+    $fields = $DB->get_record('consentform', array('id' => $instanceid), 'timestamp, state');
+    if ($instanceid = $DB->get_field('course_modules','instance', array('id' => $cmid))) {
+        $consentform = $DB->get_record('consentform', array('id' => $instanceid));
+        return $consentform;
+    }
+    return false;
+}
+
 function consentform_update_completionstate($cmid, $agreed) {
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);

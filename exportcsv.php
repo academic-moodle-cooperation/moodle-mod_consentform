@@ -45,15 +45,12 @@ require("sql.php");
 $csvrows = array();
 $status = "";
 foreach($sqlresult as $record) {
-    if (!$csvrows) {
-        $status = consentform_print_status($record->state);
-    }
 	$csvrow = array(
 	    get_string('lastname') => $record->lastname,
         get_string('firstname') => $record->firstname,
         get_string('email') => $record->email,
         get_string('timestamp', 'consentform') => $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
-        get_string('state') => $status
+        get_string('state') => consentform_print_status($record->state)
 	);
 	$csvrows[] = $csvrow;
 } // End loop records.
@@ -61,7 +58,7 @@ foreach($sqlresult as $record) {
 $export = new \mod_consentform\consentform_export();
 $exportformat = 'csv';
 $export->init($exportformat, $csvrows,
-			  $course->shortname . '_' . $consentform->name . '_' . $status . '_' . userdate(time(), '%d-%m-%Y', 99, false));
+			  $course->shortname . '_' . $consentform->name . '_' . $tab . '_' . userdate(time(), '%d-%m-%Y', 99, false));
 $export->print_file();
 
 

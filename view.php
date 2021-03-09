@@ -109,7 +109,7 @@ if ($nogostring) {
         $table->data = consentform_generate_table_content($course, $cm->id);
 
         echo consentform_render_table($table);
-        echo $OUTPUT->action_link($redirecturl, get_string("backbutton", "consentform"));
+        echo $OUTPUT->single_button($redirecturl, get_string("backbutton", "consentform"));
 
         $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));

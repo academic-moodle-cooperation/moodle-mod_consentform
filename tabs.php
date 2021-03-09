@@ -2,18 +2,10 @@
 // Get sum agreed, refused (when acitivated) and revoked (when activated).
 $sumagreed = $DB->count_records("consentform_state", array ("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_AGREED));
 $sumagreed = $sumagreed ? $sumagreed : 0;
-if ($consentform->optionrefuse) {
-    $sumrefused = $DB->count_records("consentform_state", array("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_REFUSED));
-    $sumrefused = $sumrefused ? $sumrefused : 0;
-} else {
-    $sumrefused = 0;
-}
-if ($consentform->optionrevoke) {
-    $sumrevoked = $DB->count_records("consentform_state", array("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_REVOKED));
-    $sumrevoked = $sumrevoked ? $sumrevoked : 0;
-} else {
-    $sumrevoked = 0;
-}
+$sumrefused = $DB->count_records("consentform_state", array("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_REFUSED));
+$sumrefused = $sumrefused ? $sumrefused : 0;
+$sumrevoked = $DB->count_records("consentform_state", array("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_REVOKED));
+$sumrevoked = $sumrevoked ? $sumrevoked : 0;
 // Get no actions.
 $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id'); // All participants.
 $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0, 'u.id'); // All trainers etc.
@@ -25,20 +17,19 @@ $query = "$sqlselect $sqlfrom $sqlwhere";
 $userswithaction = $DB->get_records_sql($query); // All users with reaction.
 $usersnoactions = array_diff_key($enrolledview, $userswithaction); // Reduce participants who are not trainers by action users.
 $sumnoaction = count($usersnoactions);
+$sumall = count($enrolledview);
 
 $tabrow = array();
 $tabrow[] = new tabobject(CONSENTFORM_STATUS_AGREED, $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_STATUS_AGREED,
-        get_string('titleagreed', 'consentform')." (".$sumagreed.")");
-if ($consentform->optionrefuse) {
-    $tabrow[] = new tabobject(CONSENTFORM_STATUS_REFUSED, $CFG->wwwroot . '/mod/consentform/listusers.php?id=' . $id . '&amp;tab=' . CONSENTFORM_STATUS_REFUSED,
-        get_string('titlerefused', 'consentform') . " (" . $sumrefused . ")");
-}
-if ($consentform->optionrevoke) {
-    $tabrow[] = new tabobject(CONSENTFORM_STATUS_REVOKED, $CFG->wwwroot . '/mod/consentform/listusers.php?id=' . $id . '&amp;tab=' . CONSENTFORM_STATUS_REVOKED,
-        get_string('titlerevoked', 'consentform') . " (" . $sumrevoked . ")");
-}
+    get_string('titleagreed', 'consentform')." (".$sumagreed.")");
+$tabrow[] = new tabobject(CONSENTFORM_STATUS_REFUSED, $CFG->wwwroot . '/mod/consentform/listusers.php?id=' . $id . '&amp;tab=' . CONSENTFORM_STATUS_REFUSED,
+    get_string('titlerefused', 'consentform') . " (" . $sumrefused . ")");
+$tabrow[] = new tabobject(CONSENTFORM_STATUS_REVOKED, $CFG->wwwroot . '/mod/consentform/listusers.php?id=' . $id . '&amp;tab=' . CONSENTFORM_STATUS_REVOKED,
+    get_string('titlerevoked', 'consentform') . " (" . $sumrevoked . ")");
 $tabrow[] = new tabobject(CONSENTFORM_STATUS_NOACTION, $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_STATUS_NOACTION,
     get_string('titlenone', 'consentform')." (".$sumnoaction.")");
+$tabrow[] = new tabobject(CONSENTFORM_ALL, $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_ALL,
+    get_string('titleall', 'consentform')." (".$sumall.")");
 
 $tabrows = array();
 $tabrows[] = $tabrow;     // Always put these at the top.
@@ -66,6 +57,11 @@ switch ($tab) {
         break;
     case CONSENTFORM_STATUS_NOACTION:
         if ($sumnoaction) {
+            $download = true;
+        }
+        break;
+    case CONSENTFORM_ALL:
+        if ($sumall) {
             $download = true;
         }
         break;
