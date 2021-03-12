@@ -46,7 +46,7 @@ $csvrows = array();
 $status = "";
 foreach ($sqlresult as $record) {
     $csvrow = array(
-	    get_string('lastname') => $record->lastname,
+        get_string('lastname') => $record->lastname,
         get_string('firstname') => $record->firstname,
         get_string('email') => $record->email,
         get_string('timestamp', 'consentform') => $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
