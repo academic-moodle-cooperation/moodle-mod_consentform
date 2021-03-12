@@ -45,9 +45,9 @@ define(
              // Response indicator.
              function response(val, checked) {
                  if (checked) {
-                     $(":checkbox[value=" + val +"]").parent().parent().css("background-color", "lightgreen");
+                     $(":checkbox[value=" + val + "]").parent().parent().css("background-color", "lightgreen");
                  } else {
-                     $(":checkbox[value=" + val +"]").parent().parent().css("background-color", "lightgrey");
+                     $(":checkbox[value=" + val + "]").parent().parent().css("background-color", "lightgrey");
                  }
              }
 
