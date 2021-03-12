@@ -54,15 +54,15 @@ if ($ADMIN->fulltree) {
     // Buttonlabels defaults.
     $settings->add(new admin_setting_configtext('consentform/textagreementbutton',
         get_string('textagreementbutton', 'consentform'),
-        get_string('textagreementbuttondesc','consentform'),
+        get_string('textagreementbuttondesc', 'consentform'),
         get_string('agree', 'consentform'), PARAM_TEXT));
     $settings->add(new admin_setting_configtext('consentform/textrefusalbutton',
         get_string('textrefusalbutton', 'consentform'),
-        get_string('textrefusalbuttondesc','consentform'),
+        get_string('textrefusalbuttondesc', 'consentform'),
         get_string('refuse', 'consentform'), PARAM_TEXT));
     $settings->add(new admin_setting_configtext('consentform/textrevocationbutton',
         get_string('textrevocationbutton', 'consentform'),
-        get_string('textrevocationbuttondesc','consentform'),
+        get_string('textrevocationbuttondesc', 'consentform'),
         get_string('revoke', 'consentform'), PARAM_TEXT));
 
 }

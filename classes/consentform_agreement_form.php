@@ -72,7 +72,7 @@ class consentform_agreement_form extends \moodleform {
                 $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
             }
         } else {
-            $buttonarray=array();
+            $buttonarray = array();
             $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
             if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
                 $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);

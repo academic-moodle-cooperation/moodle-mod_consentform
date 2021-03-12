@@ -563,7 +563,7 @@ function consentform_get_completion_state($course, $cm, $userid, $type) {
  */
 function consentform_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'consentformheader', get_string('modulenameplural', 'consentform'));
-    $mform->addElement('checkbox', 'reset_consentform', get_string('resetconsentform','consentform'));
+    $mform->addElement('checkbox', 'reset_consentform', get_string('resetconsentform', 'consentform'));
 }
 
 function consentform_reset_userdata($data) {
@@ -575,8 +575,8 @@ function consentform_reset_userdata($data) {
     if (!empty($data->reset_consentform)) {
         $consentformmoduleid = $DB->get_field('modules', 'id', array('name' => 'consentform'));
         $cms = $DB->get_records('course_modules', array('course' => $data->courseid, 'module' => $consentformmoduleid));
-        foreach($cms as $cm) {
-            $DB->delete_records('consentform_state', array('consentformcmid'=> $cm->id));
+        foreach ($cms as $cm) {
+            $DB->delete_records('consentform_state', array('consentformcmid' => $cm->id));
             $consentform = $DB->get_record('consentform', array('id' => $cm->instance), '*');
             consentform_clear_completions($consentform, $cm);
             consentform_grade_item_delete($consentform);
@@ -587,5 +587,5 @@ function consentform_reset_userdata($data) {
 }
 
 function consentform_reset_course_form_defaults($course) {
-    return array('reset_consentform'=>1);
+    return array('reset_consentform' => 1);
 }

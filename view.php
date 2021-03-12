@@ -137,7 +137,7 @@ if ($nogostring) {
                         'context' => $PAGE->context
                     )
                 );
-            } elseif (isset($data->revocation)) {
+            } else if (isset($data->revocation)) {
                 $ok = consentform_save_agreement(CONSENTFORM_STATUS_REVOKED, $USER->id, $cm->id);
                 $message = get_string('msgrevoked', 'consentform');
                 $event = \mod_consentform\event\agreement_revoke::create(
@@ -146,7 +146,7 @@ if ($nogostring) {
                         'context' => $PAGE->context
                     )
                 );
-            } elseif (isset($data->refusal)) {
+            } else if (isset($data->refusal)) {
                 $ok = consentform_save_agreement(CONSENTFORM_STATUS_REFUSED, $USER->id, $cm->id);
                 $message = get_string('msgrefused', 'consentform');
                 $event = \mod_consentform\event\agreement_refuse::create(

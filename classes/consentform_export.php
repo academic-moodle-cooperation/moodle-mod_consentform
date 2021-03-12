@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 class consentform_export {
 
     private $exportformat;
-	private $contentrows;
+    private $contentrows;
     private $filename;
 
     public function init($exportformat, $contentrows, $filename) {
@@ -53,7 +53,7 @@ class consentform_export {
         $export->SetAuthor($USER->firstname . " " . $USER->lastname);
         $export->set_outputformat(4);
 
-		$titles = array(
+        $titles = array(
             get_string('lastname'),
             get_string('firstname'),
             get_string('email'),
@@ -61,12 +61,12 @@ class consentform_export {
             get_string('status')
         );
 
-	    // Title row
+        // Title row.
         $export->set_titles($titles);
 
-		foreach($this->contentrows as $row) {
+        foreach ($this->contentrows as $row) {
             $export->add_row($row);
-		}
+        }
 
         $export->generate($this->filename);
         exit;

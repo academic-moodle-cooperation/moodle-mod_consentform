@@ -319,7 +319,7 @@ class mtablepdf extends \pdf {
         header('Content-Disposition: attachment; filename="' . $filename . '"; filename*="' .rawurlencode($filename));
         header('Content-Transfer-Encoding: binary');
 
-		echo($filecontent);
+        echo($filecontent);
 
         die();
     }

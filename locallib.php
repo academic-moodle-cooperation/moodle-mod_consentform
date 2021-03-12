@@ -541,7 +541,7 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
 function consentform_get_completionstate($userid) {
     global $DB;
     $fields = $DB->get_record('consentform', array('id' => $instanceid), 'timestamp, state');
-    if ($instanceid = $DB->get_field('course_modules','instance', array('id' => $cmid))) {
+    if ($instanceid = $DB->get_field('course_modules', 'instance', array('id' => $cmid))) {
         $consentform = $DB->get_record('consentform', array('id' => $instanceid));
         return $consentform;
     }
@@ -563,7 +563,7 @@ function consentform_update_caches($courseid) {
 
 function consentform_getinstance($cmid) {
     global $DB;
-    if ($instanceid = $DB->get_field('course_modules','instance', array('id' => $cmid))) {
+    if ($instanceid = $DB->get_field('course_modules', 'instance', array('id' => $cmid))) {
         $consentform = $DB->get_record('consentform', array('id' => $instanceid));
         return $consentform;
     }

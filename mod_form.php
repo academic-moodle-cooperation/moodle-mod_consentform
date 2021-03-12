@@ -156,7 +156,7 @@ class mod_consentform_mod_form extends moodleform_mod {
             if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
-            $data->completion=2;
+            $data->completion = 2;
             if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
                 $data->showdescription = 1;
             }
