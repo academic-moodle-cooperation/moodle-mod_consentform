@@ -23,7 +23,6 @@ Feature: In a course, a teacher should be able to add the control of an activity
     And I turn editing mode on
     When I add a "Consentform" to section "1" and I fill the form with:
       | Name                                      | My Consentform  |
-      | Module description                        | my co                          |
       | Consentform text to agree to              | Text.....                      |
     When I am on "Course 1" course homepage
     And I add a "Quiz" to section "1" and I fill the form with:
