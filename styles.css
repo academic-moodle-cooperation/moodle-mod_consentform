@@ -23,21 +23,21 @@
  */
 
 .consentform_confirmationtext {
-    background-color: #F0F0F0 !important;
-    border: 1px solid #BBB !important;
-    padding: 3em !important;
+    background-color: #f0f0f0;
+    border: 1px solid #bbb;
+    padding: 3em;
     margin-bottom: 1.5em;
 }
 
 .consentform_confirmationtext_incourseoverview {
-    background-color: #F0F0F0 !important;
-    border: 1px solid #BBB !important;
-    padding: 0.3em !important;
+    background-color: #f0f0f0;
+    border: 1px solid #bbb;
+    padding: 0.3em;
     margin-bottom: 0.5em;
 }
 
 #mform1 .col-md-3 {
-    width: 10% !important;
+    width: 10%;
 }
 
 #consentform_activitytable {
@@ -91,6 +91,6 @@
 }
 
 #consentform_export_form .row {
-    display: block !important;
-    margin-left: 0.0em !important;
+    display: block;
+    margin-left: 0.0em;
 }
