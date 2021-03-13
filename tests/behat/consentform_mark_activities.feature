@@ -22,8 +22,8 @@ Feature: In a course, a teacher should be able to add the control of an activity
     And I am on "Course 1" course homepage
     And I turn editing mode on
     When I add a "Consentform" to section "1" and I fill the form with:
-      | Name                                      | My Consentform  |
-      | Consentform text to agree to              | Text.....                      |
+      | Name                         | My Consentform |
+      | Consentform text to agree to | Text.....      |
     When I am on "Course 1" course homepage
     And I add a "Quiz" to section "1" and I fill the form with:
       | Name        | Test quiz name        |
@@ -42,4 +42,4 @@ Feature: In a course, a teacher should be able to add the control of an activity
     Then I should see "Test quiz name"
     And I click on "selectcoursemodule[]" "checkbox"
     When I am on "Course 1" course homepage
-    Then I should see "Not available unless: The activity"
+    Then I should see "Not available unless:"
