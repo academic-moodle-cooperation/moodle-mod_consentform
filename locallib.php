@@ -423,6 +423,9 @@ function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidco
     $newrestriction->cm = $cmidcontroller;
     $newrestriction->e = EXPECTEDCOMPLETIONVALUE;
     $availability = json_decode($availabilityjson);
+    if (!isset($availability)) {
+        $availability = new stdClass();
+    }
     if (!isset($availability->op)) {
         $availability->op = "&";
     }
