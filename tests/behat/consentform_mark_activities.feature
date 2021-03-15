@@ -42,5 +42,4 @@ Feature: In a course, a teacher should be able to add the control of an activity
     Then I should see "Test quiz name"
     And I click on "selectcoursemodule[]" "checkbox"
     When I am on "Course 1" course homepage
-    And pause
     Then I should see "Not available unless:"
