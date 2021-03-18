@@ -90,7 +90,7 @@ if ($tab == CONSENTFORM_STATUS_NOACTION) {
     }
 } else {
     $sqlenrolled = get_enrolled_sql($context, '', 0, true);
-    $enrolled = $DB->get_records_sql($sqlenrolled[0],$sqlenrolled[1]);
+    $enrolled = $DB->get_records_sql($sqlenrolled[0], $sqlenrolled[1]);
     $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, c.timestamp, c.state ";
     $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
     $sqlwhere  = "WHERE (c.consentformcmid = $cm->id AND c.state = $tab) ";
