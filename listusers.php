@@ -70,25 +70,49 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($consentform->name));
 
 $tab  = optional_param('tab', 1, PARAM_INT);
-// Get sum agreed, refused (when acitivated) and revoked (when activated).
-$sumagreed = $DB->count_records("consentform_state", array ("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_AGREED));
-$sumagreed = $sumagreed ? $sumagreed : 0;
-$sumrefused = $DB->count_records("consentform_state", array("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_REFUSED));
-$sumrefused = $sumrefused ? $sumrefused : 0;
-$sumrevoked = $DB->count_records("consentform_state", array("consentformcmid" => $cm->id, "state" => CONSENTFORM_STATUS_REVOKED));
-$sumrevoked = $sumrevoked ? $sumrevoked : 0;
-// Get no actions.
-$enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id'); // All participants.
-$enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0, 'u.id'); // All trainers etc.
-$enrolledview = array_diff_key($enrolledview, $enrolledsubmit); // All participants who are not trainers.
+
+// All active participants.
+$enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
+// All trainers and admins.
+$enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0, 'u.id');
+// All participants who are not trainers.
+$enrolled = array_diff_key($enrolledview, $enrolledsubmit);
+
+// Get all users with action.
 $sqlselect = "SELECT u.id ";
 $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
 $sqlwhere  = "WHERE (c.consentformcmid = $cm->id) ";
-$query = "$sqlselect $sqlfrom $sqlwhere";
-$userswithaction = $DB->get_records_sql($query); // All users with reaction.
-$usersnoactions = array_diff_key($enrolledview, $userswithaction); // Reduce participants who are not trainers by action users.
+$sqlwhere2 = "";
+$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+$userswithaction = $DB->get_records_sql($query);
+
+// Get sum users without action.
+$usersnoactions = array_diff_key($enrolled, $userswithaction);
 $sumnoaction = count($usersnoactions);
-$sumall = count($enrolledview);
+
+// Get sum ALL.
+$sumall = count($enrolled);
+
+// Get sum agreed.
+$sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_AGREED;
+$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+$usersagreed = $DB->get_records_sql($query);
+$usersagreed = array_intersect_key($enrolled, $usersagreed);
+$sumagreed = count($usersagreed);
+
+// Get sum refused.
+$sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REFUSED;
+$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+$usersrefused = $DB->get_records_sql($query);
+$usersrefused = array_intersect_key($enrolled, $usersrefused);
+$sumrefused = count($usersrefused);
+
+// Get sum revoked.
+$sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REVOKED;
+$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+$usersrevoked = $DB->get_records_sql($query);
+$usersrevoked = array_intersect_key($enrolled, $usersrevoked);
+$sumrevoked = count($usersrevoked);
 
 $tabrow = array();
 $tabrow[] = new tabobject(CONSENTFORM_STATUS_AGREED,

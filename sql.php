@@ -58,7 +58,8 @@ switch ( $sortkey ) {
 $sqlsortorder = $sortorder;
 
 if ($tab == CONSENTFORM_STATUS_NOACTION) {
-    $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id, u.lastname, u.firstname, u.email', $sqlsortkey.' '.$sqlsortorder);
+    $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
+        'u.id, u.lastname, u.firstname, u.email', $sqlsortkey.' '.$sqlsortorder, 0, 0, true);
     $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
         'u.id, u.lastname, u.firstname, u.email', $sqlsortkey.' '.$sqlsortorder);
     $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email ";
@@ -73,7 +74,8 @@ if ($tab == CONSENTFORM_STATUS_NOACTION) {
         $row->state = get_string('noaction', 'consentform');
     }
 } else if ($tab == CONSENTFORM_ALL) {
-    $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id, u.lastname, u.firstname, u.email', $sqlsortkey.' '.$sqlsortorder);
+    $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
+        'u.id, u.lastname, u.firstname, u.email', $sqlsortkey.' '.$sqlsortorder, 0, 0, true);
     $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
         'u.id, u.lastname, u.firstname, u.email', $sqlsortkey.' '.$sqlsortorder);
     $sqlresult = array_diff_key($enrolledview, $enrolledsubmit);
@@ -87,11 +89,14 @@ if ($tab == CONSENTFORM_STATUS_NOACTION) {
         }
     }
 } else {
+    $sqlenrolled = get_enrolled_sql($context, '', 0, true);
+    $enrolled = $DB->get_records_sql($sqlenrolled[0],$sqlenrolled[1]);
     $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, c.timestamp, c.state ";
     $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
     $sqlwhere  = "WHERE (c.consentformcmid = $cm->id AND c.state = $tab) ";
     $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
     $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
     $sqlresult = $DB->get_records_sql($query);
+    $sqlresult = array_intersect_key($sqlresult, $enrolled);
 }
 
