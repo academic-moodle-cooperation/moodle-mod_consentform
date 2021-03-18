@@ -578,7 +578,6 @@ function consentform_reset_userdata($data) {
         foreach ($cms as $cm) {
             $DB->delete_records('consentform_state', array('consentformcmid' => $cm->id));
             $consentform = $DB->get_record('consentform', array('id' => $cm->instance), '*');
-            consentform_clear_completions($consentform, $cm);
             consentform_grade_item_delete($consentform);
         }
         $status[] = array('component' => $componentstr, 'item' => get_string('resetok', 'consentform'), 'error' => false);
