@@ -25,7 +25,7 @@
  * here will all be database-neutral, using the functions defined in DLL libraries.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -134,5 +134,18 @@ function xmldb_consentform_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021020503, 'consentform');
     }
 
-        return true;
+    if ($oldversion < 2021021101) {
+
+        $table = new xmldb_table('consentform_state');
+
+        // Adding foreign key to table consentform_state.
+        $table->add_key('consentformcmid', XMLDB_KEY_FOREIGN, ['consentformcmid'], 'course_modules', ['id']);
+
+        // Adding index to table consentform_state.
+        $table->add_index('consentformcmid-userid', XMLDB_INDEX_UNIQUE, ['consentformcmid', 'userid']);
+
+        upgrade_mod_savepoint(true, 2021021101, 'consentform');
+    }
+
+    return true;
 }

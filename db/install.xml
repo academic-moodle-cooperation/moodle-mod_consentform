@@ -40,7 +40,11 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="consentformcmid" TYPE="foreign" FIELDS="consentformcmid" REFTABLE="course_modules" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="consentformcmid-userid" UNIQUE="true" FIELDS="consentformcmid, userid"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

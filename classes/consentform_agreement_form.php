@@ -21,7 +21,7 @@
  * visit: http://docs.moodle.org/en/Development:lib/formslib.php
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ if (isset($CFG)) {
  * Agreement form
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class consentform_agreement_form extends \moodleform {
@@ -82,10 +82,12 @@ class consentform_agreement_form extends \moodleform {
     }
 
     /**
-     * Split form editor field array of confirmationtext into two fields
+     * Get text from form editor field confirmationtext
+     *
+     * @return object|null
      */
-    public function get_data($slashed = true) {
-        if ($data = parent::get_data($slashed)) {
+    public function get_data() {
+        if ($data = parent::get_data()) {
             if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }

@@ -17,19 +17,15 @@
 /**
  * Prints a particular instance of consentform
  *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
- *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // Course_module ID
-
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
     $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -63,7 +59,7 @@ if (!$CFG->enablecompletion) {
     $nogostring .= get_string("nocompletion", "mod_consentform");
     $nogostrcon = " ";
 }
-if (!$COURSE->enablecompletion) {
+if (!$course->enablecompletion) {
     $nogostring .= $nogostrcon . get_string("nocompletioncourse", "mod_consentform");
     $nogostrcon = " ";
 }
@@ -105,10 +101,10 @@ if ($nogostring) {
         $table = new html_table();
         $table->id = 'consentform_activitytable';
         $table->attributes['class'] = 'flexible generaltable generalbox';
-        $table->head = consentform_generate_table_header();
-        $table->data = consentform_generate_table_content($course, $cm->id);
+        $table->head = consentform_generate_coursemodulestable_header();
+        $table->data = consentform_generate_coursemodulestable_content($course, $cm->id);
 
-        echo consentform_render_table($table);
+        echo consentform_render_coursemodulestable($table);
         echo $OUTPUT->single_button($redirecturl, get_string("backbutton", "consentform"));
 
         $jsparams = array('cmid' => $cm->id);

@@ -21,15 +21,15 @@
  * See https://docs.moodle.org/dev/version.php for more info.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_consentform';
-$plugin->version = 2021021100;
-$plugin->release = 'v3.10.0';
-$plugin->requires = 2019052000;
+$plugin->version = 2021033100;
+$plugin->release = 'v3.10.1';
+$plugin->requires = 2020011800;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->cron = 0;

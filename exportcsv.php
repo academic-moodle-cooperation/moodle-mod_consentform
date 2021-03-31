@@ -18,53 +18,35 @@
  * Prints a particular userlist of consentform
  *
  * @package    mod_consentform
- * @copyright  2021 Thomas Niedermaier Medizinische Universitaet Wien (thomas.niedermaier@meduniwien.ac.at)
+ * @copyright  2021 Thomas Niedermaier, Medical University of Vienna (thomas.niedermaier@meduniwien.ac.at)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(__DIR__ . '/../../config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // Course_module ID
-$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname | firstname | email | timestamp
-$sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC)
-$tab  = optional_param('tab', 1, PARAM_INT);
-
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
     $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
+
 } else {
     die('You must specify a course_module ID');
 }
 
-$context = context_module::instance($cm->id);
+$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname | firstname | email | timestamp
+$sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC)
+$tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
+
 require_login($course, true, $cm);
 
-$sqlresult = null;
-require("sql.php");
+$context = context_module::instance($cm->id);
+
+$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm);
 $csvrows = array();
-$status = "";
-foreach ($sqlresult as $record) {
-    $csvrow = array(
-        get_string('lastname') => $record->lastname,
-        get_string('firstname') => $record->firstname,
-        get_string('email') => $record->email,
-        get_string('timestamp', 'consentform') => $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
-        get_string('state') => consentform_print_status($record->state)
-    );
-    $csvrows[] = $csvrow;
-} // End loop records.
-
-$export = new \mod_consentform\consentform_export();
-$exportformat = 'csv';
-$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $tab . '_' . userdate(time(),
-        '%d-%m-%Y', 99, false));
-$export->print_file();
-
-
-function consentform_print_status($statuscode) {
-
-    switch ($statuscode) {
+foreach ($listusers as $record) {
+    switch ($record->state) {
         case "1":
             $status = get_string("agreed", "consentform");
             break;
@@ -78,5 +60,18 @@ function consentform_print_status($statuscode) {
             $status = get_string("noaction", "consentform");
             break;
     }
-    return $status;
-}
+    $csvrow = array(
+        get_string('lastname') => $record->lastname,
+        get_string('firstname') => $record->firstname,
+        get_string('email') => $record->email,
+        get_string('timestamp', 'consentform') => $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
+        get_string('state') => $status
+    );
+    $csvrows[] = $csvrow;
+} // End loop records.
+
+$export = new \mod_consentform\consentform_export();
+$exportformat = 'csv';
+$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $tab . '_' . userdate(time(),
+        '%d-%m-%Y', 99, false));
+$export->print_file();

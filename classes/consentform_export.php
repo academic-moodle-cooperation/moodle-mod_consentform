@@ -17,7 +17,7 @@
 /**
  * Adapter to fill in the data from the moodleform into the exportclass
  *
- * @copyright  2021 Thomas Niedermaier Medizinische Universitaet Wien (thomas.niedermaier@meduniwien.ac.at)
+ * @copyright  2021 Thomas Niedermaier, Medical University of Vienna (thomas.niedermaier@meduniwien.ac.at)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * @package    mod_consentform
- * @copyright  2021 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2021 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class consentform_export {
@@ -43,6 +43,11 @@ class consentform_export {
         $this->filename = $filename;
     }
 
+    /**
+     * Generate the file and fill it with data.
+     *
+     * @throws \coding_exception
+     */
     public function print_file() {
         global $USER;
 
@@ -68,6 +73,7 @@ class consentform_export {
             $export->add_row($row);
         }
 
+        // Generate the export file.
         $export->generate($this->filename);
         exit;
     }

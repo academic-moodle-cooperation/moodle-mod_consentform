@@ -1,14 +1,7 @@
 CHANGELOG
 =========
 
-3.7.1 (2020-05-27)
+3.10.1 (2021-03-31)
 ----------------
 
-* [FIXED] Bug with Moodle restrictions
-* [FIXED] Bug that prevents saving changes in module settings
-* [FEATURE] Setting "usegrade" (optional) to enable writing a grade value for every approval
-
-3.7 (2020-02-14)
-----------------
-
-* First release for Moodle 3.7+
+* First release for Moodle 3.10.1+

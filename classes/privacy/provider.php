@@ -18,8 +18,8 @@
  * Consentform - Tool to hide/show modules
  *
  * @package     mod_consentform
- * @author      Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
- * @copyright   2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @author      Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright   2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

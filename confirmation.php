@@ -18,7 +18,7 @@
  * Confirmation Buttons page which is used in an iframe in the module description.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -82,11 +82,9 @@ if ($data = $mform->get_data()) {
 
     $event->trigger();
 
-
     $redirecturl = new moodle_url('/mod/consentform/confirmation.php', array('id' => $id));
     $SESSION->consentform_reloadiframe = "1";
     redirect($redirecturl);
-
 
 } else {  // No data from form.
     if (isset($SESSION->consentform_reloadiframe)) {
@@ -101,4 +99,3 @@ if ($data = $mform->get_data()) {
         echo $OUTPUT->box_end();
     }
 }
-

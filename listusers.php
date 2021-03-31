@@ -17,15 +17,14 @@
 /** List of users and their status
  *
  * @package    mod_consentfom
- * @copyright  2021 Thomas Niedermaier Medizinische Universitaet Wien (thomas.niedermaier@meduniwien.ac.at)
+ * @copyright  2021 Thomas Niedermaier, Medical University of Vienna (thomas.niedermaier@meduniwien.ac.at)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(__DIR__ . '/../../config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // Course_module ID
-$deleteuseraction = optional_param('delete', null, PARAM_INT); // User-ID to delete own test action.
-
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
     $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
     $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -34,8 +33,10 @@ if ($id) {
     die('You must specify a course_module ID');
 }
 
+$deleteuseraction = optional_param('delete', null, PARAM_INT); // User-ID to delete own test action.
 $sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname | firstname | email | timestamp
 $sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC)
+$tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 $context = context_module::instance($cm->id);
 $coursecontext = context_course::instance($course->id);
@@ -60,7 +61,6 @@ $event->add_record_snapshot($PAGE->cm->modname, $consentform);
 $event->trigger();
 
 // Print the page header.
-
 $PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -68,8 +68,6 @@ $PAGE->set_heading(format_string($course->fullname));
 // Output starts here.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($consentform->name));
-
-$tab  = optional_param('tab', 1, PARAM_INT);
 
 // All active participants.
 $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
@@ -114,6 +112,7 @@ $usersrevoked = $DB->get_records_sql($query);
 $usersrevoked = array_intersect_key($enrolled, $usersrevoked);
 $sumrevoked = count($usersrevoked);
 
+// Get tabs for display.
 $tabrow = array();
 $tabrow[] = new tabobject(CONSENTFORM_STATUS_AGREED,
     $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_STATUS_AGREED,
@@ -132,7 +131,7 @@ $tabrow[] = new tabobject(CONSENTFORM_ALL,
     get_string('titleall', 'consentform')." (".$sumall.")");
 
 $tabrows = array();
-$tabrows[] = $tabrow;     // Always put these at the top.
+$tabrows[] = $tabrow;
 
 echo html_writer::start_div('consentformdisplay');
 print_tabs($tabrows, $tab);
@@ -167,8 +166,7 @@ switch ($tab) {
         break;
 }
 
-$sqlresult = null;
-require("sql.php");
+$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm);
 
 if ($download) {
     $xform = new \mod_consentform\consentform_export_form('exportcsv.php?id=' . $cm->id,
@@ -192,9 +190,7 @@ if (array_key_exists($USER->id, $userswithaction)) {
 }
 
 // Display users and their status.
-list($listnotempty, $htmltable) = consentform_display_participants($sqlresult, $cm->id, $sqlsortkey, $sortorder, $tab);
-
-echo $htmltable;
+echo consentform_display_participants($listusers, $cm->id, consentform_get_sqlsortkey($sortkey), $sortorder, $tab);
 
 if (!$consentform->nocoursemoduleslist) {
     echo $OUTPUT->single_button(new moodle_url('view.php', array('id' => $cm->id)),
@@ -203,109 +199,3 @@ if (!$consentform->nocoursemoduleslist) {
 
 // Finish the page.
 echo $OUTPUT->footer();
-
-function consentform_display_participants($sqlresult, $cmid, $sortkey, $sortorder, $tab) {
-
-    $index = 0;
-    $urlinit  = '/mod/consentform/listusers.php?';
-    $urlinit .= 'id=' . $cmid;
-    $urlinit .= '&sesskey=' . sesskey();
-    $urlinit .= '&tab=' . $tab;
-
-    foreach ($sqlresult as $row) {
-
-        if ($index == 0) {
-
-            $table = new html_table();
-            $table->head = array(
-                "",
-                consentform_tableheader_column("lastname", get_string('lastname'),
-                    $urlinit, $sortkey, $sortorder),
-                consentform_tableheader_column("firstname", get_string('firstname'),
-                    $urlinit, $sortkey, $sortorder),
-                consentform_tableheader_column("email", get_string('email'),
-                    $urlinit, $sortkey, $sortorder),
-                consentform_tableheader_column("timestamp", get_string('timestamp', 'consentform'),
-                    $urlinit, $sortkey, $sortorder),
-                get_string('status'),
-                );
-            $table->align = array(
-                'right',
-                'left',
-                'left',
-                'left',
-                'center',
-                'center',
-            );
-
-        } // end if index=0
-
-        $index++;
-        $table->data[]  = array(
-            $index,
-            $row->lastname,
-            $row->firstname,
-            $row->email,
-            $row->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($row->timestamp) : CONSENTFORM_NOTIMESTAMP,
-            consentform_display_status($row->state),
-            );
-
-    }  // for each row
-
-    $returnok = false;
-
-    if ($index == 0) {
-        $html = html_writer::tag('p', get_string('listempty', 'consentform'), array('class' => 'alert-warning'));
-    } else {
-        $html = html_writer::table($table);
-        $returnok = true;
-    }
-
-    return array($returnok, $html);
-
-}
-
-function consentform_tableheader_column($column, $columntitle, $urlinit, $sortkey, $sortorder) {
-    global $OUTPUT;
-
-    $url = $urlinit . "&sortkey=" . $column;
-
-    if ($column == $sortkey) {
-        if ($sortorder == "DESC") {
-            $icon = $OUTPUT->image_icon('t/sort_desc', get_string('sort'), 'moodle', array(
-                'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-            $url .= "&sortorder=ASC";
-        } else {
-            $icon = $OUTPUT->image_icon('t/sort_asc', get_string('sort'), 'moodle', array(
-                'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-            $url .= "&sortorder=DESC";
-        }
-    } else {
-        $icon = $OUTPUT->image_icon('t/sort_by', get_string('sort'), 'moodle', array(
-            'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-        $url .= "&sortorder=ASC";
-    }
-
-    $linkstr = html_writer::link($url, $columntitle . $icon);
-
-    return $linkstr;
-
-}
-
-function consentform_display_status($status) {
-
-    switch ($status) {
-        case "1":
-            return html_writer::span(get_string("agreed", "consentform"), "agreed");
-            break;
-        case "0":
-            return html_writer::span(get_string("revoked", "consentform"), "revoked");
-            break;
-        case "-1":
-            return html_writer::span(get_string("refused", "consentform"), "refused");
-            break;
-        default:
-            return html_writer::span(get_string("noaction", "consentform"));
-            break;
-    }
-}
