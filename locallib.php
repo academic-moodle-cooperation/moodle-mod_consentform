@@ -605,7 +605,7 @@ function consentform_update_completionstate($cmid, $agreed) {
  * @throws coding_exception
  * @throws dml_exception
  */
-function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
+function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
     global $DB;
 
     $sqlsortkey = consentform_get_sqlsortkey($sortkey);
@@ -640,7 +640,8 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
             'u.id, u.lastname, u.firstname, u.email', $orderby);
         $listusers = array_diff_key($enrolledview, $enrolledsubmit);
         foreach ($listusers as &$row) {
-            if ($fields = $DB->get_record('consentform_state', array('userid' => $row->id, 'consentformcmid' => $cm->id), 'timestamp, state')) {
+            if ($fields = $DB->get_record('consentform_state',
+                array('userid' => $row->id, 'consentformcmid' => $cm->id), 'timestamp, state')) {
                 $row->timestamp = $fields->timestamp;
                 $row->state = $fields->state;
             } else {
@@ -650,9 +651,13 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
         }
         if ($sqlsortkey == "timestamp") {
             if ($sqlsortorder == "DESC") {
-                usort($listusers, function($a, $b) {return strcmp($b->timestamp, $a->timestamp);});
+                usort($listusers, function($a, $b) {
+                    return strcmp($b->timestamp, $a->timestamp);
+                });
             } else {
-                usort($listusers, function($a, $b) {return strcmp($a->timestamp, $b->timestamp);});
+                usort($listusers, function($a, $b) {
+                    return strcmp($a->timestamp, $b->timestamp);
+                });
             }
         }
     } else { // Participants with action.
