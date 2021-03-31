@@ -610,14 +610,14 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
 
     $sqlsortkey = consentform_get_sqlsortkey($sortkey);
     $sqlsortorder = $sortorder;
+    if ($sqlsortkey != "timestamp") {
+        $orderby = $sqlsortkey . ' ' . $sqlsortorder;
+    } else {
+        $orderby = null;
+    }
 
     // Participants with no action.
     if ($tab == CONSENTFORM_STATUS_NOACTION) {
-        if ($sqlsortkey != "timestamp") {
-            $orderby = $sqlsortkey . ' ' . $sqlsortorder;
-        } else {
-            $orderby = null;
-        }
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
@@ -633,19 +633,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
             $row->timestamp = CONSENTFORM_NOTIMESTAMP;
             $row->state = get_string('noaction', 'consentform');
         }
-        if ($sqlsortkey == "timestamp") {
-            if ($sqlsortorder == "DESC") {
-                usort($listusers, function($a, $b) {return strcmp($b->timestamp, $a->timestamp);});
-            } else {
-                usort($listusers, function($a, $b) {return strcmp($a->timestamp, $b->timestamp);});
-            }
-        }
     } else if ($tab == CONSENTFORM_ALL) { // All course participants.
-        if ($sqlsortkey != "timestamp") {
-            $orderby = $sqlsortkey . ' ' . $sqlsortorder;
-        } else {
-            $orderby = null;
-        }
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
