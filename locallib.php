@@ -613,10 +613,15 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
 
     // Participants with no action.
     if ($tab == CONSENTFORM_STATUS_NOACTION) {
+        if ($sqlsortkey != "timestamp") {
+            $orderby = $sqlsortkey . ' ' . $sqlsortorder;
+        } else {
+            $orderby = null;
+        }
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
-            'u.id, u.lastname, u.firstname, u.email', $sqlsortkey . ' ' . $sqlsortorder, 0, 0, true);
+            'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
-            'u.id, u.lastname, u.firstname, u.email', $sqlsortkey . ' ' . $sqlsortorder);
+            'u.id, u.lastname, u.firstname, u.email', $orderby);
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
         $sqlwhere = "WHERE (c.consentformcmid = $cm->id) ";
@@ -628,11 +633,23 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
             $row->timestamp = CONSENTFORM_NOTIMESTAMP;
             $row->state = get_string('noaction', 'consentform');
         }
+        if ($sqlsortkey == "timestamp") {
+            if ($sqlsortorder == "DESC") {
+                usort($listusers, function($a, $b) {return strcmp($b->timestamp, $a->timestamp);});
+            } else {
+                usort($listusers, function($a, $b) {return strcmp($a->timestamp, $b->timestamp);});
+            }
+        }
     } else if ($tab == CONSENTFORM_ALL) { // All course participants.
+        if ($sqlsortkey != "timestamp") {
+            $orderby = $sqlsortkey . ' ' . $sqlsortorder;
+        } else {
+            $orderby = null;
+        }
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
-            'u.id, u.lastname, u.firstname, u.email', $sqlsortkey . ' ' . $sqlsortorder, 0, 0, true);
+            'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
-            'u.id, u.lastname, u.firstname, u.email', $sqlsortkey . ' ' . $sqlsortorder);
+            'u.id, u.lastname, u.firstname, u.email', $orderby);
         $listusers = array_diff_key($enrolledview, $enrolledsubmit);
         foreach ($listusers as &$row) {
             if ($fields = $DB->get_record('consentform_state', array('userid' => $row->id, 'consentformcmid' => $cm->id), 'timestamp, state')) {
@@ -641,6 +658,13 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm){
             } else {
                 $row->timestamp = CONSENTFORM_NOTIMESTAMP;
                 $row->state = get_string('noaction', 'consentform');
+            }
+        }
+        if ($sqlsortkey == "timestamp") {
+            if ($sqlsortorder == "DESC") {
+                usort($listusers, function($a, $b) {return strcmp($b->timestamp, $a->timestamp);});
+            } else {
+                usort($listusers, function($a, $b) {return strcmp($a->timestamp, $b->timestamp);});
             }
         }
     } else { // Participants with action.
