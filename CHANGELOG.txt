@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-3.10.1 (2021-03-31)
-----------------
+3.10.0 (2021-03-31)
+-------------------
 
-* First release for Moodle 3.10.1+
+* First release for Moodle 3.9

@@ -548,6 +548,12 @@ function consentform_save_agreement($status, $userid, $cmid) {
             consentform_set_user_grade($consentform, $userid, null);
         }
     }
+    if ($consentform->confirmincourseoverview) {
+        if ($status == CONSENTFORM_STATUS_AGREED) {
+            $DB->set_field('course_modules', 'showdescription', 0, array('id' => $cmid));
+            rebuild_course_cache($consentform->course, false);
+        }
+    }
 
     return true;
 }
