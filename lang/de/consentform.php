@@ -109,4 +109,5 @@ $string['titlerefused'] = 'Ablehnungen';
 $string['usegrade'] = 'Bewertung verwenden';
 $string['usegrade_help'] = 'Bei jeder Zustimmung eines/r Teilnehmer/in wird der Wert 1 für diese/n Teilnehmer/in für dieses Modul in die Bewertungen geschrieben.';
 $string['usegradedesc'] = 'Bewertung für den Export verwenden';
+$string['warninguserentry'] = 'Achtung: Es wurde ein Einverständniserklärungs-Eintrag in den Voraussetzungen gefunden, der nicht von der Einverständniserklärung getätigt oder nachträglich verändert wurde. Überprüfen Sie dessen Wirksamkeit!';
 $string['wrongoperator'] = 'Dieses Modul hat NICHT eine UND-Verknüpfung bei den Voraussetzungen. Diese {$a->consentform} ist daher bei diesem Modul u.U. wirkungslos!';

@@ -58,15 +58,6 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
     foreach ($coursemodules as $cmid => $cminfo) {
         $msg = "";
         if ($cminfo->modname != 'consentform' && !$cminfo->deletioninprogress) {
-            if ($availabilityjson = $cminfo->availability) {
-                $availability = json_decode($availabilityjson);
-                if (isset($availability->op)) {
-                    if ($availability->op <> "&") {
-                        $msg = "&nbsp;&nbsp;" . html_writer::start_span("warning") .
-                            get_string("wrongoperator", "consentform", $a) . html_writer::end_span();
-                    }
-                }
-            }
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
                 if (!($sectioninfo = $modinfo->get_section_info($sectioni))) { // If this section doesn't exist.
@@ -103,11 +94,19 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                 if (has_capability("mod/$modname:addinstance", $context)) {
                     $row = new html_table_row();
                     $cmidcontrolled = $cmid;
-                    $checked = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
+                    $cfcontrolled = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
+                    $checked = $cfcontrolled ? 1 : 0;
+                    $checkboxattributes = array('class' => "selectcoursemodule section$sectioni");
+                    if ($cfcontrolled == 2) {
+                        $checkboxattributes['disabled'] = "disabled";
+                    }
                     $cell = new html_table_cell(
                         html_writer::checkbox("selectcoursemodule[]", $cmid, $checked, '',
-                        array('class' => "selectcoursemodule section$sectioni"))
+                            $checkboxattributes)
                     );
+                    if ($cfcontrolled == 2) {
+                        $cell->text .= consentform_geticon_userentry();
+                    }
                     $cell->attributes['class'] = 'consentform_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
                     $viewurl = new moodle_url('/course/modedit.php', array('update' => $cmid));
@@ -116,8 +115,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                             'title' => $cminfo->modfullname, 'role' => 'presentation')) .
                             html_writer::tag('span', $cminfo->name, array('class' => 'instancename'));
                     $row->cells[] = new html_table_cell(
-                        html_writer::start_div('activity') . html_writer::link($viewurl, $activitylink) .
-                        $msg .
+                        html_writer::start_div('activity').html_writer::link($viewurl, $activitylink).
                         html_writer::end_div()
                     );
                     $row->attributes['class'] = "consentform_activitytable_activityrow";
@@ -130,6 +128,23 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
     }  // End foreach.
 
     return $rows;
+}
+
+/**
+ * @return string html string of warning icon, if a not regular user entry for consentform was found in
+ * course module's availability
+ * @throws coding_exception
+ */
+function consentform_geticon_userentry() {
+    global $OUTPUT;
+
+    $attributes = array();
+    $attributes['data-toggle'] = "tooltip";
+    $string = get_string("warninguserentry", "mod_consentform");
+    $attributes['title'] = $string;
+    $icon = $OUTPUT->pix_icon('i/incorrect', $string, 'moodle', $attributes);
+
+    return $icon;
 }
 
 /**
@@ -400,115 +415,187 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
 
 
 /**
- * Find completion entry in course_modules
+ * Find consentform completion entry in availability of course_module
  *
  * @param $cmidcontrolled  course module id of this consentform instance
  * @param $cmidcontroller  id of course module which relies on this consentform instance
- * @return bool $found     if entry is found
+ * @return bool $ret 0...not found, 1...consentform entry found, 2...user entry found
  * @throws dml_exception
  */
 function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     global $DB;
 
-    $found = false;
+    $ret = 0;
+    $availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled));
+    $availability = json_decode($availability);
+    if (isset($availability->c) && isset($availability->op)) {
+        $condition = $availability->c[0];
+        // Genuine consentform condition?
+        if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
+            if ($condition->cm == $cmidcontroller) {
+                $ret = 1;
+            }
+        }
+        // Otherwise user condition anywhere in availability?
+        if (!$ret) {
+            if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontrolled, $cmidcontroller)) {
+                $ret = 2;
+            }
+        }
+    }
 
-    $conditions = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled));
-    $conditions = json_decode($conditions);
+    return $ret;
+}
 
-    if (isset($conditions->c)) {
-        foreach ($conditions->c as $condition) {
+/**
+ * Find completion entry anywhere in availability of course module (recursive)
+ *
+ * @param $conditions condition or condiionlist of availability
+ * @param $cmidcontrolled  course module id of this consentform instance
+ * @param $cmidcontroller  id of course module which relies on this consentform instance
+ * @return bool $ret 0...not found, 1...consentform entry found, 2...user entry found
+ * @throws dml_exception
+ */
+function consentform_find_entry_availability_anywhere($conditions, $cmidcontrolled, $cmidcontroller) {
+
+    foreach ($conditions as $condition) {
+        if (isset($condition->c)) { // If conditionlist.
+            if (consentform_find_entry_availability_anywhere($condition->c, $cmidcontrolled, $cmidcontroller)) {
+                return true;
+            }
+        } else {
             if ($condition->type == 'completion') {
                 if ($condition->cm == $cmidcontroller) {
-                    $found = true;
-                    break;
+                    return true;
                 }
             }
         }
     }
 
-    return $found;
+    return false;
 }
 
 /**
- * Make condition entry in course_modules
+ * Insert condition entry in course_module x
  *
- * @param $courseid         id of this course
- * @param $cmidcontrolled  course module id of this CF instance
- * @param $cmidcontroller  id of course module which relies on this CF instance
+ * @param $courseid        id of this course
+ * @param $cmidcontrolled  id of course module which relies on this CF instance
+ * @param $cmidcontroller  course module id of this CF instance
  * @return bool
  * @throws dml_exception
  */
 function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
-    $availabilityjson = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
-    $newrestriction = new stdClass();
-    $newrestriction->type = "completion";
-    $newrestriction->cm = $cmidcontroller;
-    $newrestriction->e = EXPECTEDCOMPLETIONVALUE;
-    $availability = json_decode($availabilityjson);
-    if (!isset($availability)) {
-        $availability = new stdClass();
+    $availabilityjsonstring = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
+    $availabilityold = json_decode($availabilityjsonstring);
+    $availabilitynew = new stdClass();
+    $availabilitynew->op = "&";
+    $availabilitynew->c = array();
+    $availabilitynew->showc = array();
+    $newcondition = new stdClass();
+    $newcondition->type = "completion";
+    $newcondition->cm = $cmidcontroller;
+    $newcondition->e = EXPECTEDCOMPLETIONVALUE;
+    $availabilitynew->c[] = $newcondition;
+    $availabilitynew->showc[] = true;
+    if ($availabilityold) {
+        $availabilitynew->c[] = $availabilityold;
+        $availabilitynew->showc[] = true;
     }
-    if (!isset($availability->op)) {
-        $availability->op = "&";
-    }
-    $availability->c[] = $newrestriction;
-    $availability->showc[] = true;
-    $availabilityjson = json_encode($availability);
-    $DB->set_field('course_modules', 'availability',
-        $availabilityjson, ['id' => $cmidcontrolled]);
+    $availabilityjsonstring = json_encode($availabilitynew);
+    $DB->set_field('course_modules', 'availability', $availabilityjsonstring, ['id' => $cmidcontrolled]);
     rebuild_course_cache($courseid, false);
 
     return true;
 }
 
 /**
- * Delete condition entry in course_modules
+ * Delete condition entry in course_module x
  *
- * @param $courseid         id of this course
- * @param $cmidcontrolled  course module id of this CF instance
- * @param $cmidcontroller  id of course module which relies on this CF instance
+ * @param $courseid        id of this course
+ * @param $cmidcontrolled  id of course module which relies on this CF instance
+ * @param $cmidcontroller  course module id of this CF instance
  * @return bool
  * @throws dml_exception
  */
 function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmidcontroller) {
     global $DB;
 
-    $found = -1;
-    if ($conditionsjson = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
-        $conditionscreturn = array();
-        $showreturn = array();
-        $conditions = json_decode($conditionsjson);
-        $indx = 0;
-        foreach ($conditions->c as $condition) {
-            if ($condition->type == 'completion') {
+    $availabilityjsonstring = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
+    $availability = json_decode($availabilityjsonstring);
+    $found = false;
+    if (isset($availability->c)) {
+        $conditionslength = count($availability->c);
+        if ($conditionslength == 1) { // If it is the only condition.
+            $condition = $availability->c[0];
+            if (isset($condition->type) && $condition->type == 'completion') {
                 if ($condition->cm == $cmidcontroller) {
-                    $found = $indx;
+                    $availabilityjsonstring = null;
+                    $found = true;
                 }
-            } else {
-                $conditionscreturn[] = $condition;
-                $showreturn[] = $conditions->showc[$indx];
             }
-            $indx++;
+        } else if ($conditionslength == 2) { // There have been conditions before.
+            $condition = $availability->c[0];
+            if (isset($condition->type) && $condition->type == 'completion') {  // Do only if first condition is CF.
+                if ($condition->cm == $cmidcontroller) {
+                    // The second condition(list) will remain.
+                    $subcondition = $availability->c[1];
+                    // Sanitize showc or show if conditionlist.
+                    if (isset($subcondition->op) && ($subcondition->op == "&" || $subcondition->op == "!|")) {
+                        // No showc.
+                        if (!isset($subcondition->showc) || count($subcondition->showc) != count($subcondition->c)) {
+                            $subcondition->showc = array();
+                            foreach ($subcondition->c as $c) {
+                                $subcondition->showc[] = true;
+                            }
+                        }
+                        $diffshowc = count($subcondition->showc) - count($subcondition->c);
+                        if ($diffshowc > 0) { // Too many showc.
+                            for ($i = 0;$i < $diffshowc; $i++) {
+                                array_pop($subcondition->showc);
+                            }
+                        } else if ($diffshowc < 0) { // Not enough showc.
+                            for ($i = 0;$i < $diffshowc; $i++) {
+                                $subcondition->showc[] = true;
+                            }
+                        }
+                        $availabilityjsonstring = json_encode($subcondition);
+                    } else if (isset($subcondition->op)) { // if OR: Check show.
+                        if (!isset($subcondition->show)) {
+                            $subcondition->show = true;
+                        }
+                        $availabilityjsonstring = json_encode($subcondition);
+                    } else { // Second condition is not a list.
+                        $newcondition = new stdClass();
+                        $newcondition->op = "&";
+                        $newcondition->c = array($subcondition);
+                        $newcondition->showc = array(true);
+                        $availabilityjsonstring = json_encode($newcondition);
+                    }
+                    $found = true;
+                }
+            }
+        } else if ($conditionslength > 2) { // There have been conditions before.
+            $condition = $availability->c[0];
+            if (isset($condition->type) && $condition->type == 'completion') {
+                if ($condition->cm == $cmidcontroller) {
+                    array_shift($availability->c);
+                    array_shift($availability->showc);
+                    $availabilityjsonstring = json_encode($availability);
+                    $found = true;
+                }
+            }
         }
     }
-
-    if ($found >= 0) {
-        $obj = new stdClass();
-        $obj->op = $conditions->op;
-        $obj->c = $conditionscreturn;
-        $obj->showc = $showreturn;
-        $conditions = json_encode($obj);
-
-        $updaterecord = new stdClass();
-        $updaterecord->id = $cmidcontrolled;
-        $updaterecord->availability = $conditions;
-        if ($ok = $DB->update_record('course_modules', $updaterecord)) {
-            rebuild_course_cache($courseid, false);
-        }
+    if ($found) {
+        $DB->set_field('course_modules', 'availability', $availabilityjsonstring, ['id' => $cmidcontrolled]);
+        rebuild_course_cache($courseid, false);
+        return true;
+    } else {
+        return false;
     }
-    return true;
+
 }
 
 /**
@@ -579,6 +666,29 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
     $record->timestamp = time();
 
     return $record;
+}
+
+/**
+ * Enter grade value for all agreements when usegrade has been switched to on.
+ *
+ * @param $cmid id of this instance's coursemodule
+ * @return bool
+ * @throws dml_exception
+ */
+function consentform_usegradechange_writegrades($cmid) {
+    global $DB;
+
+    $instanceid = $DB->get_field('course_modules', 'instance', array('id' => $cmid));
+    $consentform = $DB->get_record('consentform', array('id' => $instanceid));
+
+    $records = $DB->get_records('consentform_state', ["consentformcmid" => $cmid, "state" => CONSENTFORM_STATUS_AGREED]);
+    foreach ($records as $record) {
+        consentform_set_user_grade($consentform, $record->userid, GRADEVALUETOWRITE);
+    }
+
+    rebuild_course_cache($consentform->course, false);
+
+    return true;
 }
 
 /**

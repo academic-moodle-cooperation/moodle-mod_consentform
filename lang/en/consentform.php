@@ -109,4 +109,5 @@ $string['titlerefused'] = 'Refusals';
 $string['usegrade'] = 'Use grade';
 $string['usegrade_help'] = 'When a user agrees a value of 1 is written for this user for this module in the gradebook.';
 $string['usegradedesc'] = 'Use grade for export';
+$string['warninguserentry'] = 'Alert: A consentform entry was found in the availability of this module which has not been made by this consentform or has been changed since then! Be sure that it is effective.';
 $string['wrongoperator'] = 'This module has NOT an AND-conjunction in its restrictions. This {$a->consentform} is possibly without effect on this module!';

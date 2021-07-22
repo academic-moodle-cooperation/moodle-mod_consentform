@@ -28,6 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 /**
  * Module instance settings form
@@ -151,6 +152,7 @@ class mod_consentform_mod_form extends moodleform_mod {
      * Activate show description option if confirmincourseoverview option is on
      */
     public function get_data($slashed = true) {
+        global $DB;
 
         if ($data = parent::get_data($slashed)) {
             if (isset($data->confirmationtext)) {
@@ -159,6 +161,17 @@ class mod_consentform_mod_form extends moodleform_mod {
             $data->completion = 2;
             if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
                 $data->showdescription = 1;
+            }
+            if ($data->update) {
+                $dbusegrade = $DB->get_field('consentform', 'usegrade', ["id" => $data->instance]);
+                if ($dbusegrade != $data->usegrade) {
+                    if ($data->usegrade) {
+                        consentform_usegradechange_writegrades($data->coursemodule);
+                    } else {
+                        $consentform = $DB->get_record('consentform', array('id' => $data->instance));
+                        consentform_grade_item_delete($consentform);
+                    }
+                }
             }
         }
         return $data;
