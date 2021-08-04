@@ -429,10 +429,10 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     $availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled));
     $availability = json_decode($availability);
     if (isset($availability->c) && isset($availability->op)) {
-        if (is_array($availability->c)) {
+        if (count($availability->c) > 0) {
             $condition = $availability->c[0];
         } else {
-            $condition = $availability->c;
+            return $ret;
         }
         // Genuine consentform condition?
         if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
