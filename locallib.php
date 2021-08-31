@@ -556,11 +556,11 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
                         }
                         $diffshowc = count($subcondition->showc) - count($subcondition->c);
                         if ($diffshowc > 0) { // Too many showc.
-                            for ($i = 0;$i < $diffshowc; $i++) {
+                            for ($i = 0; $i < $diffshowc; $i++) {
                                 array_pop($subcondition->showc);
                             }
                         } else if ($diffshowc < 0) { // Not enough showc.
-                            for ($i = 0;$i < $diffshowc; $i++) {
+                            for ($i = 0; $i < $diffshowc; $i++) {
                                 $subcondition->showc[] = true;
                             }
                         }
