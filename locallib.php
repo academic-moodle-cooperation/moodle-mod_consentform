@@ -95,9 +95,9 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $row = new html_table_row();
                     $cmidcontrolled = $cmid;
                     $cfcontrolled = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
-                    $checked = $cfcontrolled ? 1 : 0;
+                    $checked = $cfcontrolled <= 0 ? 0 : 1;
                     $checkboxattributes = array('class' => "selectcoursemodule section$sectioni");
-                    if ($cfcontrolled == 2) {
+                    if ($cfcontrolled == 2 || $cfcontrolled == -1) {
                         $checkboxattributes['disabled'] = "disabled";
                     }
                     $cell = new html_table_cell(
@@ -106,6 +106,8 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     );
                     if ($cfcontrolled == 2) {
                         $cell->text .= consentform_geticon_userentry();
+                    } else if ($cfcontrolled == -1) {
+                        $cell->text .= consentform_geticon_userentry_negative();
                     }
                     $cell->attributes['class'] = 'consentform_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
@@ -143,6 +145,23 @@ function consentform_geticon_userentry() {
     $string = get_string("warninguserentry", "mod_consentform");
     $attributes['title'] = $string;
     $icon = $OUTPUT->pix_icon('i/incorrect', $string, 'moodle', $attributes);
+
+    return $icon;
+}
+
+/**
+ * @return string html string of warning icon, if a negative consentform-like entry was found in
+ * course module's availability
+ * @throws coding_exception
+ */
+function consentform_geticon_userentry_negative() {
+    global $OUTPUT;
+
+    $attributes = array();
+    $attributes['data-toggle'] = "tooltip";
+    $string = get_string("warninguserentry", "mod_consentform");
+    $attributes['title'] = $string;
+    $icon = $OUTPUT->pix_icon('i/invalid', $string, 'moodle', $attributes);
 
     return $icon;
 }
@@ -438,6 +457,12 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
         if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
             if ($condition->cm == $cmidcontroller) {
                 $ret = 1;
+            }
+        }
+        // Negative user entry?
+        if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "!&") {
+            if ($condition->cm == $cmidcontroller) {
+                $ret = -1;
             }
         }
         // Otherwise user condition anywhere in availability?
