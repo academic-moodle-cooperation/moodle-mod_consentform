@@ -45,8 +45,8 @@ define(
             /**
              * Response indicator
              *
-             * @param val
-             * @param checked
+             * @param val {string}
+             * @param checked {bool}
              */
              function response(val, checked) {
                  if (checked) {
@@ -60,8 +60,8 @@ define(
             * Make ajax call to setcontrol.php page to store if the activity shall be controlled by
             * this consentform instance.
             *
-            * @param ischecked
-            * @param value
+            * @param ischecked {bool}
+            * @param value {string}
             */
             function transmitcheckboxclicked(ischecked, value) {
 
