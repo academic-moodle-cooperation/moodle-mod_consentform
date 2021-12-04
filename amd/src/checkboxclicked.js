@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -42,7 +42,12 @@ define(
 
             instance.cmid = param.cmid;
 
-             // Response indicator.
+            /**
+             * Response indicator
+             *
+             * @param val
+             * @param checked
+             */
              function response(val, checked) {
                  if (checked) {
                      $(":checkbox[value=" + val + "]").parent().parent().css("background-color", "lightgreen");
@@ -51,8 +56,13 @@ define(
                  }
              }
 
-            // Make ajax call to setcontrol.php page to store if the activity shall be controlled by
-            // this consentform instance.
+            /**
+            * Make ajax call to setcontrol.php page to store if the activity shall be controlled by
+            * this consentform instance.
+            *
+            * @param ischecked
+            * @param value
+            */
             function transmitcheckboxclicked(ischecked, value) {
 
                 $.get(config.wwwroot + '/mod/consentform/setcontrol.php', {
@@ -71,7 +81,9 @@ define(
                     });
             }
 
-            // What happens when a course module checkbox is clicked.
+            /**
+            * What happens when a course module checkbox is clicked
+            */
             function checkboxclicked() {
                 var ischecked = $(this).is(':checked');
                 var value = $(this).val();

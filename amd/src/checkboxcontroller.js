@@ -16,7 +16,7 @@
 /**
  * checkboxcontroller.js
  *
- * @package mod
+ * @package
  * @subpackage consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
