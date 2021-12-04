@@ -44,9 +44,6 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
      */
     protected function define_structure() {
 
-        // Get know if we are including userinfo.
-        $userinfo = $this->get_setting_value('userinfo');
-
         // Define the root element describing the consentform instance.
         $consentform = new backup_nested_element('consentform', array('id'), array(
             'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'confirmationtext', 'optionrevoke',

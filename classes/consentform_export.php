@@ -75,6 +75,5 @@ class consentform_export {
 
         // Generate the export file.
         $export->generate($this->filename);
-        exit;
     }
 }

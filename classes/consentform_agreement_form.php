@@ -101,7 +101,7 @@ class consentform_agreement_form extends \moodleform {
      * @param $cmid    coursemodule id
      * @param $userid  user id
      * @param $status  agreed or revoked or refused
-     * @return bool    returns false if no logentry (=timestamp) was found.
+     * @return string  returns logentry.
      * @throws coding_exception
      * @throws dml_exception
      */
@@ -121,6 +121,6 @@ class consentform_agreement_form extends \moodleform {
             }
         }
 
-        return false;
+        return "";
     }
 }
