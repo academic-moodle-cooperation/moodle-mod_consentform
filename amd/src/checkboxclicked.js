@@ -16,7 +16,8 @@
 /**
  * Add or remove the restriction of a course module when checkbox is clicked
  *
- * @package   mod_consentform
+ * @package
+ * @subpackage mod_consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
