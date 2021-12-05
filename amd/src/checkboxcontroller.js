@@ -14,10 +14,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * checkboxcontroller.js
+ * Check all or no checkboxes at once
  *
- * @package
- * @subpackage consentform
+ * @package   mod_consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -14,24 +14,21 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package
- * @subpackage consentform
+ * Add or remove the restriction of a course module when checkbox is clicked
+ *
+ * @package   mod_consentform
  * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Add or remove the restriction of a course module when checkbox is clicked
+ * @module mod_consentform/checkboxclicked
  */
-
-
-define(
-    ['jquery', 'core/config'], function($, config) {
-         /**
+define(['jquery', 'core/config'], function($, config) {
+        /**
           * @constructor
           * @alias module:mod_consentform/checkboxclicked
           */
-
          var Checkboxclicked = function() {
             this.cmid = "";
          };
