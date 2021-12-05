@@ -82,7 +82,7 @@ define(
             }
 
             /**
-            * What happens when a course module checkbox is clicked
+            * Calls ajax-call function if checkbox is clicked
             */
             function checkboxclicked() {
                 var ischecked = $(this).is(':checked');

@@ -48,7 +48,6 @@ define(['jquery', 'core/log'], function($, log) {
             var idx = classes.replace("co_section_all", "").replace("co_section_none", "").replace("section", "").replace(" ", "");
             var selector = 'input.section' + idx + ':checkbox';
             checkboxes = $(selector, e.data.inst.table);
-            log.debug(selector);
         } else {
             checkboxes = $('td input:checkbox', e.data.inst.table);
         }
