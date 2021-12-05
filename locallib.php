@@ -54,14 +54,13 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
     $usercanviewsection = true;
     $cmindex = 0;
     $a = new stdClass();
-    $a->consentform = get_string("modulename", "consentform");
+    $a->course = $course->fullname;
     foreach ($coursemodules as $cmid => $cminfo) {
-        $msg = "";
         if ($cminfo->modname != 'consentform' && !$cminfo->deletioninprogress) {
             $sectioni = $cminfo->sectionnum;
             if ($sectioni != $sectionibefore) {
                 if (!($sectioninfo = $modinfo->get_section_info($sectioni))) { // If this section doesn't exist.
-                    print_error('unknowncoursesection', 'error', null, $course->fullname);
+                    throw new moodle_exception('unknowncoursesection', 'error', null, $a);
                     return;
                 }
                 if (!$sectioninfo->uservisible) {
@@ -590,7 +589,7 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
                             }
                         }
                         $availabilityjsonstring = json_encode($subcondition);
-                    } else if (isset($subcondition->op)) { // if OR: Check show.
+                    } else if (isset($subcondition->op)) { // If OR: Check show.
                         if (!isset($subcondition->show)) {
                             $subcondition->show = true;
                         }

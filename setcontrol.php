@@ -29,7 +29,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 // Check access.
 if (!confirm_sesskey()) {
-    print_error('invalidsesskey');
+    throw new moodle_exception('invalidsesskey', 'error');
 }
 
 // Get the params.

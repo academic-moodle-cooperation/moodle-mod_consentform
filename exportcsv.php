@@ -35,8 +35,8 @@ if ($id) {
     die('You must specify a course_module ID');
 }
 
-$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname | firstname | email | timestamp
-$sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC)
+$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname|firstname|email|timestamp.
+$sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC).
 $tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 require_login($course, true, $cm);
@@ -64,7 +64,8 @@ foreach ($listusers as $record) {
         get_string('lastname') => $record->lastname,
         get_string('firstname') => $record->firstname,
         get_string('email') => $record->email,
-        get_string('timestamp', 'consentform') => $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
+        get_string('timestamp', 'consentform') =>
+            $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
         get_string('state') => $status
     );
     $csvrows[] = $csvrow;

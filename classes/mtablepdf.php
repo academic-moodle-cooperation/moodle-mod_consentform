@@ -284,7 +284,7 @@ class mtablepdf extends \pdf {
 
         $lines = array();
 
-        // Table header.print
+        // Table header.print.
         $lines[] = join($sep, $this->titles);
 
         $prev = $this->data[0];

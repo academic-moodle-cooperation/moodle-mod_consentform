@@ -71,7 +71,8 @@ class mod_consentform_mod_form extends moodleform_mod {
             $mform->setType('showdescription', PARAM_INT);
         } else {
             if (!(isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1)) {
-                $mform->addElement('advcheckbox', 'showdescription', null, get_string('showdescription', 'moodle'), null, array(0, 1));
+                $mform->addElement('advcheckbox', 'showdescription', null,
+                    get_string('showdescription', 'moodle'), null, array(0, 1));
                 $mform->setType('showdescription', PARAM_INT);
                 $mform->addHelpButton('showdescription', 'showdescription', 'moodle');
             }
@@ -127,7 +128,8 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addHelpButton('usegrade', 'usegrade', 'consentform');
 
         // Option to place confirmation in course overview.
-        $mform->addElement('advcheckbox', 'confirmincourseoverview', get_string('confirmincourseoverview', 'consentform'), null, null, array(0, 1));
+        $mform->addElement('advcheckbox', 'confirmincourseoverview',
+            get_string('confirmincourseoverview', 'consentform'), null, null, array(0, 1));
         $mform->setType('confirmincourseoverview', PARAM_INT);
         $mform->setDefault('confirmincourseoverview', $settings->confirmincourseoverview);
         $mform->addHelpButton('confirmincourseoverview', 'confirmincourseoverview', 'consentform');
@@ -135,7 +137,8 @@ class mod_consentform_mod_form extends moodleform_mod {
             $mform->disabledIf('confirmincourseoverview', 'sesskey', 'neq', '');
         }
         // Option not to use course module list for configuration of dependencies.
-        $mform->addElement('advcheckbox', 'nocoursemoduleslist', get_string('nocoursemoduleslist', 'consentform'), null, null, array(0, 1));
+        $mform->addElement('advcheckbox', 'nocoursemoduleslist',
+            get_string('nocoursemoduleslist', 'consentform'), null, null, array(0, 1));
         $mform->setType('nocoursemoduleslist', PARAM_INT);
         $mform->setDefault('nocoursemoduleslist', $settings->nocoursemoduleslist);
         $mform->addHelpButton('nocoursemoduleslist', 'nocoursemoduleslist', 'consentform');

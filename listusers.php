@@ -34,8 +34,8 @@ if ($id) {
 }
 
 $deleteuseraction = optional_param('delete', null, PARAM_INT); // User-ID to delete own test action.
-$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname | firstname | email | timestamp
-$sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC)
+$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname|firstname|email|timestamp.
+$sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC).
 $tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 $context = context_module::instance($cm->id);
@@ -44,7 +44,8 @@ $coursecontext = context_course::instance($course->id);
 require_login($course, true, $cm);
 
 if ($deleteuseraction) {
-    $thisurl = new moodle_url('/mod/consentform/listusers.php', array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
+    $thisurl = new moodle_url('/mod/consentform/listusers.php',
+        array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
     if ($DB->delete_records('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
         redirect($thisurl, get_string("deletetestmessage", "consentform"), 'notify');
     } else {
