@@ -25,7 +25,7 @@
  /**
   * @module mod_consentform/checkboxcontroller
   */
-define(['jquery', 'core/log'], function($, log) {
+define(['jquery'], function($) {
 
     /**
      * @constructor

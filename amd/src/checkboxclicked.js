@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery', 'core/config', 'core/log'], function($, config, log) {
+    ['jquery', 'core/config'], function($, config) {
          /**
           * @constructor
           * @alias module:mod_consentform/checkboxclicked
@@ -75,8 +75,6 @@ define(
                             response(value, 1);
                         } else if (data == 2 && !ischecked) {
                             response(value, 0);
-                        } else {
-                            log.debug(data);
                         }
                     });
             }
