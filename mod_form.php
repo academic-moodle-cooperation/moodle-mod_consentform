@@ -78,10 +78,10 @@ class mod_consentform_mod_form extends moodleform_mod {
             }
         }
 
-        // Adding the "text" fieldset, where all the text field options are configured.
+        // Adding the "texts" fieldset, where all the text fields are configured.
         $mform->addElement('header', 'textfields', get_string('textfields', 'consentform'));
 
-        // The confirmation Text.
+        // The text to agree to.
         $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
         if (isset($this->current->confirmationtext)) {
             $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
@@ -90,58 +90,33 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
         // Agreement buttons labels.
-        $mform->addElement('text', 'textagreementbutton', get_string('textagreementbutton', 'consentform'), 'size="32"');
-        $mform->setType('textagreementbutton', PARAM_TEXT);
-        $mform->setDefault('textagreementbutton', $settings->textagreementbutton);
+        $labels = array('textagreementbutton', 'textrefusalbutton', 'textrevocationbutton' );
+        foreach ($labels as $label) {
+            $mform->addElement('text', $label, get_string($label, 'consentform'), 'size="32"');
+            $mform->setType($label, PARAM_TEXT);
+            $mform->setDefault($label, $settings->$label);
+            $mform->addRule($label, get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
+        }
         $mform->addRule('textagreementbutton', null, 'required', null, 'client');
-        $mform->addRule('textagreementbutton', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
-
-        $mform->addElement('text', 'textrefusalbutton', get_string('textrefusalbutton', 'consentform'), 'size="32"');
-        $mform->setType('textrefusalbutton', PARAM_TEXT);
-        $mform->setDefault('textrefusalbutton', $settings->textrefusalbutton);
-        $mform->addRule('textrefusalbutton', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
-
-        $mform->addElement('text', 'textrevocationbutton', get_string('textrevocationbutton', 'consentform'), 'size="32"');
-        $mform->setType('textrevocationbutton', PARAM_TEXT);
-        $mform->setDefault('textrevocationbutton', $settings->textrevocationbutton);
-        $mform->addRule('textrevocationbutton', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
 
         // Adding the "configurations" fieldset, where all the consentform configuration options are configured.
         $mform->addElement('header', 'textfields', get_string('configurations', 'consentform'));
 
-        // Option to refuse.
-        $mform->addElement('advcheckbox', 'optionrefuse', get_string('optionrefuse', 'consentform'), null, null, array(0, 1));
-        $mform->setType('optionrefuse', PARAM_INT);
-        $mform->setDefault('optionrefuse', $settings->optionrefuse);
-        $mform->addHelpButton('optionrefuse', 'optionrefuse', 'consentform');
+        $options = array ('optionrefuse', 'optionrevoke', 'usegrade', 'confirmincourseoverview', 'nocoursemoduleslist');
+        foreach ($options as $option) {
+            $mform->addElement('advcheckbox', $option, get_string($option, 'consentform'), null, null, array(0, 1));
+            $mform->setType($option, PARAM_INT);
+            if ($option == 'usegrade') {
+                $mform->setDefault($option, 0);
+            } else {
+                $mform->setDefault($option, $settings->$option);
+            }
+            $mform->addHelpButton($option, $option, 'consentform');
+        }
 
-        // Option to revoke.
-        $mform->addElement('advcheckbox', 'optionrevoke', get_string('optionrevoke', 'consentform'), null, null, array(0, 1));
-        $mform->setType('optionrevoke', PARAM_INT);
-        $mform->setDefault('optionrevoke', $settings->optionrevoke);
-        $mform->addHelpButton('optionrevoke', 'optionrevoke', 'consentform');
-
-        // Option to write grade value for an agreement.
-        $mform->addElement('advcheckbox', 'usegrade', get_string('usegrade', 'consentform'), null, null, array(0, 1));
-        $mform->setType('usegrade', PARAM_INT);
-        $mform->setDefault('usegrade', 0);
-        $mform->addHelpButton('usegrade', 'usegrade', 'consentform');
-
-        // Option to place confirmation in course overview.
-        $mform->addElement('advcheckbox', 'confirmincourseoverview',
-            get_string('confirmincourseoverview', 'consentform'), null, null, array(0, 1));
-        $mform->setType('confirmincourseoverview', PARAM_INT);
-        $mform->setDefault('confirmincourseoverview', $settings->confirmincourseoverview);
-        $mform->addHelpButton('confirmincourseoverview', 'confirmincourseoverview', 'consentform');
         if ($this->_instance) {
             $mform->disabledIf('confirmincourseoverview', 'sesskey', 'neq', '');
         }
-        // Option not to use course module list for configuration of dependencies.
-        $mform->addElement('advcheckbox', 'nocoursemoduleslist',
-            get_string('nocoursemoduleslist', 'consentform'), null, null, array(0, 1));
-        $mform->setType('nocoursemoduleslist', PARAM_INT);
-        $mform->setDefault('nocoursemoduleslist', $settings->nocoursemoduleslist);
-        $mform->addHelpButton('nocoursemoduleslist', 'nocoursemoduleslist', 'consentform');
 
         $this->standard_coursemodule_elements();
 
@@ -154,10 +129,10 @@ class mod_consentform_mod_form extends moodleform_mod {
      * Set completion to value 2
      * Activate show description option if confirmincourseoverview option is on
      */
-    public function get_data($slashed = true) {
+    public function get_data() {
         global $DB;
 
-        if ($data = parent::get_data($slashed)) {
+        if ($data = parent::get_data()) {
             if (isset($data->confirmationtext)) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
