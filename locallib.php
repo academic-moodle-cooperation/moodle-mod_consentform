@@ -729,11 +729,16 @@ function consentform_usegradechange_writegrades($cmid) {
  * @throws moodle_exception
  */
 function consentform_update_completionstate($cmid, $agreed) {
+    global $USER;
+
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
-    // Update completion state.
-    $completion = new completion_info($course);
-    $completion->update_state($cm, $agreed);
+    $cminfo = new completion_info($course);
+    $current = $cminfo->get_data($cm, false, $USER->id);
+    $current->completionstate = $agreed;
+    $current->timemodified    = time();
+    $cminfo->internal_set_data($cm, $current);
+
     return true;
 }
 

@@ -270,30 +270,6 @@ function consentform_set_user_grade($consentform, $userid, $agreed=true) {
 }
 
 /**
- * Obtains the automatic completion state for this consentform instance for this user
- *
- * @param object $cm Course-module
- * @param int $userid User ID
- * @return bool|mixed
- * @throws dml_exception
- */
-function consentform_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
-
-    if (isset($cm->id)) {
-        $cmid = $cm->id;
-    } else {
-        $cmid = $cm;
-    }
-    if ($state = $DB->get_field(
-        'consentform_state', 'state', array('consentformcmid' => $cmid, 'userid' => $userid))) {
-        return $state;
-    } else {
-        return false;
-    }
-}
-
-/**
  * Called by course/reset.php
  */
 function consentform_reset_course_form_definition(&$mform) {

@@ -63,7 +63,7 @@ class consentform_agreement_form extends \moodleform {
         $mform->addElement('html', $confirmationtexthtml);
 
         // Show state of confirmation of this user.
-        $state = consentform_get_completion_state(null, $data['cmid'], $data['userid'], null);
+        $state = $this->get_completion_state($data['cmid'], $data['userid']);
         $mform->addElement('html', $this->get_agreementlogentry($data['cmid'], $data['userid'], $state));
 
         // Display submit buttons.
@@ -122,5 +122,25 @@ class consentform_agreement_form extends \moodleform {
         }
 
         return "";
+    }
+
+    /**
+     * Obtains the automatic completion state for this consentform instance for this user
+     *
+     * @param object $cm Course-module
+     * @param int $userid User ID
+     * @return bool|mixed
+     * @throws dml_exception
+     */
+    private function get_completion_state($cm, $userid) {
+        global $DB;
+
+        if (isset($cm->id)) {
+            $cmid = $cm->id;
+        } else {
+            $cmid = $cm;
+        }
+        $state = $DB->get_field('consentform_state', 'state', array('consentformcmid' => $cmid, 'userid' => $userid));
+        return $state ?? false;
     }
 }

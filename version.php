@@ -28,8 +28,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_consentform';
-$plugin->version = 2021033101;
-$plugin->release = 'v3.10.1';
-$plugin->requires = 2020061502;
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->version = 2022011200;
+$plugin->release = 'v3.11.0';
+$plugin->requires = 2021051700;
+$plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;

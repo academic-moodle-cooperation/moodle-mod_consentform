@@ -1,4 +1,4 @@
-Consentform Module
+git Consentform Module
 ================
 
 This file is part of the mod_consentform plugin for Moodle - <http://moodle.org/>
@@ -31,7 +31,7 @@ If he/she agrees, the hidden elements of the course will be revealed.
 Requirements
 ------------
 
-The plugin is available for Moodle 3.9+. This version is for Moodle 3.9
+The plugin is available for Moodle 3.11+. This version is for Moodle 3.11
 
 The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1.
 Otherwise consentform will not work!
@@ -65,9 +65,7 @@ administrators in the consentform module:
 Documentation
 -------------
 
-You can find a documentation for the plugin on the [Github
-website](https://github.com/bluetom/consentform/) and a video tutorial in
-german only in the [YouTube Channel](https://www.youtube.com/c/ThomasNiedermaier).
+You can find a documentation for this AMC plugin on [Github](https://github.com/academic-moodle-cooperation/moodle-mod_consentform/).
 
 
 Bug Reports / Support
@@ -75,7 +73,7 @@ Bug Reports / Support
 
 We try our best to deliver bug-free plugins, but we can not test the plugin for every platform,
 database, PHP and Moodle version. If you find any bug please report it on
-[GitHub](https://github.com/bluetom/consentform/issues). Please
+[GitHub](https://github.com/academic-moodle-cooperation/moodle-mod_consentform/issues). Please
 provide a detailed bug description, including the plugin and Moodle version and, if applicable, a
 screenshot.
 
