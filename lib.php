@@ -101,6 +101,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $iframeparms["onload"] = "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
         $iframeparms["frameborder"] = "0";
         $iframeparms["style"] = "min-width:450px;";
+        $iframeparms["name"] = "consentformiframe$consentform->id";
         $html = html_writer::tag("iframe", null, $iframeparms);
         $consentformintro = $html;
         $DB->set_field("consentform", "intro", $consentformintro, array("id" => $consentform->id));

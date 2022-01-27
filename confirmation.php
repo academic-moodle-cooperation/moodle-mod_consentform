@@ -35,10 +35,6 @@ require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
 
-$PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($consentform->name));
-$PAGE->set_pagelayout('embedded');
-
 // Agreement form, participant's view.
 $mform = new \mod_consentform\consentform_agreement_form(null,
     array('id' => $id,
@@ -51,6 +47,9 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
     ));
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {
+    $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
+    $PAGE->set_title(format_string($consentform->name));
+    $PAGE->set_pagelayout('embedded');
     if (isset( $data->agreement) && $data->agreement == $consentform->textagreementbutton) {
         $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
         $message = get_string('msgagreed', 'consentform');
@@ -92,10 +91,22 @@ if ($data = $mform->get_data()) {
         // Reload parent after form processing.
         echo html_writer::script('parent.location.reload();');
     } else {
-        // Display agreement form to participant.
-        echo $OUTPUT->header();
-        echo $OUTPUT->box_start('', 'consentform_main_cointainer');
-        $mform->display();
-        echo $OUTPUT->box_end();
+        // Show inline form only if there is no user's action yet.
+        if (!$DB->record_exists(
+            'consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
+            // Display agreement form to participant.
+            $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
+            $PAGE->set_title(format_string($consentform->name));
+            $PAGE->set_pagelayout('embedded');
+            echo $OUTPUT->header();
+            echo $OUTPUT->box_start('', 'consentform_main_cointainer');
+            $mform->display();
+            echo $OUTPUT->box_end();
+        } else {
+            $jscode = "window.onload=function(){var myIframe;if (myIframe = window.parent.document.getElementsByName('";
+            $jscode .= "consentformiframe$consentform->id')[0]) {";
+            $jscode .= "myIframe.remove();}}";
+            echo html_writer::script($jscode);
+        }
     }
 }
