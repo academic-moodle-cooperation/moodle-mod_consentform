@@ -25,12 +25,15 @@
 
 require_once(__DIR__ . "../../../config.php");
 
-require_course_login($course);
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID.
+if ($id) {
+    $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+} else {
+    die('You must specify a course_module ID');
+}
 
-$id = required_param('id', PARAM_INT);// Course module ID.
-// Item number may be != 0 for activities that allow more than one grade per user.
-$itemnumber = optional_param('itemnumber', 0, PARAM_INT);
-$userid = optional_param('userid', 0, PARAM_INT); // Graded user ID (optional).
+require_course_login($course);
 
 // In the simplest case just redirect to the view page.
 redirect('view.php?id='.$id);
