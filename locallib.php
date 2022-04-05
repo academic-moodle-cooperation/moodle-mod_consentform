@@ -753,7 +753,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
 
     $sqlsortkey = consentform_get_sqlsortkey($sortkey);
     $sqlsortorder = $sortorder;
-    if ($sqlsortkey != "timestamp") {
+    if ($sqlsortkey != "timestamp" && $sqlsortkey != "state") {
         $orderby = $sqlsortkey . ' ' . $sqlsortorder;
     } else {
         $orderby = null;
@@ -765,7 +765,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby);
-        $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email ";
+        $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, -2 as state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
         $sqlwhere = "WHERE (c.consentformcmid = $cm->id) ";
         $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
@@ -803,6 +803,17 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
                 });
             }
         }
+        if ($sqlsortkey == "state") {
+            if ($sqlsortorder == "DESC") {
+                usort($listusers, function($a, $b) {
+                    return strcmp($b->state, $a->state);
+                });
+            } else {
+                usort($listusers, function($a, $b) {
+                    return strcmp($a->state, $b->state);
+                });
+            }
+        }
     } else { // Participants with action.
         $sqlenrolled = get_enrolled_sql($context, '', 0, true);
         $enrolled = $DB->get_records_sql($sqlenrolled[0], $sqlenrolled[1]);
@@ -837,6 +848,9 @@ function consentform_get_sqlsortkey($sortkey) {
         case "timestamp":
             $sqlsortkey = "timestamp";
             break;
+        case "state":
+            $sqlsortkey = "state";
+            break;
     }
     return $sqlsortkey;
 }
@@ -855,38 +869,31 @@ function consentform_get_sqlsortkey($sortkey) {
 function consentform_display_participants($listusers, $cmid, $sortkey, $sortorder, $tab) {
 
     $index = 0;
-    $urlinit  = '/mod/consentform/listusers.php?';
-    $urlinit .= 'id=' . $cmid;
-    $urlinit .= '&sesskey=' . sesskey();
-    $urlinit .= '&tab=' . $tab;
+
+    $table = new html_table();
+    $table->head = array(
+        "",
+        consentform_participantstable_headercolumn("lastname", get_string('lastname'),
+            $sortkey, $sortorder, $cmid, $tab),
+        consentform_participantstable_headercolumn("firstname", get_string('firstname'),
+            $sortkey, $sortorder, $cmid, $tab),
+        consentform_participantstable_headercolumn("email", get_string('email'),
+            $sortkey, $sortorder, $cmid, $tab),
+        consentform_participantstable_headercolumn("timestamp", get_string('timestamp', 'consentform'),
+            $sortkey, $sortorder, $cmid, $tab),
+        consentform_participantstable_headercolumn("state", get_string('status'),
+            $sortkey, $sortorder, $cmid, $tab)
+    );
+    $table->align = array(
+        'right',
+        'left',
+        'left',
+        'left',
+        'center',
+        'center',
+    );
 
     foreach ($listusers as $row) {
-
-        if ($index == 0) {
-
-            $table = new html_table();
-            $table->head = array(
-                "",
-                consentform_participantstable_headercolumn("lastname", get_string('lastname'),
-                    $urlinit, $sortkey, $sortorder),
-                consentform_participantstable_headercolumn("firstname", get_string('firstname'),
-                    $urlinit, $sortkey, $sortorder),
-                consentform_participantstable_headercolumn("email", get_string('email'),
-                    $urlinit, $sortkey, $sortorder),
-                consentform_participantstable_headercolumn("timestamp", get_string('timestamp', 'consentform'),
-                    $urlinit, $sortkey, $sortorder),
-                get_string('status'),
-            );
-            $table->align = array(
-                'right',
-                'left',
-                'left',
-                'left',
-                'center',
-                'center',
-            );
-
-        } // end if index=0
 
         $index++;
         switch ($row->state) {
@@ -899,6 +906,7 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
             case "-1":
                 $state = html_writer::span(get_string("refused", "consentform"), "refused");
                 break;
+            case "-2":
             default:
                 $state = html_writer::span(get_string("noaction", "consentform"));
                 break;
@@ -912,7 +920,7 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
             $state,
         );
 
-    }  // for each row
+    }  // For each user row.
 
     if ($index == 0) {
         $html = html_writer::tag('p', get_string('listempty', 'consentform'), array('class' => 'alert-warning'));
@@ -935,25 +943,27 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
  * @return string html of column cell
  * @throws coding_exception
  */
-function consentform_participantstable_headercolumn($column, $columntitle, $urlinit, $sortkey, $sortorder) {
+function consentform_participantstable_headercolumn($column, $columntitle, $sortkey, $sortorder, $cmid, $tab) {
     global $OUTPUT;
 
-    $url = $urlinit . "&sortkey=" . $column;
+    $urlinit  = '/mod/consentform/listusers.php?';
+    $icon = "";
 
     if ($column == $sortkey) {
         if ($sortorder == "DESC") {
             $icon = $OUTPUT->image_icon('t/sort_desc', get_string('sort'), 'moodle', array(
                 'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-            $url .= "&sortorder=ASC";
+            $url = new moodle_url($urlinit, array('sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
+                'tab' => $tab, 'sortorder' => 'ASC'));
         } else {
             $icon = $OUTPUT->image_icon('t/sort_asc', get_string('sort'), 'moodle', array(
                 'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-            $url .= "&sortorder=DESC";
+            $url = new moodle_url($urlinit, array('sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
+                'tab' => $tab, 'sortorder' => 'DESC'));
         }
     } else {
-        $icon = $OUTPUT->image_icon('t/sort_by', get_string('sort'), 'moodle', array(
-            'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-        $url .= "&sortorder=ASC";
+        $url = new moodle_url($urlinit, array('sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
+            'tab' => $tab, 'sortorder' => 'ASC'));
     }
 
     $linkstr = html_writer::link($url, $columntitle . $icon);

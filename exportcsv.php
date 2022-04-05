@@ -56,7 +56,7 @@ foreach ($listusers as $record) {
         case "-1":
             $status = get_string("refused", "consentform");
             break;
-        default:
+        case "-2":
             $status = get_string("noaction", "consentform");
             break;
     }
