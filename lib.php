@@ -66,9 +66,9 @@ function consentform_supports($feature) {
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_GROUPS:
-            return true;
+            return false;
         case FEATURE_GROUPINGS:
-            return true;
+            return false;
         default:
             return null;
     }
