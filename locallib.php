@@ -66,25 +66,23 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                 if (!$sectioninfo->uservisible) {
                     $usercanviewsection = false;
                 } else {
-                    if ($sectioni != 0) {
-                        $usercanviewsection = true;
-                        $row = new html_table_row();
-                        $sectionname = $sections[$sectioni]->name;
-                        $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
+                    $usercanviewsection = true;
+                    $row = new html_table_row();
+                    $sectionname = $sections[$sectioni]->name;
+                    $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
 
-                        $nourl = $PAGE->url . "#";
-                        $cell = new html_table_cell($sectionname . '&nbsp;&nbsp;' .
-                            \html_writer::link($nourl, get_string('all', 'moodle'),
-                                ['class' => "co_section_all section$sectioni"]).' / '.
-                            \html_writer::link($nourl, get_string('none', 'moodle'),
-                                ['class' => "co_section_none section$sectioni"]));
-                        $cell->attributes['class'] = "consentform_activitytable_checkboxcolumn$sectioni";
-                        $cell->colspan = "2";
+                    $nourl = $PAGE->url . "#";
+                    $cell = new html_table_cell($sectionname . '&nbsp;&nbsp;' .
+                        \html_writer::link($nourl, get_string('all', 'moodle'),
+                            ['class' => "co_section_all section$sectioni"]).' / '.
+                        \html_writer::link($nourl, get_string('none', 'moodle'),
+                            ['class' => "co_section_none section$sectioni"]));
+                    $cell->attributes['class'] = "consentform_activitytable_checkboxcolumn$sectioni";
+                    $cell->colspan = "2";
 
-                        $row->cells[] = $cell;
-                        $row->attributes['class'] = "consentform_activitytable_sectionrow";
-                        $rows[] = $row;
-                    }
+                    $row->cells[] = $cell;
+                    $row->attributes['class'] = "consentform_activitytable_sectionrow";
+                    $rows[] = $row;
                 }
                 $sectionibefore = $sectioni;
             }
