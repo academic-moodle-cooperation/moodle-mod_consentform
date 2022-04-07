@@ -106,8 +106,9 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $consentformintro = $html;
         $DB->set_field("consentform", "intro", $consentformintro, array("id" => $consentform->id));
     }
-
-    consentform_grade_item_update($consentform);
+    if ($consentform->usegrade) {
+        consentform_grade_item_update($consentform);
+    }
 
     return $consentform->id;
 }
@@ -131,7 +132,11 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
 
     $result = $DB->update_record('consentform', $consentform);
 
-    consentform_grade_item_update($consentform);
+    if ($consentform->usegrade) {
+        consentform_grade_item_update($consentform);
+    } else {
+        consentform_grade_item_delete($consentform);
+    }
 
     return $result;
 }
