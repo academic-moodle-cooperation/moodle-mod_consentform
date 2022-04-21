@@ -43,6 +43,10 @@ $coursecontext = context_course::instance($course->id);
 
 require_login($course, true, $cm);
 
+if (!has_capability('mod/consentform:submit', $context, null, false)) {
+    redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id)));
+}
+
 if ($deleteuseraction) {
     $thisurl = new moodle_url('/mod/consentform/listusers.php',
         array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
