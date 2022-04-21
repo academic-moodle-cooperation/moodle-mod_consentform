@@ -69,13 +69,6 @@ class mod_consentform_mod_form extends moodleform_mod {
         if (!$this->_instance) {
             $mform->addElement('hidden', 'showdescription', '1');
             $mform->setType('showdescription', PARAM_INT);
-        } else {
-            if (!(isset($this->current->confirmincourseoverview) && $this->current->confirmincourseoverview == 1)) {
-                $mform->addElement('advcheckbox', 'showdescription', null,
-                    get_string('showdescription', 'moodle'), null, array(0, 1));
-                $mform->setType('showdescription', PARAM_INT);
-                $mform->addHelpButton('showdescription', 'showdescription', 'moodle');
-            }
         }
 
         // Adding the "texts" fieldset, where all the text fields are configured.
