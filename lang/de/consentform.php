@@ -95,6 +95,7 @@ $string['revocation'] = 'Widerrufen';
 $string['revoke'] = 'Ich ziehe meine Zustimmung zurück';
 $string['revoked'] = 'Zustimmung zurückgezogen';
 $string['revokelogentry'] = 'Sie haben am {$a} Ihre Zustimmung zurückgezogen.';
+$string['state'] = 'Status';
 $string['textagreementbutton'] = 'Beschriftung Zustimmung-Button';
 $string['textagreementbuttondesc'] = 'Standardwert für die Schaltfläche, mit der die Zustimmung gesendet wird.';
 $string['textfields'] = 'Textfelder';

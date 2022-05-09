@@ -63,8 +63,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'consentform_state',
             [
                 'userid' => 'privacy:metadata:userid',
-                'state' => 'privacy:metadata:state',
-
+                'state' => 'privacy:metadata:state'
             ],
             'privacy:metadata:consentform_state'
         );
@@ -78,6 +77,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      * @param   userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
     public static function get_users_in_context(userlist $userlist) {
+
         $context = $userlist->get_context();
 
         if ($context->contextlevel != CONTEXT_MODULE) {
@@ -85,18 +85,15 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         }
 
         $params = [
-            'modulename' => 'consentform',
             'contextid' => $context->id,
             'contextlevel' => CONTEXT_MODULE
         ];
 
         $sql = "SELECT cs.userid
                   FROM {context} ctx
-                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
-                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                  JOIN {consentform_state} cs ON cm.id = cs.consentformcmid
+                  JOIN {consentform_state} cs ON ctx.instanceid = cs.consentformcmid
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
-        // Get all users who have participated in this consentform instance.
+        // Get all users who have taken consentform action in this context.
         $userlist->add_from_sql('userid', $sql, $params);
     }
 
@@ -109,19 +106,14 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     public static function get_contexts_for_userid(int $userid): contextlist {
 
         $params = [
-            'modulename' => 'consentform',
             'contextlevel' => CONTEXT_MODULE,
             'userid' => $userid
         ];
 
         $sql = "SELECT ctx.id
-                 FROM {course_modules} cm
-                 JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
-                 JOIN {consentform_state} cs ON cm.id = cs.consentformcmid
-                 JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
-                WHERE (
-                      cs.userid = :userid
-                      )";
+                 FROM {context} ctx 
+                 JOIN {consentform_state} cs ON cs.consentformcmid = ctx.instanceid
+                WHERE ctx.contextlevel = :contextlevel AND cs.userid = :userid";
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
 
@@ -139,26 +131,38 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
+        // The moodle contextlist is not usable here. So we do it by ourselves.
+        $user = $contextlist->get_user();
+        $contextlist = self::get_contexts_for_userid($user->id);
+
         $contexts = $contextlist->get_contexts();
 
         if (empty($contexts)) {
             return;
         }
 
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        $contextids = $contextlist->get_contextids();
 
-        $sql = "SELECT c.id AS contextid, cf.id AS consentformid, cm.id AS cmid
-                  FROM {context} c
-                  JOIN {course_modules} cm ON cm.id = c.instanceid
-                  JOIN {consentform} cf ON cf.id = cm.instance
-                 WHERE c.id {$contextsql}";
+        if (empty($contextids) || $contextids === []) {
+            return;
+        }
 
-        $consentforms = $DB->get_records_sql($sql, $contextparams);
+        list($ctxsql, $ctxparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
 
-        $user = $contextlist->get_user();
+        // Get all consentform instances of context.
+        $sql = "SELECT DISTINCT(ctx.instanceid) AS cmid
+                    FROM {context} ctx
+                    WHERE ctx.id " . $ctxsql;
+        if (!$consentformids = $DB->get_fieldset_sql($sql, $ctxparams)) {
+            return;
+        }
 
-        foreach ($consentforms as $consentform) {
-            $context = \context_module::instance($consentform->cmid);
+        if (empty($consentformids)) {
+            return;
+        }
+
+        foreach ($consentformids as $consentformid) {
+            $context = \context_module::instance($consentformid);
 
             // Check that the context is a module context.
             if ($context->contextlevel != CONTEXT_MODULE) {
@@ -169,7 +173,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
 
             writer::with_context($context)->export_data([], $consentformdata);
 
-            static::export_states($context, $consentform, $user);
+            static::export_states($context, $consentformid, $user);
 
         }
     }
@@ -183,37 +187,40 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      * @param  array $path Current directory path that we are exporting to.
      * @throws \dml_exception
      */
-    protected static function export_states(\context $context, $consentform, \stdClass $user) {
+    protected static function export_states(\context $context, $consentformid, \stdClass $user) {
         global $DB;
 
-        // Fetch all states of participants who have participated in this consentform instance.
+        // Fetch all state records of this user in this consentform instance.
         $params = [
-            'userid' => $user->id,
-            'consentform' => $consentform->consentformid
+            'agreed' => get_string('agreed', 'consentform'),
+            'revoked' => get_string('revoked', 'consentform'),
+            'refused' => get_string('refused', 'consentform'),
+            'action' => get_string('action', 'moodle'),
+            'consentform' => $consentformid,
+            'userid' => $user->id
         ];
 
-        $sql = "
-                  SELECT cs.id, cs.userid, cs.timestamp, CASE cs.state WHEN 1 THEN :agreed WHEN 0 THEN :revoked WHEN -1 THEN :refused END as :state
-                  FROM {consentform_states} cs
-                  WHERE
-                      cs.id = :consentform
-                      AND (
-                      cs.userid = :userid
-                      )
-
-              ";
+        $sql = "SELECT cs.id, cs.timestamp, 
+                CASE cs.state WHEN 1 THEN :agreed WHEN 0 THEN :revoked WHEN -1 THEN :refused END as state
+                FROM {consentform_state} cs
+                WHERE cs.consentformcmid = :consentform AND cs.userid = :userid";
 
         $rs = $DB->get_recordset_sql($sql, $params);
 
         foreach ($rs as $id => $cur) {
-            writer::with_context($context)->export_data(['user state ' . $id], $cur);
+            $out = new \stdClass();
+            $timestamp = get_string('timestamp', 'consentform');
+            $out->{$timestamp} = userdate($cur->timestamp);
+            $state = get_string('state', 'consentform');
+            $out->{$state} = $cur->state;
+            writer::with_context($context)->export_data([get_string('action', 'moodle') . ' ID ' . $id], $out);
         }
 
         $rs->close();
     }
 
     /**
-     * Delete all use data which matches the specified context.
+     * Delete all user data which matches the specified context.
      *
      * @param \context $context The module context.
      * @throws \dml_exception
@@ -222,22 +229,18 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         global $DB;
 
         if ($context->contextlevel == CONTEXT_MODULE) {
-            // Apparently we can't trust anything that comes via the context.
-            $sql = "SELECT cs.consentformcmid
-                    FROM {consentform} cf
-                    JOIN {course_modules} cm ON cf.id = cm.instance AND cf.course = cm.course
-                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                    JOIN {consentform_state} cs ON cs.consentformcmid = cm.id
-                    JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
-                    WHERE ctx.id = :contextid";
-            $params = ['modulename' => 'consentform', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
+            // Get the consentform module with user action in this context.
+            $sql = "SELECT cs.consentformcmid as id
+                    FROM {consentform_state} cs
+                    JOIN {context} ctx ON ctx.instanceid = cs.consentformcmid 
+                    WHERE ctx.id = :contextid AND ctx.contextlevel = :contextmodule";
+            $params = ['contextid' => $context->id, 'contextmodule' => CONTEXT_MODULE ];
             $id = $DB->get_field_sql($sql, $params);
             // If we have a count over zero then we can proceed.
             if ($id > 0) {
                 // Get all the state records of this consentform instance.
                 $stateids = $DB->get_fieldset_select('consentform_state', 'id', 'consentformcmid = :consentformcmid', ['consentformcmid' => $id]);
-
-                // Delete all state records of this instance.
+                // Delete all state records of this consentform instance.
                 $DB->delete_records_list('consentform_state', 'id', $stateids);
             }
         }
@@ -253,7 +256,9 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
 
+        // The moodle contextlist is not usable here. So we do it by ourselves.
         $user = $contextlist->get_user();
+        $contextlist = self::get_contexts_for_userid($user->id);
 
         $contextids = $contextlist->get_contextids();
 
@@ -263,27 +268,14 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
 
         list($ctxsql, $ctxparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
 
-        // Apparently we can't trust anything that comes via the context.
-        $sql = "SELECT ctx.id AS ctxid, cm.cmid
-                    FROM {consentform} cf
-                    JOIN {course_modules} cm ON cf.id = cm.instance AND cf.course = cm.course
-                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                    JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
+        // Get all consentform instances of context.
+        $sql = "SELECT DISTINCT(ctx.instanceid) AS cmid
+                    FROM {context} ctx
                     WHERE ctx.id " . $ctxsql;
-        $params = ['modulename' => 'consentform', 'contextmodule' => CONTEXT_MODULE];
-        if (!$records = $DB->get_records_sql($sql, $params + $ctxparams)) {
+        if (!$consentformids = $DB->get_fieldset_sql($sql, $ctxparams)) {
             return;
         }
 
-        // Get all consentform instances of context.
-        $consentformids = [];
-        foreach ($contextlist as $context) {
-            if ($context->contextlevel != CONTEXT_MODULE) {
-                continue;
-            }
-
-            $consentformids[] = $records[$context->id]->cmid;
-        }
         if (empty($consentformids)) {
             return;
         }
@@ -295,9 +287,8 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         }
         // Delete all state records of this user.
         list($csidssql, $csidsparams) = $DB->get_in_or_equal($csids, SQL_PARAMS_NAMED);
-        $DB->delete_records_select('consentform_state',
-            "(userid = :userid) AND csid " . $csidssql,
-            $csidsparams + ['userid' => $user->id]);
+        $DB->delete_records_select('consentform_state', "(userid = :userid) AND id " . $csidssql,
+            ['userid' => $user->id] + $csidsparams);
 
     }
 
@@ -312,25 +303,22 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         $context = $userlist->get_context();
 
         if ($context->contextlevel == CONTEXT_MODULE) {
-            // Apparently we can't trust anything that comes via the context.
-            $sql = "SELECT cf.id as id, cm.id as consentformcmid
-                    FROM {consentform} cf
-                    JOIN {course_modules} cm ON cf.id = cm.instance AND cf.course = cm.course
-                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                    JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
+            // Get the consentform module id of this context.
+            $sql = "SELECT ctx.instanceid as id
+                    FROM {consentform_state} cs
+                    JOIN {context} ctx ON ctx.instanceid = cs.consentformcmid 
                     WHERE ctx.id = :contextid";
-            $params = ['modulename' => 'consentform', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
+            $params = ['contextid' => $context->id];
             $consentform = $DB->get_record_sql($sql, $params);
             // If we have an id over zero then we can proceed.
-            if (!empty($consentform) && $consentform->id > 0) {
+            if (!empty($consentform)) {
                 $userids = $userlist->get_userids();
                 if (count($userids) <= 0) {
                     return;
                 }
                 // Get state records of this consentform instance.
-                $csids = $DB->get_fieldset_select('consentform_state', 'id', 'consentformcmid = ?', [$consentform->consentformcmid]);
+                $csids = $DB->get_fieldset_select('consentform_state', 'id', 'consentformcmid = ?', [$consentform->id]);
                 list($csidssql, $csidsparams) = $DB->get_in_or_equal($csids, SQL_PARAMS_NAMED);
-
                 list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
                 // Delete all record states of these users in these slots.
                 $DB->delete_records_select('consentform_state', "id " . $csidssql . " AND userid " . $usersql,

@@ -95,6 +95,7 @@ $string['revocation'] = 'Revoke';
 $string['revoke'] = 'I revoke';
 $string['revoked'] = 'revoked';
 $string['revokelogentry'] = 'You have revoked your agreement at {$a}.';
+$string['state'] = 'State';
 $string['textagreementbutton'] = 'Label Agreement Button';
 $string['textagreementbuttondesc'] = 'Default value for the label of the agreement button.';
 $string['textfields'] = 'Text fields';
