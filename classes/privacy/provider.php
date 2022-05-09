@@ -111,7 +111,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         ];
 
         $sql = "SELECT ctx.id
-                 FROM {context} ctx 
+                 FROM {context} ctx
                  JOIN {consentform_state} cs ON cs.consentformcmid = ctx.instanceid
                 WHERE ctx.contextlevel = :contextlevel AND cs.userid = :userid";
         $contextlist = new contextlist();
@@ -200,7 +200,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'userid' => $user->id
         ];
 
-        $sql = "SELECT cs.id, cs.timestamp, 
+        $sql = "SELECT cs.id, cs.timestamp,
                 CASE cs.state WHEN 1 THEN :agreed WHEN 0 THEN :revoked WHEN -1 THEN :refused END as state
                 FROM {consentform_state} cs
                 WHERE cs.consentformcmid = :consentform AND cs.userid = :userid";
@@ -232,14 +232,15 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             // Get the consentform module with user action in this context.
             $sql = "SELECT cs.consentformcmid as id
                     FROM {consentform_state} cs
-                    JOIN {context} ctx ON ctx.instanceid = cs.consentformcmid 
+                    JOIN {context} ctx ON ctx.instanceid = cs.consentformcmid
                     WHERE ctx.id = :contextid AND ctx.contextlevel = :contextmodule";
             $params = ['contextid' => $context->id, 'contextmodule' => CONTEXT_MODULE ];
             $id = $DB->get_field_sql($sql, $params);
             // If we have a count over zero then we can proceed.
             if ($id > 0) {
                 // Get all the state records of this consentform instance.
-                $stateids = $DB->get_fieldset_select('consentform_state', 'id', 'consentformcmid = :consentformcmid', ['consentformcmid' => $id]);
+                $stateids = $DB->get_fieldset_select('consentform_state', 'id',
+                    'consentformcmid = :consentformcmid', ['consentformcmid' => $id]);
                 // Delete all state records of this consentform instance.
                 $DB->delete_records_list('consentform_state', 'id', $stateids);
             }
@@ -306,7 +307,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             // Get the consentform module id of this context.
             $sql = "SELECT ctx.instanceid as id
                     FROM {consentform_state} cs
-                    JOIN {context} ctx ON ctx.instanceid = cs.consentformcmid 
+                    JOIN {context} ctx ON ctx.instanceid = cs.consentformcmid
                     WHERE ctx.id = :contextid";
             $params = ['contextid' => $context->id];
             $consentform = $DB->get_record_sql($sql, $params);
