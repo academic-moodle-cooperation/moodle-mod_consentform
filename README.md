@@ -1,11 +1,11 @@
-git Consentform Module
+The Consentform Module
 ================
 
 This file is part of the mod_consentform plugin for Moodle - <http://moodle.org/>
 
 *Author:*   Thomas Niedermaier
 
-*Copyright:* 2020 [Medizinische Universität Wien](https://meduniwien.ac.at)
+*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
@@ -65,7 +65,7 @@ administrators in the consentform module:
 Documentation
 -------------
 
-You can find a documentation for this AMC plugin on [Github](https://github.com/academic-moodle-cooperation/moodle-mod_consentform/).
+You can find a cheat sheet for the plugin on the AMC website in german only: https://www.academic-moodle-cooperation.org/fileadmin/user_upload/p_aec/Cheat_Sheets/Einverstaendniserklaerung_einholen-DE.pdf.
 
 
 Bug Reports / Support
