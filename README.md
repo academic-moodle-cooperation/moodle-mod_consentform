@@ -1,4 +1,4 @@
-The Consentform Module
+Consentform Module
 ================
 
 This file is part of the mod_consentform plugin for Moodle - <http://moodle.org/>
