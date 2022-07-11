@@ -46,7 +46,7 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
 
         // Define the root element describing the consentform instance.
         $consentform = new backup_nested_element('consentform', array('id'), array(
-            'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'confirmationtext', 'optionrevoke',
+            'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'grade', 'confirmationtext', 'optionrevoke',
             'optionrefuse', 'textagreementbutton', 'textrefusalbutton', 'textrevocationbutton', 'usegrade',
             'confirmincourseoverview'));
 

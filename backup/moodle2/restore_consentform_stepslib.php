@@ -35,6 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class restore_consentform_activity_structure_step extends restore_activity_structure_step {
 
+    protected $newcfid; // ID of new consentform instance.
+
     /**
      * Defines structure of path elements to be processed during the restore
      *
@@ -44,6 +46,12 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $paths = array();
         $paths[] = new restore_path_element('consentform', '/activity/consentform');
+
+        $userinfo = $this->get_setting_value('userinfo');
+        if ($userinfo) {
+            $paths[] = new restore_path_element('consentformstate',
+                '/activity/consentform/consentformstates/consentformstate');
+        }
 
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
@@ -70,14 +78,37 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
             $data->timemodified = time();
         }
 
-        if ($data->grade < 0) {
+        if (isset($data->grade) && $data->grade < 0) {
             // Scale found, get mapping.
             $data->grade = -($this->get_mappingid('scale', abs($data->grade)));
         }
 
         // Create the consentform instance.
         $newitemid = $DB->insert_record('consentform', $data);
+        $this->newcfid = $newitemid;
         $this->apply_activity_instance($newitemid);
+    }
+
+    /**
+     * Process the given restore path element data
+     *
+     * @param array $data parsed element data
+     * @throws base_step_exception
+     * @throws dml_exception
+     */
+    protected function process_consentformstate($data) {
+        global $DB;
+
+        $data = (object) $data;
+        $oldid = $data->id;
+
+        $moduleid = $DB->get_field('course_modules', 'module', array('id' => $data->consentformcmid));
+        $newcmid = $DB->get_field('course_modules', 'id',
+            array('module' => $moduleid, 'instance' => $this->newcfid));
+        $data->consentformcmid = $newcmid;
+
+        $newitemid = $DB->insert_record('consentform_state', $data);
+        $this->set_mapping('consentformstate', $oldid, $newitemid);
     }
 
     /**
