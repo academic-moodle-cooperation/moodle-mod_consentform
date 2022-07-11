@@ -104,7 +104,7 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $moduleid = $DB->get_field('course_modules', 'module', array('id' => $data->consentformcmid));
         $newcmid = $DB->get_field('course_modules', 'id',
-            array('module'=> $moduleid, 'instance' => $this->newcfid));
+            array('module' => $moduleid, 'instance' => $this->newcfid));
         $data->consentformcmid = $newcmid;
 
         $newitemid = $DB->insert_record('consentform_state', $data);
