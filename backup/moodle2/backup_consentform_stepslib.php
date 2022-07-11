@@ -46,19 +46,28 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
 
         // Define the root element describing the consentform instance.
         $consentform = new backup_nested_element('consentform', array('id'), array(
-            'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'confirmationtext', 'optionrevoke',
+            'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'grade', 'confirmationtext', 'optionrevoke',
             'optionrefuse', 'textagreementbutton', 'textrefusalbutton', 'textrevocationbutton', 'usegrade',
             'confirmincourseoverview'));
 
-        // If we had more elements, we would build the tree here.
-
-        // Define data sources.
+        // Define data source.
         $consentform->set_source_table('consentform', array('id' => backup::VAR_ACTIVITYID));
 
-        // If we were referring to other tables, we would annotate the relation
-        // with the element's annotate_ids() method.
+        $userinfo = $this->get_setting_value('userinfo');
+        // If userinfo is requested backup consentformstate as well.
+        if ($userinfo) {
+            $consentformstates = new backup_nested_element('consentformstates');
+            $consentformstate = new backup_nested_element(
+                'consentformstate', array('id'), array('consentformcmid', 'userid', 'state', 'timestamp')
+            );
+            // Build the tree.
+            $consentform->add_child($consentformstates);
+            $consentformstates->add_child($consentformstate);
+            $consentformstate->set_source_table('consentform_state', array('consentformcmid' => backup::VAR_MODID));
+            $consentformstate->annotate_ids('user', 'userid');
+        }
 
-        // Define file annotations (we do not use itemid in this example).
+        // Define file annotations.
         $consentform->annotate_files('mod_consentform', 'intro', null);
 
         // Return the root element (consentform), wrapped into standard activity structure.
