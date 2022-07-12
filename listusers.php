@@ -54,7 +54,7 @@ if ($deleteuseraction) {
     if ($DB->delete_records('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
         redirect($thisurl, get_string("deletetestmessage", "consentform"), 0, 'notify');
     } else {
-        redirect($thisurl, get_string("deletetesterrormessage", "consentform"), 0,'error');
+        redirect($thisurl, get_string("deletetesterrormessage", "consentform"), 0, 'error');
     }
 }
 
