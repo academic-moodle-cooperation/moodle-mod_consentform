@@ -41,19 +41,20 @@ $tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 $context = context_module::instance($cm->id);
 $coursecontext = context_course::instance($course->id);
 
-require_login($course, true, $cm);
+require_login($course, false, $cm);
 
 if (!has_capability('mod/consentform:submit', $context, null, false)) {
-    redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id)));
+    redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id, 'sesskey' => sesskey())));
 }
 
 if ($deleteuseraction) {
+    require_sesskey();
     $thisurl = new moodle_url('/mod/consentform/listusers.php',
-        array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
+        array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder, 'sesskey' => sesskey()));
     if ($DB->delete_records('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
-        redirect($thisurl, get_string("deletetestmessage", "consentform"), 'notify');
+        redirect($thisurl, get_string("deletetestmessage", "consentform"), 0, 'notify');
     } else {
-        redirect($thisurl, get_string("deletetesterrormessage", "consentform"), 'error');
+        redirect($thisurl, get_string("deletetesterrormessage", "consentform"), 0,'error');
     }
 }
 
@@ -188,7 +189,7 @@ if ($download) {
 }
 
 if (array_key_exists($USER->id, $userswithaction)) {
-    $deletelink = new moodle_url($PAGE->url, array("delete" => "1"));
+    $deletelink = new moodle_url($PAGE->url, array("delete" => "1", 'sesskey' => sesskey()));
     echo $OUTPUT->box_start();
     echo $OUTPUT->single_button($deletelink, get_string("deletetestaction", "consentform"));
     echo $OUTPUT->box_end();

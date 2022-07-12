@@ -59,7 +59,8 @@ class consentform_agreement_form extends \moodleform {
         $mform->setType('sesskey', PARAM_ALPHANUM);
 
         // Display confirmation text.
-        $confirmationtexthtml = '<div class="' . $data['confirmationtextclass'] . '">' . $data['text'] . '</div>';
+        $confirmationtexthtml = '<div class="' . $data['confirmationtextclass'] . '">' .
+            $data['consentform']->confirmationtext . '</div>';
         $mform->addElement('html', $confirmationtexthtml);
 
         // Show state of confirmation of this user.
