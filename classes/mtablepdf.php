@@ -55,7 +55,7 @@ class mtablepdf extends \pdf {
         parent::__construct();
 
         // Set default configuration.
-        $this->SetCreator('MedUni Wien');
+        $this->SetCreator('Moodle');
         $this->SetMargins(10, 20, 10, true);
         $this->setHeaderMargin(7);
         $this->SetFont('freesans', '');

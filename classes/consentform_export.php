@@ -55,7 +55,7 @@ class consentform_export {
 
         // Set document information.
         $export->SetCreator('MOODLE');
-        $export->SetAuthor($USER->firstname . " " . $USER->lastname);
+        $export->SetAuthor(fullname($USER));
         $export->set_outputformat(4);
 
         $titles = array(
