@@ -765,10 +765,11 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
             'u.id, u.lastname, u.firstname, u.email', $orderby);
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, -2 as state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
-        $sqlwhere = "WHERE (c.consentformcmid = $cm->id) ";
-        $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
+        $sqlwhere = "WHERE (c.consentformcmid = :cmid) ";
+        $sqlorderby = "ORDER BY :sqlsortkey :sqlsortorder";
         $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
-        $withaction = $DB->get_records_sql($query);
+        $params = array('cmid' => $cm->id, 'sqlsortkey' => $sqlsortkey, 'sqlsortorder' => $sqlsortorder);
+        $withaction = $DB->get_records_sql($query, $params);
         $listusers = array_diff_key($enrolledview, $enrolledsubmit, $withaction);
         foreach ($listusers as &$row) {
             $row->timestamp = CONSENTFORM_NOTIMESTAMP;
@@ -817,10 +818,11 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $enrolled = $DB->get_records_sql($sqlenrolled[0], $sqlenrolled[1]);
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, c.timestamp, c.state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
-        $sqlwhere = "WHERE (c.consentformcmid = $cm->id AND c.state = $tab) ";
-        $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
+        $sqlwhere = "WHERE (c.consentformcmid = :cmid AND c.state = :tab) ";
+        $sqlorderby = "ORDER BY :sqlsortkey :sqlsortorder";
         $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
-        $listusers = $DB->get_records_sql($query);
+        $params = array('cmid' => $cm->id, 'tab' => $tab, 'sqlsortkey' => $sqlsortkey, 'sqlsortorder' => $sqlsortorder);
+        $listusers = $DB->get_records_sql($query, $params);
         $listusers = array_intersect_key($listusers, $enrolled);
     }
     return $listusers;

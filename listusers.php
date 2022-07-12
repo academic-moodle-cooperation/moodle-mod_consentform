@@ -85,10 +85,9 @@ $enrolled = array_diff_key($enrolledview, $enrolledsubmit);
 // Get all users with action.
 $sqlselect = "SELECT u.id ";
 $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
-$sqlwhere  = "WHERE (c.consentformcmid = $cm->id) ";
-$sqlwhere2 = "";
-$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$userswithaction = $DB->get_records_sql($query);
+$sqlwhere  = "WHERE (c.consentformcmid = :cmid) ";
+$query = "$sqlselect $sqlfrom $sqlwhere";
+$userswithaction = $DB->get_records_sql($query, array('cmid' => $cm->id));
 
 // Get sum users without action.
 $usersnoactions = array_diff_key($enrolled, $userswithaction);
@@ -100,21 +99,21 @@ $sumall = count($enrolled);
 // Get sum agreed.
 $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_AGREED;
 $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$usersagreed = $DB->get_records_sql($query);
+$usersagreed = $DB->get_records_sql($query, array('cmid' => $cm->id));
 $usersagreed = array_intersect_key($enrolled, $usersagreed);
 $sumagreed = count($usersagreed);
 
 // Get sum refused.
 $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REFUSED;
 $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$usersrefused = $DB->get_records_sql($query);
+$usersrefused = $DB->get_records_sql($query, array('cmid' => $cm->id));
 $usersrefused = array_intersect_key($enrolled, $usersrefused);
 $sumrefused = count($usersrefused);
 
 // Get sum revoked.
 $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REVOKED;
 $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$usersrevoked = $DB->get_records_sql($query);
+$usersrevoked = $DB->get_records_sql($query, array('cmid' => $cm->id));
 $usersrevoked = array_intersect_key($enrolled, $usersrevoked);
 $sumrevoked = count($usersrevoked);
 

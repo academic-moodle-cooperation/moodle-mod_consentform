@@ -115,7 +115,6 @@ if ($nogostring) {
         // Agreement form, participant's view.
         $mform = new \mod_consentform\consentform_agreement_form(null,
             array('id' => $id,
-                'text' => $consentform->confirmationtext,
                 'cmid' => $cm->id,
                 'courseid' => $course->id,
                 'consentform' => $consentform,
