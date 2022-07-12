@@ -36,7 +36,7 @@
     margin-bottom: 0.5em;
 }
 
-#mform1 .col-md-3 {
+.path-mod-consentform #mform1 .col-md-3 {
     width: 10%;
 }
 
@@ -78,15 +78,15 @@
     padding: 3px;
 }
 
-.agreed {
+.path-mod-consentform .agreed {
     color: green;
 }
 
-.revoked {
+.path-mod-consentform .revoked {
     color: red;
 }
 
-.refused {
+.path-mod-consentform .refused {
     color: red;
 }
 
