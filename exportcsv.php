@@ -47,13 +47,13 @@ $listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm
 $csvrows = array();
 foreach ($listusers as $record) {
     switch ($record->state) {
-        case "1":
+        case CONSENTFORM_STATUS_AGREED:
             $status = get_string("agreed", "consentform");
             break;
-        case "0":
+        case CONSENTFORM_STATUS_REVOKED:
             $status = get_string("revoked", "consentform");
             break;
-        case "-1":
+        case CONSENTFORM_STATUS_REFUSED:
             $status = get_string("refused", "consentform");
             break;
         default:
@@ -70,8 +70,25 @@ foreach ($listusers as $record) {
     $csvrows[] = $csvrow;
 } // End loop records.
 
+switch ($tab){
+    case CONSENTFORM_STATUS_AGREED:
+        $statusname = get_string("agreed", "consentform");
+        break;
+    case CONSENTFORM_STATUS_REVOKED:
+        $statusname = get_string("revoked", "consentform");
+        break;
+    case CONSENTFORM_STATUS_REFUSED:
+        $statusname = get_string("refused", "consentform");
+        break;
+    case CONSENTFORM_STATUS_NOACTION:
+        $statusname = get_string("noaction", "consentform");
+        break;
+    default:
+        $statusname = get_string("titleall", "consentform");
+}
+
 $export = new \mod_consentform\consentform_export();
 $exportformat = 'csv';
-$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $tab . '_' . userdate(time(),
+$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $statusname . '_' . userdate(time(),
         '%d-%m-%Y', 99, false));
 $export->print_file();
