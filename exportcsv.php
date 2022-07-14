@@ -56,9 +56,8 @@ foreach ($listusers as $record) {
         case "-1":
             $status = get_string("refused", "consentform");
             break;
-        case "-2":
+        default:
             $status = get_string("noaction", "consentform");
-            break;
     }
     $csvrow = array(
         get_string('lastname') => $record->lastname,
