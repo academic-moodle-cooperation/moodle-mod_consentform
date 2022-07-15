@@ -24,7 +24,7 @@
  */
 
 namespace mod_consentform\event;
-defined('MOODLE_INTERNAL') || die();
+
 /**
  * The agreement_revoke event class.
  **/

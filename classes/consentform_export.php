@@ -23,9 +23,6 @@
 
 namespace mod_consentform;
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * @package    mod_consentform
  * @copyright  2021 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>

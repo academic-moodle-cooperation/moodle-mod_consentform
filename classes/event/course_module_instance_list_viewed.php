@@ -24,8 +24,6 @@
 
 namespace mod_consentform\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The mod_consentform instance list viewed event class.
  *

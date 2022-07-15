@@ -29,8 +29,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 define('EXPECTEDCOMPLETIONVALUE', 1);
 define('GRADEVALUETOWRITE', 1);
 define('CONSENTFORM_STATUS_AGREED', 1);
