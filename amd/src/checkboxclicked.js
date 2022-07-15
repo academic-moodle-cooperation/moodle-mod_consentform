@@ -27,9 +27,9 @@
  */
 define(['jquery', 'core/config'], function($, config) {
         /**
-          * @constructor
-          * @alias module:mod_consentform/checkboxclicked
-          */
+         *  @constructor
+         *  @alias module:mod_consentform/checkboxclicked
+         */
          var Checkboxclicked = function() {
             this.cmid = "";
          };
@@ -54,7 +54,7 @@ define(['jquery', 'core/config'], function($, config) {
                  }
              }
 
-            /**
+           /**
             * Make ajax call to setcontrol.php page to store if the activity shall be controlled by
             * this consentform instance.
             *
@@ -77,7 +77,7 @@ define(['jquery', 'core/config'], function($, config) {
                     });
             }
 
-            /**
+           /**
             * Calls ajax-call function if checkbox is clicked
             */
             function checkboxclicked() {

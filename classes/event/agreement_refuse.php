@@ -28,8 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The agreement_refuse event class.
  **/
-class agreement_refuse extends \core\event\base
-{
+class agreement_refuse extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
