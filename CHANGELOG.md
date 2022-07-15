@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-3.11.1 (2022-07-14)
+3.11.1 (2022-07-15)
 -------------------
 
 * [FIXED] #7263 Add consenform_states to backup
