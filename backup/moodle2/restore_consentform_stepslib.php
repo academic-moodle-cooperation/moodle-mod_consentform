@@ -33,12 +33,13 @@
  */
 class restore_consentform_activity_structure_step extends restore_activity_structure_step {
 
-    protected $newcfid; // ID of new consentform instance.
+    /** @var int ID of new consentform instance. */
+    protected $newcfid;
 
     /**
      * Defines structure of path elements to be processed during the restore
      *
-     * @return array of {@link restore_path_element}
+     * @return object
      */
     protected function define_structure() {
 
