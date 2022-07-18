@@ -33,8 +33,8 @@ require_once($CFG->libdir . '/completionlib.php');
 /**
  * Generate rows of coursemodules list table
  *
- * @param $course dataset of course
- * @param $cmidcontroller course module id of this consentform instance
+ * @param object $course dataset of course
+ * @param int $cmidcontroller course module id of this consentform instance
  * @return array|void array of table rows
  *
  * @throws coding_exception
@@ -130,8 +130,9 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
 }
 
 /**
- * @return string html string of warning icon, if a not regular user entry for consentform was found in
- * course module's availability
+ * Returns string of warning icon, if a not regular user entry for consentform was found in course module's availability
+ *
+ * @return string html
  * @throws coding_exception
  */
 function consentform_geticon_userentry() {
@@ -147,8 +148,9 @@ function consentform_geticon_userentry() {
 }
 
 /**
- * @return string html string of warning icon, if a negative consentform-like entry was found in
- * course module's availability
+ * Returns string of warning icon, if a negative consentform-like entry was found in course module's availability
+ *
+ * @return string html
  * @throws coding_exception
  */
 function consentform_geticon_userentry_negative() {

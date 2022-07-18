@@ -194,10 +194,10 @@ function consentform_delete_instance($id) {
 /**
  * Creates or updates grade item for the given consentform instance
  *
- * Needed by {@link grade_update_mod_grades()}.
+ * Needed by grade_update_mod_grades().
  *
  * @param stdClass $consentform instance object with extra cmidnumber and modname property
- * @param bool $reset reset grades in the gradebook
+ * @param grade_item $grades reset grades in the gradebook
  * @return void
  */
 function consentform_grade_item_update(stdClass $consentform, $grades=null) {
@@ -236,10 +236,11 @@ function consentform_grade_item_delete($consentform) {
 /**
  * Update consentform grades in the gradebook
  *
- * Needed by {@link grade_update_mod_grades()}.
+ * Needed by grade_update_mod_grades().
  *
  * @param stdClass $consentform instance object with extra cmidnumber and modname property
  * @param int $userid update grade of specific user only, 0 means all participants
+ * @throws coding_exception
  */
 function consentform_update_grades(stdClass $consentform, $userid = 0) {
     global $CFG, $DB;
@@ -283,6 +284,9 @@ function consentform_set_user_grade($consentform, $userid, $agreed=true) {
 
 /**
  * Called by course/reset.php
+ *
+ * @param \moodle_form $mform
+ * @throws coding_exception
  */
 function consentform_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'consentformheader', get_string('modulenameplural', 'consentform'));
@@ -318,7 +322,7 @@ function consentform_reset_userdata($data) {
 
 /**
  * Reset consentform instance
- * 
+ *
  * @param object $course
  * @return int[]
  */
