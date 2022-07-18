@@ -42,9 +42,9 @@ class consentform_export {
     /**
      * Init export class
      *
-     * @param $exportformat ... of export file like csv or pdf
-     * @param $contentrows  ... rows to write in file
-     * @param $filename ... filename for download file
+     * @param string $exportformat ... of export file like csv or pdf
+     * @param array $contentrows  ... rows to write in file
+     * @param string $filename ... filename for download file
      * @throws \coding_exception
      */
     public function init($exportformat, $contentrows, $filename) {
