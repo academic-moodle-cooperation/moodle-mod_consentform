@@ -184,7 +184,6 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      * @param  \context $context
      * @param  $consentform
      * @param  \stdClass $user
-     * @param  array $path Current directory path that we are exporting to.
      * @throws \dml_exception
      */
     protected static function export_states(\context $context, $consentformid, \stdClass $user) {

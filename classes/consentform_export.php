@@ -24,16 +24,27 @@
 namespace mod_consentform;
 
 /**
+ * Class for exporting reaction lists as files.
+ *
  * @package    mod_consentform
  * @copyright  2021 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class consentform_export {
 
+    /** @var string export file format */
     private $exportformat;
+    /** @var array rows to export in file */
     private $contentrows;
+    /** @var string name of export file */
     private $filename;
 
+    /**
+     * Init export class
+     * @param $exportformat ... of export file like csv or pdf
+     * @param $contentrows  ... rows to write in file
+     * @param $filename ... filename for download file
+     */
     public function init($exportformat, $contentrows, $filename) {
         $this->exportformat = $exportformat;
         $this->contentrows = $contentrows;
