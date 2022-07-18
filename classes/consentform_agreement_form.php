@@ -99,9 +99,9 @@ class consentform_agreement_form extends \moodleform {
     /**
      * Get log entry of last agreement/refusal/revocation of this user.
      *
-     * @param $cmid    coursemodule id
-     * @param $userid  user id
-     * @param $status  agreed or revoked or refused
+     * @param int $cmid    coursemodule id
+     * @param int $userid  user id
+     * @param int $status  agreed or revoked or refused
      * @return string  returns logentry.
      * @throws coding_exception
      * @throws dml_exception

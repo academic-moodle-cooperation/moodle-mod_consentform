@@ -40,6 +40,11 @@ if (isset($CFG)) {
  */
 class consentform_export_form extends \moodleform {
 
+    /**
+     * Define this form instance
+     *
+     * @throws \coding_exception
+     */
     public function definition() {
 
         $mform = $this->_form;
