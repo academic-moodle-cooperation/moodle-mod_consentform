@@ -17,8 +17,7 @@
 /**
  * Table export class
  *
- * @package       local
- * @subpackage    printpreview
+ * @package       mod_consentform
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Andreas Weninger
@@ -35,22 +34,47 @@ if (isset($CFG)) {
     require_once($CFG->libdir . '/pdflib.php');
 }
 
+/**
+ * Class for exporting reaction lists as files.
+ *
+ * @package    mod_consentform
+ * @author     Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author     Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author     Andreas Weninger
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mtablepdf extends \pdf {
 
+    /** @var int value for output format pdf */
     const OUTPUT_FORMAT_PDF = 0;
+    /** @var int value for output format excel */
     const OUTPUT_FORMAT_XLSX = 1;
+    /** @var int value for output format old excel */
     const OUTPUT_FORMAT_XLS = 2;
+    /** @var int value for output format csv */
     const OUTPUT_FORMAT_CSV_COMMA = 4;
 
+    /** @var string default output format */
     private $outputformat = self::OUTPUT_FORMAT_CSV_COMMA;
 
+    /** @var int rows per page */
     private $rowsperpage = 0;
+    /** @var boolean show header and footer */
     private $showheaderfooter = false;
+    /** @var array columns widths */
     private $columnwidths = array();
+    /** @var array titles */
     private $titles = null;
+    /** @var array format of columns */
     private $columnformat;
+    /** @var array data */
     private $data = array();
 
+    /**
+     * Constructor of pdf class
+     *
+     * @param array $columnwidths ... width of each column
+     */
     public function __construct($columnwidths) {
         parent::__construct();
 
@@ -76,14 +100,20 @@ class mtablepdf extends \pdf {
         $this->titles = $titles;
     }
 
+    /**
+     * Sets output format of file
+     *
+     * @param string $format
+     */
     public function set_outputformat($format) {
         $this->outputformat = $format;
     }
 
     /**
      * Defines how many rows are printed on each page
-     * @param int $i > 0
-     * @return true if ok
+     *
+     * @param int $rowsperpage
+     * @return boolean
      */
     public function set_rowsperpage($rowsperpage) {
         if (is_number($rowsperpage) && $rowsperpage > 0) {
@@ -96,6 +126,7 @@ class mtablepdf extends \pdf {
 
     /**
      * Adds a row to the pdf
+     *
      * @param array $row
      * @return boolean
      */
@@ -150,10 +181,11 @@ class mtablepdf extends \pdf {
         return true;
     }
 
-    /*
-     * Generate the file
-     * */
-
+    /**
+     * Generate the export file
+     *
+     * @param string $filename
+     */
     public function generate($filename) {
 
         if ($filename == '') {
@@ -267,6 +299,11 @@ class mtablepdf extends \pdf {
         }
     }
 
+    /**
+     * Get the excel file
+     *
+     * @param string $filename
+     */
     public function get_xls($filename) {
         global $CFG;
 
@@ -280,6 +317,12 @@ class mtablepdf extends \pdf {
         $workbook->close();
     }
 
+    /**
+     * Get the csv file
+     *
+     * @param string $filename
+     * @param string $sep ... seperator of line fields
+     */
     public function get_csv($filename, $sep = "\t") {
 
         $lines = array();

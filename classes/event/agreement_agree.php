@@ -29,16 +29,31 @@ namespace mod_consentform\event;
  * The agreement_agree event class.
  **/
 class agreement_agree extends \core\event\base {
+    /**
+     * Init the agreement instance
+     */
     protected function init() {
         $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'grade_grades';
     }
 
+    /**
+     * Get name of instance
+     *
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public static function get_name() {
         return get_string('eventagreementagree', 'mod_consentform');
     }
 
+    /**
+     * Get description of instance
+     *
+     * @return \lang_string|string|null
+     * @throws \coding_exception
+     */
     public function get_description() {
         $a = new \stdClass();
         $a->userid = $this->userid;
@@ -46,10 +61,21 @@ class agreement_agree extends \core\event\base {
         return get_string('eventagreementagreedesc', 'mod_consentform', $a);
     }
 
+    /**
+     * Get url of instance
+     *
+     * @return \moodle_url
+     * @throws \moodle_exception
+     */
     public function get_url() {
         return new \moodle_url('/mod/consentform/view.php', array('id' => $this->objectid));
     }
 
+    /**
+     * Get legacy logdata
+     *
+     * @return array
+     */
     public function get_legacy_logdata() {
         // Override if you are migrating an add_to_log() call.
         return array($this->courseid, 'mod_consentform', 'add',

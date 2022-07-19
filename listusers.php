@@ -16,7 +16,7 @@
 
 /** List of users and their status
  *
- * @package    mod_consentfom
+ * @package    mod_consentform
  * @copyright  2021 Thomas Niedermaier, Medical University of Vienna (thomas.niedermaier@meduniwien.ac.at)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

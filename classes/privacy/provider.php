@@ -181,11 +181,11 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     /**
      * Fetches all of the user's states and adds them to the export
      *
-     * @param  \context $context
-     * @param  $consentform
-     * @param  \stdClass $user
-     * @param  array $path Current directory path that we are exporting to.
+     * @param  \context $context ... the module context
+     * @param  int $consentformid ... id of instance
+     * @param  \stdClass $user ... user object
      * @throws \dml_exception
+     * @throws \coding_exception
      */
     protected static function export_states(\context $context, $consentformid, \stdClass $user) {
         global $DB;
@@ -224,6 +224,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      *
      * @param \context $context The module context.
      * @throws \dml_exception
+     * @throws \coding_exception
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;

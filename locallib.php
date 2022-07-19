@@ -33,8 +33,8 @@ require_once($CFG->libdir . '/completionlib.php');
 /**
  * Generate rows of coursemodules list table
  *
- * @param $course dataset of course
- * @param $cmidcontroller course module id of this consentform instance
+ * @param object $course dataset of course
+ * @param int $cmidcontroller course module id of this consentform instance
  * @return array|void array of table rows
  *
  * @throws coding_exception
@@ -130,8 +130,9 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
 }
 
 /**
- * @return string html string of warning icon, if a not regular user entry for consentform was found in
- * course module's availability
+ * Returns string of warning icon, if a not regular user entry for consentform was found in course module's availability
+ *
+ * @return string html
  * @throws coding_exception
  */
 function consentform_geticon_userentry() {
@@ -147,8 +148,9 @@ function consentform_geticon_userentry() {
 }
 
 /**
- * @return string html string of warning icon, if a negative consentform-like entry was found in
- * course module's availability
+ * Returns string of warning icon, if a negative consentform-like entry was found in course module's availability
+ *
+ * @return string html
  * @throws coding_exception
  */
 function consentform_geticon_userentry_negative() {
@@ -433,8 +435,8 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
 /**
  * Find consentform completion entry in availability of course_module
  *
- * @param $cmidcontrolled  course module id of this consentform instance
- * @param $cmidcontroller  id of course module which relies on this consentform instance
+ * @param int $cmidcontrolled  course module id of this consentform instance
+ * @param int $cmidcontroller  id of course module which relies on this consentform instance
  * @return bool $ret 0...not found, 1...consentform entry found, 2...user entry found
  * @throws dml_exception
  */
@@ -476,9 +478,9 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
 /**
  * Find completion entry anywhere in availability of course module (recursive)
  *
- * @param $conditions condition or condiionlist of availability
- * @param $cmidcontrolled  course module id of this consentform instance
- * @param $cmidcontroller  id of course module which relies on this consentform instance
+ * @param array $conditions condition or condiionlist of availability
+ * @param int $cmidcontrolled  course module id of this consentform instance
+ * @param int $cmidcontroller  id of course module which relies on this consentform instance
  * @return bool $ret 0...not found, 1...consentform entry found, 2...user entry found
  * @throws dml_exception
  */
@@ -504,9 +506,9 @@ function consentform_find_entry_availability_anywhere($conditions, $cmidcontroll
 /**
  * Insert condition entry in course_module x
  *
- * @param $courseid        id of this course
- * @param $cmidcontrolled  id of course module which relies on this CF instance
- * @param $cmidcontroller  course module id of this CF instance
+ * @param int $courseid        id of this course
+ * @param int $cmidcontrolled  id of course module which relies on this CF instance
+ * @param int $cmidcontroller  course module id of this CF instance
  * @return bool
  * @throws dml_exception
  */
@@ -539,9 +541,9 @@ function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidco
 /**
  * Delete condition entry in course_module x
  *
- * @param $courseid        id of this course
- * @param $cmidcontrolled  id of course module which relies on this CF instance
- * @param $cmidcontroller  course module id of this CF instance
+ * @param int $courseid        id of this course
+ * @param int $cmidcontrolled  id of course module which relies on this CF instance
+ * @param int $cmidcontroller  course module id of this CF instance
  * @return bool
  * @throws dml_exception
  */
@@ -627,9 +629,9 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
 /**
  * Save agreement/refusal/revocation as completion and in consentform
  *
- * @param $status agreement/refusal/revocation
- * @param $userid user's id
- * @param $cmid id of this instance's coursemodule
+ * @param int $status agreement/refusal/revocation
+ * @param int $userid user's id
+ * @param int $cmid id of this instance's coursemodule
  * @return bool
  * @throws dml_exception
  */
@@ -668,10 +670,10 @@ function consentform_save_agreement($status, $userid, $cmid) {
 /**
  * Build the record for saving the user's agreement/refusal/revocation
  *
- * @param $id       record id
- * @param $userid   user id of participant
- * @param $agreed   1 agreed, 0 revoked, -1 refused
- * @param $cmid     course module id
+ * @param int $id       record id
+ * @param int $userid   user id of participant
+ * @param int $agreed   1 agreed, 0 revoked, -1 refused
+ * @param int $cmid     course module id
  * @return stdClass record object for inser or update db
  */
 function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
@@ -691,7 +693,7 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
 /**
  * Enter grade value for all agreements when usegrade has been switched to on.
  *
- * @param $cmid id of this instance's coursemodule
+ * @param int $cmid id of this instance's coursemodule
  * @return bool
  * @throws dml_exception
  */
@@ -714,8 +716,8 @@ function consentform_usegradechange_writegrades($cmid) {
 /**
  * Update completions of this consentform course module
  *
- * @param $cmid course module id of this consentform instance
- * @param $agreed agreement/refusal/revocation
+ * @param int $cmid course module id of this consentform instance
+ * @param int $agreed agreement/refusal/revocation
  * @return bool
  * @throws coding_exception
  * @throws moodle_exception
@@ -737,11 +739,11 @@ function consentform_update_completionstate($cmid, $agreed) {
 /**
  * Database query to get list of course participants
  *
- * @param $sortkey which user's field should be used to sort list
- * @param $sortorder sort order of sorting (asc/desc)
- * @param $tab which list of users (only agreed/refused/etc..)
- * @param $context used by system function to get enrolled users of course
- * @param $cm
+ * @param string $sortkey which user's field should be used to sort list
+ * @param string $sortorder sort order of sorting (asc/desc)
+ * @param int $tab which list of users (only agreed/refused/etc..)
+ * @param \context $context used by system function to get enrolled users of course
+ * @param stdClass $cm
  * @return array list of participants, id,lastname,firstname,email(,status)
  * @throws coding_exception
  * @throws dml_exception
@@ -831,7 +833,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
 /**
  * Calculate the SQL sortkey to be used by the SQL statements later.
  *
- * @param $sortkey
+ * @param string $sortkey
  * @return string
  */
 function consentform_get_sqlsortkey($sortkey) {
@@ -858,11 +860,11 @@ function consentform_get_sqlsortkey($sortkey) {
 /**
  * Returns list of participants as html
  *
- * @param $listusers list of participants id, firstname, lasthame, email(,status)
- * @param $cmid course module id of this consentform instance
- * @param $sortkey participants field used for sorting
- * @param $sortorder asc/desc
- * @param $tab which users, only agreed/refused/revoked etc.
+ * @param array $listusers list of participants id, firstname, lasthame, email(,status)
+ * @param int $cmid course module id of this consentform instance
+ * @param string $sortkey participants field used for sorting
+ * @param string $sortorder asc/desc
+ * @param int $tab which users, only agreed/refused/revoked etc.
  * @return string html of participants list
  * @throws coding_exception
  */
@@ -935,11 +937,12 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
 /**
  * Returns participants list table header column as html
  *
- * @param $column lastname, firstname, email, timestamp
- * @param $columntitle html title of column
- * @param $urlinit url for sorting
- * @param $sortkey field used to sort list
- * @param $sortorder asc/desc
+ * @param string $column lastname, firstname, email, timestamp
+ * @param string $columntitle html title of column
+ * @param string $sortkey field used to sort list
+ * @param string $sortorder asc/desc
+ * @param int $cmid course module id of instance
+ * @param int $tab which users, only agreed/refused/revoked etc.
  * @return string html of column cell
  * @throws coding_exception
  */

@@ -22,14 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-.consentform_confirmationtext {
+.path-mod-consentform .consentform_confirmationtext {
     background-color: #f0f0f0;
     border: 1px solid #bbb;
     padding: 3em;
     margin-bottom: 1.5em;
 }
 
-.consentform_confirmationtext_incourseoverview {
+.path-mod-consentform .consentform_confirmationtext_incourseoverview {
     background-color: #f0f0f0;
     border: 1px solid #bbb;
     padding: 0.3em;
@@ -40,39 +40,39 @@
     width: 10%;
 }
 
-#consentform_activitytable {
+.path-mod-consentform #consentform_activitytable {
     width: 90%;
     visibility: hidden;
 }
 
-.consentform_activitytable_activityrow {
+.path-mod-consentform .consentform_activitytable_activityrow {
     line-height: 1.7em;
 }
-.consentform_activitytable_sectionrow {
+.path-mod-consentform .consentform_activitytable_sectionrow {
     line-height: 2.0em;
 }
 
-.consentform_activitytable_checkboxcolumn {
+.path-mod-consentform .consentform_activitytable_checkboxcolumn {
     white-space: nowrap;
     width: 5%;
     text-align: center;
 }
 
-.consentform_activitytable_checkboxcolumn.header {
+.path-mod-consentform .consentform_activitytable_checkboxcolumn.header {
     padding: 0.5em;
     background-color: white;
 }
 
-.consentform_activitytable_activitycolumn {
+.path-mod-consentform .consentform_activitytable_activitycolumn {
     text-align: left;
 }
 
-.consentform_activitytable_activitycolumn.header {
+.path-mod-consentform .consentform_activitytable_activitycolumn.header {
     padding: 0.5em;
     background-color: white;
 }
 
-.consentformwarning {
+.path-mod-consentform .consentformwarning {
     background-color: red;
     color: white;
     padding: 3px;
@@ -90,7 +90,7 @@
     color: red;
 }
 
-#consentform_export_form .row {
+.path-mod-consentform #consentform_export_form .row {
     display: block;
     margin-left: 0;
 }

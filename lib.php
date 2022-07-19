@@ -43,7 +43,7 @@ define('CONSENTFORM_NOTIMESTAMP', '-');
 /**
  * Returns the information on whether the module supports a feature
  *
- * See {@link plugin_supports()} for more info.
+ * See plugin_supports() for more info.
  *
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
@@ -194,10 +194,10 @@ function consentform_delete_instance($id) {
 /**
  * Creates or updates grade item for the given consentform instance
  *
- * Needed by {@link grade_update_mod_grades()}.
+ * Needed by grade_update_mod_grades().
  *
  * @param stdClass $consentform instance object with extra cmidnumber and modname property
- * @param bool $reset reset grades in the gradebook
+ * @param grade_item $grades reset grades in the gradebook
  * @return void
  */
 function consentform_grade_item_update(stdClass $consentform, $grades=null) {
@@ -236,10 +236,11 @@ function consentform_grade_item_delete($consentform) {
 /**
  * Update consentform grades in the gradebook
  *
- * Needed by {@link grade_update_mod_grades()}.
+ * Needed by grade_update_mod_grades().
  *
  * @param stdClass $consentform instance object with extra cmidnumber and modname property
  * @param int $userid update grade of specific user only, 0 means all participants
+ * @throws coding_exception
  */
 function consentform_update_grades(stdClass $consentform, $userid = 0) {
     global $CFG, $DB;
@@ -251,6 +252,14 @@ function consentform_update_grades(stdClass $consentform, $userid = 0) {
     grade_update('mod/consentform', $consentform->course, 'mod', 'consentform', $consentform->id, 0, $grades);
 }
 
+/**
+ * Set user's grade according to reaction
+ *
+ * @param object $consentform
+ * @param int $userid
+ * @param bool $agreed
+ * @return false|void
+ */
 function consentform_set_user_grade($consentform, $userid, $agreed=true) {
 
     if ($userid) {
@@ -275,12 +284,23 @@ function consentform_set_user_grade($consentform, $userid, $agreed=true) {
 
 /**
  * Called by course/reset.php
+ *
+ * @param \moodle_form $mform
+ * @throws coding_exception
  */
 function consentform_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'consentformheader', get_string('modulenameplural', 'consentform'));
     $mform->addElement('checkbox', 'reset_consentform', get_string('resetconsentform', 'consentform'));
 }
 
+/**
+ * Reset consentform state userdata
+ *
+ * @param object $data
+ * @return array
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function consentform_reset_userdata($data) {
     global $DB;
 
@@ -300,6 +320,12 @@ function consentform_reset_userdata($data) {
     return $status;
 }
 
+/**
+ * Reset consentform instance
+ *
+ * @param object $course
+ * @return int[]
+ */
 function consentform_reset_course_form_defaults($course) {
     return array('reset_consentform' => 1);
 }
