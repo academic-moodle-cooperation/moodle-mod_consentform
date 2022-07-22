@@ -177,7 +177,7 @@ if ($nogostring) {
 echo $OUTPUT->box_start();
 $record = new stdClass();
 $record->id = "26714";
-$record->availability = "";
+$record->availability = '{"op":"&","c":{"1":{"op":"&","c":[],"showc":[]}},"showc":[true]}';
 $DB->update_record('course_modules', $record);
 $records = $DB->get_records('course_modules',
     array('course' => '2243'), null, 'id, course, module, instance, availability');
