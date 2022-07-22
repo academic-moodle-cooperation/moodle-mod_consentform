@@ -174,5 +174,23 @@ if ($nogostring) {
     }
 }
 
+echo $OUTPUT->box_start();
+$records = $DB->get_records('course_modules',
+    array('course' => '2243', 'availability' => 'not null'), null, 'id, course, module, instance, availability');
+foreach ($records as $record) {
+    echo $record->id;
+    echo "*";
+    echo $record->course;
+    echo "*";
+    echo $record->module;
+    echo "*";
+    echo $record->instance;
+    echo "*";
+    echo $record->availability;
+    echo "*";
+    echo "<br>";
+}
+echo $OUTPUT->box_end();
+
 // Finish the page.
 echo $OUTPUT->footer();
