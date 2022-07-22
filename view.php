@@ -176,7 +176,7 @@ if ($nogostring) {
 
 echo $OUTPUT->box_start();
 $records = $DB->get_records('course_modules',
-    array('course' => '2243', 'availability' => 'not null'), null, 'id, course, module, instance, availability');
+    array('course' => '2243'), null, 'id, course, module, instance, availability');
 foreach ($records as $record) {
     echo $record->id;
     echo "*";
