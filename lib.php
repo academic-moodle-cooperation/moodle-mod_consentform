@@ -176,6 +176,9 @@ function consentform_delete_instance($id) {
                 }
                 $i++;
             }
+            if ($conditions == '{"op":"&","c":[],"showc":[]}') {
+                $conditions = "";
+            }
             $conditions = json_encode($conditions);
             $updaterecord = new stdClass();
             $updaterecord->id = $record->id;
