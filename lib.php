@@ -164,25 +164,7 @@ function consentform_delete_instance($id) {
     $DB->delete_records('consentform', array('id' => $consentform->id));
     $DB->delete_records('consentform_state', array('consentformcmid' => $cm->id));
 
-    // Search for and remove restrictions introduced by this consentform instance in other course modules.
-    $records = $DB->get_records('course_modules', array('course' => $consentform->course));
-    foreach ($records as $record) {
-        if ($conditions = json_decode($record->availability)) {
-            $i = 0;
-            foreach ($conditions->c as $conditionc) {
-                if ($conditionc->type == 'completion' && $conditionc->cm == $cm->id) {
-                    unset($conditions->c[$i]);
-                    unset($conditions->showc[$i]);
-                }
-                $i++;
-            }
-            $conditions = json_encode($conditions);
-            $updaterecord = new stdClass();
-            $updaterecord->id = $record->id;
-            $updaterecord->availability = $conditions;
-            $DB->update_record('course_modules', $updaterecord);
-        }
-    }
+    consentform_grade_item_update($consentform);
 
     rebuild_course_cache($consentform->course, false);
 
@@ -211,7 +193,7 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
     $item['grademin']  = 0;
 
     if ($grades === 'reset') {
-        $params['reset'] = true;
+        $item['reset'] = true;
         $grades = null;
     }
 
