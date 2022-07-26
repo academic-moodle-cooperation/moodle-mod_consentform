@@ -516,6 +516,9 @@ function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidco
     global $DB;
 
     $availabilityjsonstring = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
+    if ($availabilityjsonstring == '{"op":"&","c":[],"showc":[]}') {
+        $availabilityjsonstring = "";
+    }
     $availabilityold = json_decode($availabilityjsonstring);
     $availabilitynew = new stdClass();
     $availabilitynew->op = "&";
