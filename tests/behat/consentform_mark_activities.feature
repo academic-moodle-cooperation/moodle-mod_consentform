@@ -22,7 +22,7 @@ Feature: In a course, a teacher should be able to add the control of an activity
     And I am on "Course 1" course homepage
     And I turn editing mode on
     When I add a "Consentform" to section "1" and I fill the form with:
-      | Name                         | My Consentform |
+      | Name                         | My consent form |
       | Consentform text to agree to | Text.....      |
     When I am on "Course 1" course homepage
     And I add a "Quiz" to section "1" and I fill the form with:
@@ -35,10 +35,8 @@ Feature: In a course, a teacher should be able to add the control of an activity
       | Correct answer                     | False                                   |
       | Feedback for the response 'True'.  | So you think it is true                 |
       | Feedback for the response 'False'. | So you think it is false                |
-    And I follow "Test quiz name"
-    Then I should see "Test quiz name"
     When I am on "Course 1" course homepage
-    And I follow "My Consentform"
+    And I am on the "My consent form" "Consentform activity" page
     Then I should see "Test quiz name"
     And I click on "selectcoursemodule[]" "checkbox"
     When I am on "Course 1" course homepage
