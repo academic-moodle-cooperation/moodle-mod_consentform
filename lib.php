@@ -67,8 +67,6 @@ function consentform_supports($feature) {
             return false;
         case FEATURE_GROUPINGS:
             return false;
-        case FEATURE_MOD_PURPOSE:
-            return MOD_PURPOSE_ADMINISTRATION;
         default:
             return null;
     }
