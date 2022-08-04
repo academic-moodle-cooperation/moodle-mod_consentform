@@ -19,14 +19,16 @@ The Consentform module allows trainers to hide/reveal course elements in depende
 Example
 -------
 
-A trainer wants to hide some elements of a moodle course as long as the course participants have not agreed with a
-consentform. First you insert an instance of this activity module to your course and you insert the text, which
-the participants have to agree with. Then you click at this consentform instance in course overview and
-see a list of all visible moodle elements of this course. You can select here all the modules which
-shall be hidden as long as the participant has not agreed to the consentform. If - on the other hand - a course 
-participant clicks on this module in course overview, he/she will see the consentform text and a button
-"agree" or "refuse". He/she can now agree or refuse to this text by pressing the appropriate button.
-If he/she agrees, the hidden elements of the course will be revealed.
+With consentform a trainer is able to hide selected elements of the course for participants as long as they have not
+agreed to a declaration of consent.
+To achieve this a trainer adds one or more consent form instances to a course, providing a declaration of agreement for
+each instance.
+Now, if trainers click at such an instance a list of all the modules of the course are presented to them and they can
+set the availability of each one of them as dependent on the consentform.
+Later on, if participants click at this consent form instance the declaration of consent is shown to them and they are asked to
+confirm or (optionally) to refuse, or revoke their confirmation. If the participant agrees, the elements of the course dependent on this
+consent form module will be accessible.
+
 
 Requirements
 ------------
