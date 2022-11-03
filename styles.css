@@ -94,3 +94,7 @@
     display: block;
     margin-left: 0;
 }
+
+.path-mod-consentform .leftmargin {
+    margin-left: 0.3em;
+}
