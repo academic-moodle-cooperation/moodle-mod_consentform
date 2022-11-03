@@ -74,7 +74,6 @@ $PAGE->add_body_class('limitedwidth');
 
 // Output starts here.
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($consentform->name));
 
 // All active participants.
 $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);

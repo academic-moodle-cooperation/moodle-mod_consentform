@@ -72,7 +72,6 @@ if (!$cm->completion) {
 if ($nogostring) {
 
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(format_string($consentform->name));
     $nogostring = get_string("nocompletiontitle", "mod_consentform"). $nogostrcon . $nogostring;
     echo $OUTPUT->fatal_error(
         $nogostring, "https://docs.moodle.org/en/Activity_completion_settings", $redirecturl, null);
@@ -84,7 +83,6 @@ if ($nogostring) {
             redirect(new moodle_url('/mod/consentform/listusers.php', array('id' => $id)));
         }
         echo $OUTPUT->header();
-        echo $OUTPUT->heading(format_string($consentform->name));
         if (!$consentform->confirmincourseoverview) {
             if ($consentform->intro) {
                 echo $OUTPUT->box(format_module_intro(
@@ -160,7 +158,6 @@ if ($nogostring) {
             }
         } else {  // Display agreement form to participant.
             echo $OUTPUT->header();
-            echo $OUTPUT->heading(format_string($consentform->name));
             if (!$consentform->confirmincourseoverview) {
                 if ($consentform->intro) {
                     echo $OUTPUT->box(format_module_intro(
