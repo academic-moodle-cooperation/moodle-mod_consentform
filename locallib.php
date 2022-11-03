@@ -72,7 +72,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
 
                     $nourl = $PAGE->url . "#";
-                    $cell = new html_table_cell($sectionname . '&nbsp;&nbsp;' .
+                    $cell = new html_table_cell('<strong>' .$sectionname . '</strong>&nbsp;&nbsp;' .
                         \html_writer::link($nourl, get_string('all', 'moodle'),
                             ['class' => "co_section_all section$sectioni"]).' / '.
                         \html_writer::link($nourl, get_string('none', 'moodle'),

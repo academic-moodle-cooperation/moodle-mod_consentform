@@ -31,7 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 $string['agree'] = 'I agree';
 $string['agreed'] = 'agreed';
 $string['agreementlogentry'] = 'You have agreed at {$a}.';
-$string['backbutton'] = 'Back to course overview';
 $string['backbuttonlist'] = 'Back to module list';
 $string['choice'] = 'Make your choice: ';
 $string['configurations'] = 'Configuration of this consentform instance';

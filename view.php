@@ -52,6 +52,7 @@ $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
 $PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
+$PAGE->add_body_class('limitedwidth');
 
 $nogostring = "";
 $nogostrcon = "";
@@ -105,7 +106,6 @@ if ($nogostring) {
         $table->data = consentform_generate_coursemodulestable_content($course, $cm->id);
 
         echo consentform_render_coursemodulestable($table);
-        echo $OUTPUT->single_button($redirecturl, get_string("backbutton", "consentform"));
 
         $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));

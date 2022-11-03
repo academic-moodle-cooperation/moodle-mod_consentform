@@ -70,6 +70,7 @@ $event->trigger();
 $PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
+$PAGE->add_body_class('limitedwidth');
 
 // Output starts here.
 echo $OUTPUT->header();
