@@ -98,3 +98,7 @@
 .path-mod-consentform .leftmargin {
     margin-left: 0.3em;
 }
+
+.completion-info {
+    display: none;
+}
