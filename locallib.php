@@ -832,7 +832,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby);
         $listusers = array_diff_key($listusers, $enrolledsubmit);
-   }
+    }
     return $listusers;
 }
 

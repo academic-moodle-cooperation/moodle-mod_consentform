@@ -71,7 +71,6 @@ $PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
-//$PAGE->set_pagelayout('report');
 
 // Output starts here.
 echo $OUTPUT->header();
@@ -124,13 +123,13 @@ $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
 $thirdnav = array();
 $url->param('tab',CONSENTFORM_STATUS_AGREED);
 $thirdnavlink[CONSENTFORM_STATUS_AGREED] = $url->out();
-$url->param('tab',CONSENTFORM_STATUS_REFUSED);
+$url->param('tab', CONSENTFORM_STATUS_REFUSED);
 $thirdnavlink[CONSENTFORM_STATUS_REFUSED] = $url->out();
-$url->param('tab',CONSENTFORM_STATUS_REVOKED);
+$url->param('tab', CONSENTFORM_STATUS_REVOKED);
 $thirdnavlink[CONSENTFORM_STATUS_REVOKED] = $url->out();
-$url->param('tab',CONSENTFORM_STATUS_NOACTION);
+$url->param('tab', CONSENTFORM_STATUS_NOACTION);
 $thirdnavlink[CONSENTFORM_STATUS_NOACTION] = $url->out();
-$url->param('tab',CONSENTFORM_ALL);
+$url->param('tab', CONSENTFORM_ALL);
 $thirdnavlink[CONSENTFORM_ALL] = $url->out();
 
 $thirdnav[$thirdnavlink[CONSENTFORM_STATUS_AGREED]] =
