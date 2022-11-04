@@ -89,13 +89,7 @@ if ($nogostring) {
                     'consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
             }
         }
-        // Render action link to the reaction lists.
-        echo $OUTPUT->box_start('', 'consentform_linklistusers_cointainer');
-        echo $OUTPUT->image_icon('t/groupv', get_string('listusers', 'consentform'), 'moodle', array(
-            'style' => 'cursor:pointer;margin-right:3px;nowrap'));
-        echo $OUTPUT->action_link(new moodle_url('listusers.php', array('id' => $cm->id)),
-            get_string('listusers', 'consentform'));
-        echo $OUTPUT->box_end();
+
         // List of course modules, teacher's view.
         $table = new html_table();
         $table->id = 'consentform_activitytable';

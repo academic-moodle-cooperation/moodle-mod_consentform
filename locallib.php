@@ -762,13 +762,13 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $orderby = null;
     }
 
-    // Participants with no action.
+    // Participants with no action. Only with capability view.
     if ($tab == CONSENTFORM_STATUS_NOACTION) {
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby);
-        $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, -2 as state ";
+        $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, 2 as state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
         $sqlwhere = "WHERE (c.consentformcmid = :cmid) ";
         $sqlorderby = "ORDER BY :sqlsortkey :sqlsortorder";
@@ -778,9 +778,9 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $listusers = array_diff_key($enrolledview, $enrolledsubmit, $withaction);
         foreach ($listusers as &$row) {
             $row->timestamp = CONSENTFORM_NOTIMESTAMP;
-            $row->state = get_string('noaction', 'consentform');
+            $row->state = CONSENTFORM_STATUS_NOACTION;
         }
-    } else if ($tab == CONSENTFORM_ALL) { // All course participants.
+    } else if ($tab == CONSENTFORM_ALL) { // All course participants. Only with capability view.
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
@@ -793,7 +793,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
                 $row->state = $fields->state;
             } else {
                 $row->timestamp = CONSENTFORM_NOTIMESTAMP;
-                $row->state = get_string('noaction', 'consentform');
+                $row->state = CONSENTFORM_STATUS_NOACTION;
             }
         }
         if ($sqlsortkey == "timestamp") {
@@ -818,7 +818,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
                 });
             }
         }
-    } else { // Participants with action.
+    } else { // Participants with action. Only with capability view.
         $sqlenrolled = get_enrolled_sql($context, '', 0, true);
         $enrolled = $DB->get_records_sql($sqlenrolled[0], $sqlenrolled[1]);
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, c.timestamp, c.state ";
@@ -829,7 +829,10 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $params = array('cmid' => $cm->id, 'tab' => $tab, 'sqlsortkey' => $sqlsortkey, 'sqlsortorder' => $sqlsortorder);
         $listusers = $DB->get_records_sql($query, $params);
         $listusers = array_intersect_key($listusers, $enrolled);
-    }
+        $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
+            'u.id, u.lastname, u.firstname, u.email', $orderby);
+        $listusers = array_diff_key($listusers, $enrolledsubmit);
+   }
     return $listusers;
 }
 
@@ -902,16 +905,16 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
 
         $index++;
         switch ($row->state) {
-            case "1":
+            case CONSENTFORM_STATUS_AGREED:
                 $state = html_writer::span(get_string("agreed", "consentform"), "agreed");
                 break;
-            case "0":
+            case CONSENTFORM_STATUS_REVOKED:
                 $state = html_writer::span(get_string("revoked", "consentform"), "revoked");
                 break;
-            case "-1":
+            case CONSENTFORM_STATUS_REFUSED:
                 $state = html_writer::span(get_string("refused", "consentform"), "refused");
                 break;
-            case "-2":
+            case CONSENTFORM_STATUS_NOACTION:
             default:
                 $state = html_writer::span(get_string("noaction", "consentform"));
                 break;
@@ -928,7 +931,8 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
     }  // For each user row.
 
     if ($index == 0) {
-        $html = html_writer::tag('p', get_string('listempty', 'consentform'), array('class' => 'alert-warning'));
+        $html = html_writer::tag('p', get_string('listempty', 'consentform'),
+            array('class' => 'alert-warning', 'style' => 'margin-top:0.5em;'));
     } else {
         $html = html_writer::table($table);
     }

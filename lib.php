@@ -313,3 +313,18 @@ function consentform_reset_userdata($data) {
 function consentform_reset_course_form_defaults($course) {
     return array('reset_consentform' => 1);
 }
+
+/**
+ * Adds module specific settings to the settings block
+ *
+ * @param settings_navigation $settings The settings navigation object
+ * @param navigation_node $consentformnode The node to add module settings to
+ */
+function consentform_extend_settings_navigation(settings_navigation $settings, navigation_node $consentformnode) {
+
+    if (has_capability('mod/consentform:submit', $settings->get_page()->cm->context)) {
+        $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settings->get_page()->cm->id));
+        $consentformnode->add(get_string('listusers', 'consentform'), $url, navigation_node::TYPE_SETTING, null, 'listusers', null);
+    }
+
+}
