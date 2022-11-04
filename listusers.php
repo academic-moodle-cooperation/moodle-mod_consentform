@@ -193,13 +193,6 @@ if ($download) {
     echo html_writer::end_div();
 }
 
-if (array_key_exists($USER->id, $userswithaction)) {
-    $deletelink = new moodle_url($PAGE->url, array("delete" => "1", 'sesskey' => sesskey()));
-    echo $OUTPUT->box_start();
-    echo $OUTPUT->single_button($deletelink, get_string("deletetestaction", "consentform"));
-    echo $OUTPUT->box_end();
-}
-
 // Display users and their status.
 echo consentform_display_participants($listusers, $cm->id, consentform_get_sqlsortkey($sortkey), $sortorder, $tab);
 
