@@ -121,7 +121,7 @@ $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
 // Get tabs for display.
 
 $thirdnav = array();
-$url->param('tab',CONSENTFORM_STATUS_AGREED);
+$url->param('tab', CONSENTFORM_STATUS_AGREED);
 $thirdnavlink[CONSENTFORM_STATUS_AGREED] = $url->out();
 $url->param('tab', CONSENTFORM_STATUS_REFUSED);
 $thirdnavlink[CONSENTFORM_STATUS_REFUSED] = $url->out();
