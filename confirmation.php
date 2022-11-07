@@ -96,7 +96,7 @@ if ($data = $mform->get_data()) {
             // Display agreement form to participant.
             $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
             $PAGE->set_title(format_string($consentform->name));
-            $PAGE->set_pagelayout('embedded');
+            $PAGE->set_pagelayout('login');
             echo $OUTPUT->header();
             echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();
