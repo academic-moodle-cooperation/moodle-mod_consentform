@@ -981,3 +981,32 @@ function consentform_participantstable_headercolumn($column, $columntitle, $sort
     return $linkstr;
 
 }
+
+/**
+ * Get log entry of last agreement/refusal/revocation of this user.
+ *
+ * @param int $cmid    coursemodule id
+ * @param int $userid  user id
+ * @param int $status  agreed or revoked or refused
+ * @return string  returns logentry.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function consentform_get_agreementlogentry($cmid, $userid, $status) {
+    global $DB, $OUTPUT;
+
+    if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
+        array('consentformcmid' => $cmid, 'userid' => $userid))) {
+        if ($status == CONSENTFORM_STATUS_AGREED) {
+            return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)), 'success');
+        } else {
+            if ($status == CONSENTFORM_STATUS_REVOKED) {
+                return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)), 'warning');
+            } else if ($status == CONSENTFORM_STATUS_REFUSED) {
+                return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)), 'error');
+            }
+        }
+    }
+
+    return "";
+}

@@ -101,6 +101,7 @@ if ($nogostring) {
         $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));
         $PAGE->requires->js_call_amd('mod_consentform/checkboxcontroller', 'init');
+        $PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
     } else {  // Participant's view, lack the right to submit.
         // Agreement form, participant's view.
@@ -150,13 +151,8 @@ if ($nogostring) {
                 redirect($redirecturl);
             }
         } else {  // Display agreement form to participant.
+            $PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
             echo $OUTPUT->header();
-            if (!$consentform->confirmincourseoverview) {
-                if ($consentform->intro) {
-                    echo $OUTPUT->box(format_module_intro(
-                        'consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
-                }
-            }
             echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();
             echo $OUTPUT->box_end();

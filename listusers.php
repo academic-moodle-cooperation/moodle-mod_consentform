@@ -195,5 +195,7 @@ if ($download) {
 // Display users and their status.
 echo consentform_display_participants($listusers, $cm->id, consentform_get_sqlsortkey($sortkey), $sortorder, $tab);
 
+$PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
+
 // Finish the page.
 echo $OUTPUT->footer();
