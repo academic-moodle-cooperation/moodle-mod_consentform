@@ -71,6 +71,7 @@ $PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
+$PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
 // Output starts here.
 echo $OUTPUT->header();
@@ -194,8 +195,6 @@ if ($download) {
 
 // Display users and their status.
 echo consentform_display_participants($listusers, $cm->id, consentform_get_sqlsortkey($sortkey), $sortorder, $tab);
-
-$PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
 // Finish the page.
 echo $OUTPUT->footer();

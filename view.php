@@ -53,6 +53,7 @@ $PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
+$PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
 $nogostring = "";
 $nogostrcon = "";
@@ -101,7 +102,6 @@ if ($nogostring) {
         $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));
         $PAGE->requires->js_call_amd('mod_consentform/checkboxcontroller', 'init');
-        $PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
     } else {  // Participant's view, lack the right to submit.
         // Agreement form, participant's view.
@@ -151,7 +151,6 @@ if ($nogostring) {
                 redirect($redirecturl);
             }
         } else {  // Display agreement form to participant.
-            $PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
             echo $OUTPUT->header();
             echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();

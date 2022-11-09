@@ -36,7 +36,7 @@ define(['jquery'], function($) {
     var instance = new Removedescription();
 
     instance.init = function() {
-        $('#intro').remove();
+        $('#intro').hide();
         $( document ).ready(function() {
             $('#intro').remove();
         });
