@@ -41,7 +41,7 @@ require_once($CFG->libdir . '/completionlib.php');
  * @throws dml_exception
  * @throws moodle_exception
  */
-function consentform_generate_coursemodulestable_content($course, $cmidcontroller) {
+function consentform_generate_coursemodulestable_content($course, $cmidcontroller, $locked) {
     global $PAGE;
 
     $modinfo = get_fast_modinfo($course);
@@ -69,7 +69,10 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $usercanviewsection = true;
                     $row = new html_table_row();
                     $sectionname = $sections[$sectioni]->name;
-                    $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
+                    if (!$sectionname && $sectioni==0) {
+                        $sectionname = get_string("general", "moodle");
+                    }
+                    $sectionname = $sectionname ?? get_string("topic", "moodle") . " " . (string)($sectioni);
 
                     $nourl = $PAGE->url . "#";
                     $cell = new html_table_cell('<strong>' .$sectionname . '</strong>&nbsp;&nbsp;' .
@@ -87,14 +90,13 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                 $sectionibefore = $sectioni;
             }
             if ($usercanviewsection) {
-                $modname = $cminfo->modname;
-                if (has_capability("mod/$modname:addinstance", $context)) {
+                if ($cminfo->uservisible) {
                     $row = new html_table_row();
                     $cmidcontrolled = $cmid;
                     $cfcontrolled = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $checked = $cfcontrolled <= 0 ? 0 : 1;
                     $checkboxattributes = array('class' => "selectcoursemodule section$sectioni");
-                    if ($cfcontrolled == 2 || $cfcontrolled == -1) {
+                    if ($cfcontrolled == 2 || $cfcontrolled == -1 || $locked) {
                         $checkboxattributes['disabled'] = "disabled";
                     }
                     $cell = new html_table_cell(

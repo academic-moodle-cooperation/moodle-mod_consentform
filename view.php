@@ -36,7 +36,25 @@ if ($id) {
 
 require_login($course, true, $cm);
 
-$context = context_module::instance($cm->id);
+$locked = false;
+$contextcoursecat = context_coursecat::instance($course->category);
+if ($contextcoursecat->locked) {
+    $locked = true;
+} else {
+    $context = $contextcoursecat;
+}
+$contextcourse = context_course::instance($cm->course);
+if ($contextcourse->locked) {
+    $locked = true;
+} else {
+    $context = $contextcourse;
+}
+$contextmodule = context_module::instance($cm->id);
+if ($contextmodule->locked) {
+    $locked = true;
+} else {
+    $context = $contextmodule;
+}
 
 $event = \mod_consentform\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
@@ -95,7 +113,7 @@ if ($nogostring) {
         $table->id = 'consentform_activitytable';
         $table->attributes['class'] = 'flexible generaltable generalbox';
         $table->head = consentform_generate_coursemodulestable_header();
-        $table->data = consentform_generate_coursemodulestable_content($course, $cm->id);
+        $table->data = consentform_generate_coursemodulestable_content($course, $cm->id, $locked);
 
         echo consentform_render_coursemodulestable($table);
 
@@ -111,7 +129,8 @@ if ($nogostring) {
                 'courseid' => $course->id,
                 'consentform' => $consentform,
                 'userid' => $USER->id,
-                'confirmationtextclass' => 'consentform_confirmationtext'
+                'confirmationtextclass' => 'consentform_confirmationtext',
+                'locked' => $locked
             ));
         // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {

@@ -33,7 +33,21 @@ list($course, $cm) = get_course_and_cm_from_instance($id, 'consentform', $consen
 
 require_login($course, false, $cm);
 
-$context = context_module::instance($cm->id);
+$locked = false;
+$contextcoursecat = context_coursecat::instance($course->category);
+if ($contextcoursecat->locked) {
+    $locked = true;
+} else {
+    $contextcourse = context_course::instance($cm->course);
+    if ($contextcourse->locked) {
+        $locked = true;
+    } else {
+        $contextmodule = context_module::instance($cm->id);
+        if ($contextmodule->locked) {
+            $locked = true;
+        }
+    }
+}
 
 // Agreement form, participant's view.
 $mform = new \mod_consentform\consentform_agreement_form(null,
@@ -42,7 +56,8 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
         'courseid' => $course->id,
         'consentform' => $consentform,
         'userid' => $USER->id,
-        'confirmationtextclass' => 'consentform_confirmationtext_incourseoverview'
+        'confirmationtextclass' => 'consentform_confirmationtext_incourseoverview',
+        'locked' => $locked
     ));
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {

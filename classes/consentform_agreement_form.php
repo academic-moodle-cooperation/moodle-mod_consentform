@@ -69,18 +69,20 @@ class consentform_agreement_form extends \moodleform {
                 array('consentformcmid' => $data['cmid'], 'userid' => $data['userid'])) ?? false;
         $mform->addElement('html', consentform_get_agreementlogentry($data['cmid'], $data['userid'], $state));
 
-        // Display submit buttons.
-        if ($state == CONSENTFORM_STATUS_AGREED) { // Already agreed.
-            if ($data['consentform']->optionrevoke) {
-                $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
+        if (!$data['locked']) {
+            // Display submit buttons.
+            if ($state == CONSENTFORM_STATUS_AGREED) { // Already agreed.
+                if ($data['consentform']->optionrevoke) {
+                    $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
+                }
+            } else {
+                $buttonarray = array();
+                $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
+                if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
+                    $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
+                }
+                $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
             }
-        } else {
-            $buttonarray = array();
-            $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
-            if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
-                $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
-            }
-            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         }
     }
 
