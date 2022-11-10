@@ -106,8 +106,7 @@ if ($data = $mform->get_data()) {
         echo html_writer::script('parent.location.reload();');
     } else {
         // Show inline form only if there is no user's action yet.
-        if (!$DB->record_exists(
-            'consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
+        if (!$DB->record_exists('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
             // Display agreement form to participant.
             $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
             $PAGE->set_title(format_string($consentform->name));

@@ -69,7 +69,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $usercanviewsection = true;
                     $row = new html_table_row();
                     $sectionname = $sections[$sectioni]->name;
-                    if (!$sectionname && $sectioni==0) {
+                    if (!$sectionname && $sectioni == 0) {
                         $sectionname = get_string("general", "moodle");
                     }
                     $sectionname = $sectionname ?? get_string("topic", "moodle") . " " . (string)($sectioni);
