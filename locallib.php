@@ -35,6 +35,7 @@ require_once($CFG->libdir . '/completionlib.php');
  *
  * @param object $course dataset of course
  * @param int $cmidcontroller course module id of this consentform instance
+ * @param bool $locked if freezing is active
  * @return array|void array of table rows
  *
  * @throws coding_exception
@@ -47,7 +48,6 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
     $modinfo = get_fast_modinfo($course);
     $coursemodules = $modinfo->get_cms();
     $sections = $modinfo->get_section_info_all();
-    $context = $PAGE->cm->context;
 
     $rows = array();
     $sectionibefore = "";
@@ -1011,4 +1011,13 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
     }
 
     return "";
+}
+
+function consentform_showheaderwithoutintro($id) {
+    global $DB, $OUTPUT;
+    $intro = $DB->get_field('consentform', 'intro', array('id' => $id));
+    $DB->set_field('consentform', 'intro', null, array('id' => $id));
+    echo $OUTPUT->header();
+    $DB->set_field('consentform', 'intro', $intro, array('id' => $id));
+    return true;
 }

@@ -71,7 +71,6 @@ $PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
-$PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
 $nogostring = "";
 $nogostrcon = "";
@@ -100,13 +99,7 @@ if ($nogostring) {
         if ($consentform->nocoursemoduleslist) {
             redirect(new moodle_url('/mod/consentform/listusers.php', array('id' => $id)));
         }
-        echo $OUTPUT->header();
-        if (!$consentform->confirmincourseoverview) {
-            if ($consentform->intro) {
-                echo $OUTPUT->box(format_module_intro(
-                    'consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
-            }
-        }
+        consentform_showheaderwithoutintro($consentform->id);
 
         // List of course modules, teacher's view.
         $table = new html_table();
@@ -170,7 +163,7 @@ if ($nogostring) {
                 redirect($redirecturl);
             }
         } else {  // Display agreement form to participant.
-            echo $OUTPUT->header();
+            consentform_showheaderwithoutintro($consentform->id);
             echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();
             echo $OUTPUT->box_end();

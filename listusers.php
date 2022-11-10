@@ -71,10 +71,9 @@ $PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
-$PAGE->requires->js_call_amd('mod_consentform/removedescription', 'init');
 
 // Output starts here.
-echo $OUTPUT->header();
+consentform_showheaderwithoutintro($consentform->id);
 
 // All active participants.
 $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
