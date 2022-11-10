@@ -155,7 +155,6 @@ class mod_consentform_mod_form extends moodleform_mod {
     /**
      * Called during validation to see whether some module-specific completion rules are selected.
      *
-     * @param array $data Input data not yet validated.
      * @return bool True if one or more rules is enabled, false if none are.
      */
     public function completion_rule_enabled() {

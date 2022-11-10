@@ -1013,6 +1013,12 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
     return "";
 }
 
+/**
+ * Output header without the intro because it is used for course view confirmation.
+ * @param $id of the consentform instance
+ * @return bool all is good
+ * @throws dml_exception
+ */
 function consentform_showheaderwithoutintro($id) {
     global $DB, $OUTPUT;
     $intro = $DB->get_field('consentform', 'intro', array('id' => $id));
