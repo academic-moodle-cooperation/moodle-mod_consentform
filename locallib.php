@@ -1015,7 +1015,7 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
 
 /**
  * Output header without the intro because it is used for course view confirmation.
- * 
+ *
  * @param int $id of the consentform instance
  * @return bool all is good
  * @throws dml_exception
