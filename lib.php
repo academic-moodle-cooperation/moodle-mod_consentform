@@ -322,24 +322,15 @@ function consentform_reset_course_form_defaults($course) {
  */
 function consentform_extend_settings_navigation(settings_navigation $settings, navigation_node $consentformnode) {
 
-    $locked = false;
+    $context = context_module::instance($settings->get_page()->cm->id);
     $contextcoursecat = context_coursecat::instance($settings->get_page()->course->category);
-    if ($contextcoursecat->locked) {
-        $locked = true;
-    } else {
+    if (!$contextcoursecat->locked) {
         $context = $contextcoursecat;
-    }
-    $contextcourse = context_course::instance($settings->get_page()->course->id);
-    if ($contextcourse->locked) {
-        $locked = true;
     } else {
-        $context = $contextcourse;
-    }
-    $contextmodule = context_module::instance($settings->get_page()->cm->id);
-    if ($contextmodule->locked) {
-        $locked = true;
-    } else {
-        $context = $contextmodule;
+        $contextcourse = context_course::instance($settings->get_page()->course->id);
+        if (!$contextcourse->locked) {
+            $context = $contextcourse;
+        }
     }
 
     if (has_capability('mod/consentform:submit', $context)) {
