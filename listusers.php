@@ -39,11 +39,10 @@ $sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the o
 $tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 $context = context_module::instance($cm->id);
-$coursecontext = context_course::instance($course->id);
 
 require_login($course, false, $cm);
 
-if (!has_capability('mod/consentform:submit', $context, null, false)) {
+if (!has_capability('mod/consentform:submit', $context)) {
     redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id, 'sesskey' => sesskey())));
 }
 
@@ -75,10 +74,11 @@ $PAGE->add_body_class('limitedwidth');
 // Output starts here.
 consentform_showheaderwithoutintro($consentform->id);
 
+$coursecontext = context_course::instance($course->id);
 // All active participants.
-$enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
+$enrolledview = get_enrolled_users($coursecontext, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
 // All trainers and admins.
-$enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0, 'u.id');
+$enrolledsubmit = get_enrolled_users($coursecontext, 'mod/consentform:submit', 0, 'u.id');
 // All participants who are not trainers.
 $enrolled = array_diff_key($enrolledview, $enrolledsubmit);
 
@@ -181,7 +181,7 @@ switch ($tab) {
 }
 echo html_writer::tag('h2', $title);
 
-$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm);
+$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $coursecontext, $cm);
 
 if ($download) {
     $exportlink = new moodle_url('exportcsv.php', array(

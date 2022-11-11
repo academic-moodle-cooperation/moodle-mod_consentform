@@ -33,7 +33,7 @@ consent form module will be accessible.
 Requirements
 ------------
 
-The plugin is available for Moodle 3.11+. This version is for Moodle 3.11
+The plugin is available for Moodle 3.11+.
 
 The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1.
 Otherwise consentform will not work!

@@ -36,24 +36,20 @@ if ($id) {
 
 require_login($course, true, $cm);
 
+$context = context_module::instance($cm->id);
 $locked = false;
-$contextcoursecat = context_coursecat::instance($course->category);
-if ($contextcoursecat->locked) {
+if ($context->locked) {
     $locked = true;
 } else {
-    $context = $contextcoursecat;
-}
-$contextcourse = context_course::instance($cm->course);
-if ($contextcourse->locked) {
-    $locked = true;
-} else {
-    $context = $contextcourse;
-}
-$contextmodule = context_module::instance($cm->id);
-if ($contextmodule->locked) {
-    $locked = true;
-} else {
-    $context = $contextmodule;
+    $contextcoursecat = context_coursecat::instance($course->category);
+    if ($contextcoursecat->locked) {
+        $locked = true;
+    } else {
+        $contextcourse = context_course::instance($cm->course);
+        if ($contextcourse->locked) {
+            $locked = true;
+        }
+    }
 }
 
 $event = \mod_consentform\event\course_module_viewed::create(array(

@@ -323,15 +323,6 @@ function consentform_reset_course_form_defaults($course) {
 function consentform_extend_settings_navigation(settings_navigation $settings, navigation_node $consentformnode) {
 
     $context = context_module::instance($settings->get_page()->cm->id);
-    $contextcoursecat = context_coursecat::instance($settings->get_page()->course->category);
-    if (!$contextcoursecat->locked) {
-        $context = $contextcoursecat;
-    } else {
-        $contextcourse = context_course::instance($settings->get_page()->course->id);
-        if (!$contextcourse->locked) {
-            $context = $contextcourse;
-        }
-    }
 
     if (has_capability('mod/consentform:submit', $context)) {
         $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settings->get_page()->cm->id));
