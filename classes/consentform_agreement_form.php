@@ -47,6 +47,7 @@ class consentform_agreement_form extends \moodleform {
      * Defines forms elements
      */
     public function definition() {
+        global $DB;
 
         $mform = $this->_form;
         $data = &$this->_customdata;
@@ -64,21 +65,24 @@ class consentform_agreement_form extends \moodleform {
         $mform->addElement('html', $confirmationtexthtml);
 
         // Show state of confirmation of this user.
-        $state = $this->get_completion_state($data['cmid'], $data['userid']);
-        $mform->addElement('html', $this->get_agreementlogentry($data['cmid'], $data['userid'], $state));
+        $state = $DB->get_field('consentform_state', 'state',
+                array('consentformcmid' => $data['cmid'], 'userid' => $data['userid'])) ?? false;
+        $mform->addElement('html', consentform_get_agreementlogentry($data['cmid'], $data['userid'], $state));
 
-        // Display submit buttons.
-        if ($state == CONSENTFORM_STATUS_AGREED) { // Already agreed.
-            if ($data['consentform']->optionrevoke) {
-                $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
+        if (!$data['locked']) {
+            // Display submit buttons.
+            if ($state == CONSENTFORM_STATUS_AGREED) { // Already agreed.
+                if ($data['consentform']->optionrevoke) {
+                    $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
+                }
+            } else {
+                $buttonarray = array();
+                $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
+                if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
+                    $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
+                }
+                $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
             }
-        } else {
-            $buttonarray = array();
-            $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
-            if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
-                $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
-            }
-            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         }
     }
 
@@ -96,52 +100,4 @@ class consentform_agreement_form extends \moodleform {
         return $data;
     }
 
-    /**
-     * Get log entry of last agreement/refusal/revocation of this user.
-     *
-     * @param int $cmid    coursemodule id
-     * @param int $userid  user id
-     * @param int $status  agreed or revoked or refused
-     * @return string  returns logentry.
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    private function get_agreementlogentry($cmid, $userid, $status) {
-        global $DB, $OUTPUT;
-
-        if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
-            array('consentformcmid' => $cmid, 'userid' => $userid))) {
-            if ($status == CONSENTFORM_STATUS_AGREED) {
-                return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)), 'success');
-            } else {
-                if ($status == CONSENTFORM_STATUS_REVOKED) {
-                    return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)), 'warning');
-                } else if ($status == CONSENTFORM_STATUS_REFUSED) {
-                    return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)), 'error');
-                }
-            }
-        }
-
-        return "";
-    }
-
-    /**
-     * Obtains the automatic completion state for this consentform instance for this user
-     *
-     * @param object $cm Course-module
-     * @param int $userid User ID
-     * @return bool|mixed
-     * @throws dml_exception
-     */
-    private function get_completion_state($cm, $userid) {
-        global $DB;
-
-        if (isset($cm->id)) {
-            $cmid = $cm->id;
-        } else {
-            $cmid = $cm;
-        }
-        $state = $DB->get_field('consentform_state', 'state', array('consentformcmid' => $cmid, 'userid' => $userid));
-        return $state ?? false;
-    }
 }

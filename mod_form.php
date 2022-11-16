@@ -113,6 +113,10 @@ class mod_consentform_mod_form extends moodleform_mod {
 
         $this->standard_coursemodule_elements();
 
+        $mform->disabledIf('completion', 'sesskey', 'neq', 'dummy');
+        $mform->disabledIf('completionusegrade', 'completion', 'eq', 2);
+        $mform->disabledIf('completionpassgrade', 'completion', 'eq', 2);
+
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
     }

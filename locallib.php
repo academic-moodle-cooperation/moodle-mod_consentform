@@ -35,19 +35,19 @@ require_once($CFG->libdir . '/completionlib.php');
  *
  * @param object $course dataset of course
  * @param int $cmidcontroller course module id of this consentform instance
+ * @param bool $locked if freezing is active
  * @return array|void array of table rows
  *
  * @throws coding_exception
  * @throws dml_exception
  * @throws moodle_exception
  */
-function consentform_generate_coursemodulestable_content($course, $cmidcontroller) {
+function consentform_generate_coursemodulestable_content($course, $cmidcontroller, $locked) {
     global $PAGE;
 
     $modinfo = get_fast_modinfo($course);
     $coursemodules = $modinfo->get_cms();
     $sections = $modinfo->get_section_info_all();
-    $context = $PAGE->cm->context;
 
     $rows = array();
     $sectionibefore = "";
@@ -69,10 +69,13 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $usercanviewsection = true;
                     $row = new html_table_row();
                     $sectionname = $sections[$sectioni]->name;
-                    $sectionname = $sectionname ? $sectionname : get_string("section", "moodle") . " " . (string)($sectioni);
+                    if (!$sectionname && $sectioni == 0) {
+                        $sectionname = get_string("general", "moodle");
+                    }
+                    $sectionname = $sectionname ?? get_string("topic", "moodle") . " " . (string)($sectioni);
 
                     $nourl = $PAGE->url . "#";
-                    $cell = new html_table_cell($sectionname . '&nbsp;&nbsp;' .
+                    $cell = new html_table_cell('<strong>' .$sectionname . '</strong>&nbsp;&nbsp;' .
                         \html_writer::link($nourl, get_string('all', 'moodle'),
                             ['class' => "co_section_all section$sectioni"]).' / '.
                         \html_writer::link($nourl, get_string('none', 'moodle'),
@@ -87,14 +90,13 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                 $sectionibefore = $sectioni;
             }
             if ($usercanviewsection) {
-                $modname = $cminfo->modname;
-                if (has_capability("mod/$modname:addinstance", $context)) {
+                if ($cminfo->uservisible) {
                     $row = new html_table_row();
                     $cmidcontrolled = $cmid;
                     $cfcontrolled = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $checked = $cfcontrolled <= 0 ? 0 : 1;
                     $checkboxattributes = array('class' => "selectcoursemodule section$sectioni");
-                    if ($cfcontrolled == 2 || $cfcontrolled == -1) {
+                    if ($cfcontrolled == 2 || $cfcontrolled == -1 || $locked) {
                         $checkboxattributes['disabled'] = "disabled";
                     }
                     $cell = new html_table_cell(
@@ -112,10 +114,10 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $activitylink = html_writer::empty_tag('img', array('src' => $cminfo->get_icon_url(),
                             'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname,
                             'title' => $cminfo->modfullname, 'role' => 'presentation')) .
-                            html_writer::tag('span', $cminfo->name, array('class' => 'instancename'));
+                            html_writer::tag('span', $cminfo->name, array('class' => 'leftmargin'));
                     $row->cells[] = new html_table_cell(
                         html_writer::start_div('activity').html_writer::link($viewurl, $activitylink).
-                        html_writer::end_div()
+                            html_writer::end_div()
                     );
                     $row->attributes['class'] = "consentform_activitytable_activityrow";
                     $rows[] = $row;
@@ -762,13 +764,13 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $orderby = null;
     }
 
-    // Participants with no action.
+    // Participants with no action. Only with capability view.
     if ($tab == CONSENTFORM_STATUS_NOACTION) {
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby);
-        $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, -2 as state ";
+        $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, 2 as state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
         $sqlwhere = "WHERE (c.consentformcmid = :cmid) ";
         $sqlorderby = "ORDER BY :sqlsortkey :sqlsortorder";
@@ -778,9 +780,9 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $listusers = array_diff_key($enrolledview, $enrolledsubmit, $withaction);
         foreach ($listusers as &$row) {
             $row->timestamp = CONSENTFORM_NOTIMESTAMP;
-            $row->state = get_string('noaction', 'consentform');
+            $row->state = CONSENTFORM_STATUS_NOACTION;
         }
-    } else if ($tab == CONSENTFORM_ALL) { // All course participants.
+    } else if ($tab == CONSENTFORM_ALL) { // All course participants. Only with capability view.
         $enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0,
             'u.id, u.lastname, u.firstname, u.email', $orderby, 0, 0, true);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
@@ -793,7 +795,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
                 $row->state = $fields->state;
             } else {
                 $row->timestamp = CONSENTFORM_NOTIMESTAMP;
-                $row->state = get_string('noaction', 'consentform');
+                $row->state = CONSENTFORM_STATUS_NOACTION;
             }
         }
         if ($sqlsortkey == "timestamp") {
@@ -818,7 +820,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
                 });
             }
         }
-    } else { // Participants with action.
+    } else { // Participants with action. Only with capability view.
         $sqlenrolled = get_enrolled_sql($context, '', 0, true);
         $enrolled = $DB->get_records_sql($sqlenrolled[0], $sqlenrolled[1]);
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, c.timestamp, c.state ";
@@ -829,6 +831,9 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $params = array('cmid' => $cm->id, 'tab' => $tab, 'sqlsortkey' => $sqlsortkey, 'sqlsortorder' => $sqlsortorder);
         $listusers = $DB->get_records_sql($query, $params);
         $listusers = array_intersect_key($listusers, $enrolled);
+        $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
+            'u.id, u.lastname, u.firstname, u.email', $orderby);
+        $listusers = array_diff_key($listusers, $enrolledsubmit);
     }
     return $listusers;
 }
@@ -902,16 +907,16 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
 
         $index++;
         switch ($row->state) {
-            case "1":
+            case CONSENTFORM_STATUS_AGREED:
                 $state = html_writer::span(get_string("agreed", "consentform"), "agreed");
                 break;
-            case "0":
+            case CONSENTFORM_STATUS_REVOKED:
                 $state = html_writer::span(get_string("revoked", "consentform"), "revoked");
                 break;
-            case "-1":
+            case CONSENTFORM_STATUS_REFUSED:
                 $state = html_writer::span(get_string("refused", "consentform"), "refused");
                 break;
-            case "-2":
+            case CONSENTFORM_STATUS_NOACTION:
             default:
                 $state = html_writer::span(get_string("noaction", "consentform"));
                 break;
@@ -928,7 +933,8 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
     }  // For each user row.
 
     if ($index == 0) {
-        $html = html_writer::tag('p', get_string('listempty', 'consentform'), array('class' => 'alert-warning'));
+        $html = html_writer::tag('p', get_string('listempty', 'consentform'),
+            array('class' => 'alert-warning', 'style' => 'margin-top:0.5em;'));
     } else {
         $html = html_writer::table($table);
     }
@@ -976,4 +982,49 @@ function consentform_participantstable_headercolumn($column, $columntitle, $sort
 
     return $linkstr;
 
+}
+
+/**
+ * Get log entry of last agreement/refusal/revocation of this user.
+ *
+ * @param int $cmid    coursemodule id
+ * @param int $userid  user id
+ * @param int $status  agreed or revoked or refused
+ * @return string  returns logentry.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function consentform_get_agreementlogentry($cmid, $userid, $status) {
+    global $DB, $OUTPUT;
+
+    if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
+        array('consentformcmid' => $cmid, 'userid' => $userid))) {
+        if ($status == CONSENTFORM_STATUS_AGREED) {
+            return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)), 'success');
+        } else {
+            if ($status == CONSENTFORM_STATUS_REVOKED) {
+                return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)), 'warning');
+            } else if ($status == CONSENTFORM_STATUS_REFUSED) {
+                return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)), 'error');
+            }
+        }
+    }
+
+    return "";
+}
+
+/**
+ * Output header without the intro because it is used for course view confirmation.
+ *
+ * @param int $id of the consentform instance
+ * @return bool all is good
+ * @throws dml_exception
+ */
+function consentform_showheaderwithoutintro($id) {
+    global $DB, $OUTPUT;
+    $intro = $DB->get_field('consentform', 'intro', array('id' => $id));
+    $DB->set_field('consentform', 'intro', null, array('id' => $id));
+    echo $OUTPUT->header();
+    $DB->set_field('consentform', 'intro', $intro, array('id' => $id));
+    return true;
 }

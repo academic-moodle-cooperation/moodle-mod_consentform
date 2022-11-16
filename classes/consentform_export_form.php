@@ -53,10 +53,8 @@ class consentform_export_form extends \moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'tab');
         $mform->setType('tab', PARAM_INT);
-        $mform->addElement('hidden', 'sqlresult');
-        $mform->setType('sqlresult', PARAM_TEXT);
 
         // Add standard buttons, common to all modules.
-        $this->add_action_buttons(false, get_string('downloadbuttonlabel', 'consentform'));
+        $mform->addElement('submit', 'submitbutton', get_string('downloadbuttonlabel', 'consentform'));
     }
 }

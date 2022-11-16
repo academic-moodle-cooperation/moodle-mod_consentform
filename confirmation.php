@@ -33,7 +33,21 @@ list($course, $cm) = get_course_and_cm_from_instance($id, 'consentform', $consen
 
 require_login($course, false, $cm);
 
-$context = context_module::instance($cm->id);
+$locked = false;
+$contextcoursecat = context_coursecat::instance($course->category);
+if ($contextcoursecat->locked) {
+    $locked = true;
+} else {
+    $contextcourse = context_course::instance($cm->course);
+    if ($contextcourse->locked) {
+        $locked = true;
+    } else {
+        $contextmodule = context_module::instance($cm->id);
+        if ($contextmodule->locked) {
+            $locked = true;
+        }
+    }
+}
 
 // Agreement form, participant's view.
 $mform = new \mod_consentform\consentform_agreement_form(null,
@@ -42,7 +56,8 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
         'courseid' => $course->id,
         'consentform' => $consentform,
         'userid' => $USER->id,
-        'confirmationtextclass' => 'consentform_confirmationtext_incourseoverview'
+        'confirmationtextclass' => 'consentform_confirmationtext_incourseoverview',
+        'locked' => $locked
     ));
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {
@@ -58,6 +73,7 @@ if ($data = $mform->get_data()) {
                 'context' => $PAGE->context
             )
         );
+        $event->trigger();
     } else if (isset($data->revocation) && $data->revocation == $consentform->textrevocationbutton) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REVOKED, $USER->id, $cm->id);
         $message = get_string('msgrevoked', 'consentform');
@@ -67,6 +83,7 @@ if ($data = $mform->get_data()) {
                 'context' => $PAGE->context
             )
         );
+        $event->trigger();
     } else if (isset($data->refusal) && $data->refusal == $consentform->textrefusalbutton) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REFUSED, $USER->id, $cm->id);
         $message = get_string('msgrefused', 'consentform');
@@ -76,9 +93,9 @@ if ($data = $mform->get_data()) {
                 'context' => $PAGE->context
             )
         );
+        $event->trigger();
     }
 
-    $event->trigger();
 
     $redirecturl = new moodle_url('/mod/consentform/confirmation.php', array('id' => $id));
     $SESSION->consentform_reloadiframe = "1";
@@ -91,12 +108,11 @@ if ($data = $mform->get_data()) {
         echo html_writer::script('parent.location.reload();');
     } else {
         // Show inline form only if there is no user's action yet.
-        if (!$DB->record_exists(
-            'consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
+        if (!$DB->record_exists('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
             // Display agreement form to participant.
             $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
             $PAGE->set_title(format_string($consentform->name));
-            $PAGE->set_pagelayout('embedded');
+            $PAGE->set_pagelayout('login');
             echo $OUTPUT->header();
             echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();

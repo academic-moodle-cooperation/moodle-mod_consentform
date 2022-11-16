@@ -33,7 +33,7 @@ consent form module will be accessible.
 Requirements
 ------------
 
-The plugin is available for Moodle 3.11+. This version is for Moodle 3.11
+The plugin is available for Moodle 3.11+.
 
 The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1.
 Otherwise consentform will not work!
@@ -67,7 +67,9 @@ administrators in the consentform module:
 Documentation
 -------------
 
-You can find a cheat sheet for the plugin on the AMC website in german only: https://www.academic-moodle-cooperation.org/fileadmin/user_upload/p_aec/Cheat_Sheets/Einverstaendniserklaerung_einholen-DE.pdf.
+You can find a cheat sheet for the plugin here: 
+English - https://m3e.meduniwien.ac.at/m3e/Consentform_311-EN.pdf
+German - https://www.academic-moodle-cooperation.org/fileadmin/user_upload/p_aec/Cheat_Sheets/Einverstaendniserklaerung_einholen-DE.pdf
 
 
 Bug Reports / Support

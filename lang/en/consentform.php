@@ -31,7 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 $string['agree'] = 'I agree';
 $string['agreed'] = 'agreed';
 $string['agreementlogentry'] = 'You have agreed at {$a}.';
-$string['backbutton'] = 'Back to course overview';
 $string['backbuttonlist'] = 'Back to module list';
 $string['choice'] = 'Make your choice: ';
 $string['configurations'] = 'Configuration of this consentform instance';
@@ -50,7 +49,7 @@ $string['deletetesterrormessage'] = 'Your test action could not be deleted due t
 $string['deletetestmessage'] = 'Your test action has been deleted.';
 $string['dependent'] = 'Course elements not accessible without agreement';
 $string['description'] = 'Description';
-$string['downloadbuttonlabel'] = 'Download';
+$string['downloadbuttonlabel'] = 'Export';
 $string['eventagreementagree'] = "User AGREED";
 $string['eventagreementagreedesc'] = 'The user with id {$a->userid} AGREED to the consentform statement of module {$a->contextinstanceid}.';
 $string['eventagreementrefuse'] = 'User REFUSED';

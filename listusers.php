@@ -39,11 +39,10 @@ $sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the o
 $tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 $context = context_module::instance($cm->id);
-$coursecontext = context_course::instance($course->id);
 
 require_login($course, false, $cm);
 
-if (!has_capability('mod/consentform:submit', $context, null, false)) {
+if (!has_capability('mod/consentform:submit', $context)) {
     redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id, 'sesskey' => sesskey())));
 }
 
@@ -67,18 +66,19 @@ $event->add_record_snapshot($PAGE->cm->modname, $consentform);
 $event->trigger();
 
 // Print the page header.
-$PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
+$PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
+$PAGE->add_body_class('limitedwidth');
 
 // Output starts here.
-echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($consentform->name));
+consentform_showheaderwithoutintro($consentform->id);
 
+$coursecontext = context_course::instance($course->id);
 // All active participants.
-$enrolledview = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
+$enrolledview = get_enrolled_users($coursecontext, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
 // All trainers and admins.
-$enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0, 'u.id');
+$enrolledsubmit = get_enrolled_users($coursecontext, 'mod/consentform:submit', 0, 'u.id');
 // All participants who are not trainers.
 $enrolled = array_diff_key($enrolledview, $enrolledsubmit);
 
@@ -117,90 +117,83 @@ $usersrevoked = $DB->get_records_sql($query, array('cmid' => $cm->id));
 $usersrevoked = array_intersect_key($enrolled, $usersrevoked);
 $sumrevoked = count($usersrevoked);
 
+$url = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
 // Get tabs for display.
-$tabrow = array();
-$tabrow[] = new tabobject(CONSENTFORM_STATUS_AGREED,
-    $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_STATUS_AGREED,
-    get_string('titleagreed', 'consentform')." (".$sumagreed.")");
-$tabrow[] = new tabobject(CONSENTFORM_STATUS_REFUSED,
-    $CFG->wwwroot . '/mod/consentform/listusers.php?id=' . $id . '&amp;tab=' . CONSENTFORM_STATUS_REFUSED,
-    get_string('titlerefused', 'consentform') . " (" . $sumrefused . ")");
-$tabrow[] = new tabobject(CONSENTFORM_STATUS_REVOKED,
-    $CFG->wwwroot . '/mod/consentform/listusers.php?id=' . $id . '&amp;tab=' . CONSENTFORM_STATUS_REVOKED,
-    get_string('titlerevoked', 'consentform') . " (" . $sumrevoked . ")");
-$tabrow[] = new tabobject(CONSENTFORM_STATUS_NOACTION,
-    $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_STATUS_NOACTION,
-    get_string('titlenone', 'consentform')." (".$sumnoaction.")");
-$tabrow[] = new tabobject(CONSENTFORM_ALL,
-    $CFG->wwwroot.'/mod/consentform/listusers.php?id='.$id.'&amp;tab='.CONSENTFORM_ALL,
-    get_string('titleall', 'consentform')." (".$sumall.")");
 
-$tabrows = array();
-$tabrows[] = $tabrow;
+$thirdnav = array();
+$url->param('tab', CONSENTFORM_STATUS_AGREED);
+$thirdnavlink[CONSENTFORM_STATUS_AGREED] = $url->out();
+$url->param('tab', CONSENTFORM_STATUS_REFUSED);
+$thirdnavlink[CONSENTFORM_STATUS_REFUSED] = $url->out();
+$url->param('tab', CONSENTFORM_STATUS_REVOKED);
+$thirdnavlink[CONSENTFORM_STATUS_REVOKED] = $url->out();
+$url->param('tab', CONSENTFORM_STATUS_NOACTION);
+$thirdnavlink[CONSENTFORM_STATUS_NOACTION] = $url->out();
+$url->param('tab', CONSENTFORM_ALL);
+$thirdnavlink[CONSENTFORM_ALL] = $url->out();
 
-echo html_writer::start_div('consentformdisplay');
-print_tabs($tabrows, $tab);
-echo html_writer::end_div();
+$thirdnav[$thirdnavlink[CONSENTFORM_STATUS_AGREED]] =
+    get_string('titleagreed', 'consentform')." (".$sumagreed.")";
+$thirdnav[$thirdnavlink[CONSENTFORM_STATUS_REFUSED]] =
+    get_string('titlerefused', 'consentform') . " (" . $sumrefused . ")";
+$thirdnav[$thirdnavlink[CONSENTFORM_STATUS_REVOKED]] =
+    get_string('titlerevoked', 'consentform') . " (" . $sumrevoked . ")";
+$thirdnav[$thirdnavlink[CONSENTFORM_STATUS_NOACTION]] =
+    get_string('titlenone', 'consentform')." (".$sumnoaction.")";
+$thirdnav[$thirdnavlink[CONSENTFORM_ALL]] =
+    get_string('titleall', 'consentform')." (".$sumall.")";
+
+$urlselector = new \url_select($thirdnav, $thirdnavlink[$tab]);
+echo $OUTPUT->render($urlselector);
 
 $download = false;
+$title = "";
 switch ($tab) {
     case CONSENTFORM_STATUS_AGREED:
         if ($sumagreed) {
             $download = true;
         }
+        $title = get_string('titleagreed', 'consentform');
         break;
     case CONSENTFORM_STATUS_REFUSED:
         if ($sumrefused) {
             $download = true;
         }
+        $title = get_string('titlerefused', 'consentform');
         break;
     case CONSENTFORM_STATUS_REVOKED:
         if ($sumrevoked) {
             $download = true;
         }
+        $title = get_string('titlerevoked', 'consentform');
         break;
     case CONSENTFORM_STATUS_NOACTION:
         if ($sumnoaction) {
             $download = true;
         }
+        $title = get_string('titlenone', 'consentform');
         break;
     case CONSENTFORM_ALL:
         if ($sumall) {
             $download = true;
         }
-        break;
+        $title = get_string('titleall', 'consentform');
 }
+echo html_writer::tag('h2', $title);
 
-$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm);
+$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $coursecontext, $cm);
 
 if ($download) {
-    $xform = new \mod_consentform\consentform_export_form('exportcsv.php?id=' . $cm->id,
-        null, null, null, array("id" => "consentform_export_form"));
-    $data = new stdClass();
-    $data->id = $cm->id;
-    $data->tab = $tab;
-    $data->sortkey = $sortkey;
-    $data->sortorder = $sortorder;
-    $xform->set_data($data);
-    echo $OUTPUT->box_start();
-    $xform->display();
-    echo $OUTPUT->box_end();
-}
-
-if (array_key_exists($USER->id, $userswithaction)) {
-    $deletelink = new moodle_url($PAGE->url, array("delete" => "1", 'sesskey' => sesskey()));
-    echo $OUTPUT->box_start();
-    echo $OUTPUT->single_button($deletelink, get_string("deletetestaction", "consentform"));
-    echo $OUTPUT->box_end();
+    $exportlink = new moodle_url('exportcsv.php', array(
+        'id' => $id, 'tab' => $tab, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
+    $exporttext = get_string('downloadbuttonlabel', 'consentform');
+    echo html_writer::start_div('consentformexportlink');
+    echo html_writer::link($exportlink, $exporttext,  ['class' => 'btn btn-primary']);
+    echo html_writer::end_div();
 }
 
 // Display users and their status.
 echo consentform_display_participants($listusers, $cm->id, consentform_get_sqlsortkey($sortkey), $sortorder, $tab);
-
-if (!$consentform->nocoursemoduleslist) {
-    echo $OUTPUT->single_button(new moodle_url('view.php', array('id' => $cm->id)),
-        get_string("backbuttonlist", "consentform"));
-}
 
 // Finish the page.
 echo $OUTPUT->footer();

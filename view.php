@@ -37,6 +37,20 @@ if ($id) {
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
+$locked = false;
+if ($context->locked) {
+    $locked = true;
+} else {
+    $contextcoursecat = context_coursecat::instance($course->category);
+    if ($contextcoursecat->locked) {
+        $locked = true;
+    } else {
+        $contextcourse = context_course::instance($cm->course);
+        if ($contextcourse->locked) {
+            $locked = true;
+        }
+    }
+}
 
 $event = \mod_consentform\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
@@ -52,6 +66,7 @@ $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
 $PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
+$PAGE->add_body_class('limitedwidth');
 
 $nogostring = "";
 $nogostrcon = "";
@@ -71,10 +86,8 @@ if (!$cm->completion) {
 if ($nogostring) {
 
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(format_string($consentform->name));
     $nogostring = get_string("nocompletiontitle", "mod_consentform"). $nogostrcon . $nogostring;
-    echo $OUTPUT->fatal_error(
-        $nogostring, "https://docs.moodle.org/en/Activity_completion_settings", $redirecturl, null);
+    echo $OUTPUT->notification($nogostring, 'info', false);
 
 } else {
 
@@ -82,30 +95,16 @@ if ($nogostring) {
         if ($consentform->nocoursemoduleslist) {
             redirect(new moodle_url('/mod/consentform/listusers.php', array('id' => $id)));
         }
-        echo $OUTPUT->header();
-        echo $OUTPUT->heading(format_string($consentform->name));
-        if (!$consentform->confirmincourseoverview) {
-            if ($consentform->intro) {
-                echo $OUTPUT->box(format_module_intro(
-                    'consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
-            }
-        }
-        // Render action link to the reaction lists.
-        echo $OUTPUT->box_start('', 'consentform_linklistusers_cointainer');
-        echo $OUTPUT->image_icon('t/groupv', get_string('listusers', 'consentform'), 'moodle', array(
-            'style' => 'cursor:pointer;margin-right:3px;nowrap'));
-        echo $OUTPUT->action_link(new moodle_url('listusers.php', array('id' => $cm->id)),
-            get_string('listusers', 'consentform'));
-        echo $OUTPUT->box_end();
+        consentform_showheaderwithoutintro($consentform->id);
+
         // List of course modules, teacher's view.
         $table = new html_table();
         $table->id = 'consentform_activitytable';
         $table->attributes['class'] = 'flexible generaltable generalbox';
         $table->head = consentform_generate_coursemodulestable_header();
-        $table->data = consentform_generate_coursemodulestable_content($course, $cm->id);
+        $table->data = consentform_generate_coursemodulestable_content($course, $cm->id, $locked);
 
         echo consentform_render_coursemodulestable($table);
-        echo $OUTPUT->single_button($redirecturl, get_string("backbutton", "consentform"));
 
         $jsparams = array('cmid' => $cm->id);
         $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));
@@ -119,7 +118,8 @@ if ($nogostring) {
                 'courseid' => $course->id,
                 'consentform' => $consentform,
                 'userid' => $USER->id,
-                'confirmationtextclass' => 'consentform_confirmationtext'
+                'confirmationtextclass' => 'consentform_confirmationtext',
+                'locked' => $locked
             ));
         // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {
@@ -159,14 +159,7 @@ if ($nogostring) {
                 redirect($redirecturl);
             }
         } else {  // Display agreement form to participant.
-            echo $OUTPUT->header();
-            echo $OUTPUT->heading(format_string($consentform->name));
-            if (!$consentform->confirmincourseoverview) {
-                if ($consentform->intro) {
-                    echo $OUTPUT->box(format_module_intro(
-                        'consentform', $consentform, $cm->id), 'generalbox mod_introbox', 'consentformintro');
-                }
-            }
+            consentform_showheaderwithoutintro($consentform->id);
             echo $OUTPUT->box_start('', 'consentform_main_cointainer');
             $mform->display();
             echo $OUTPUT->box_end();
