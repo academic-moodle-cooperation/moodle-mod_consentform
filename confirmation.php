@@ -73,6 +73,7 @@ if ($data = $mform->get_data()) {
                 'context' => $PAGE->context
             )
         );
+        $event->trigger();
     } else if (isset($data->revocation) && $data->revocation == $consentform->textrevocationbutton) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REVOKED, $USER->id, $cm->id);
         $message = get_string('msgrevoked', 'consentform');
@@ -82,6 +83,7 @@ if ($data = $mform->get_data()) {
                 'context' => $PAGE->context
             )
         );
+        $event->trigger();
     } else if (isset($data->refusal) && $data->refusal == $consentform->textrefusalbutton) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REFUSED, $USER->id, $cm->id);
         $message = get_string('msgrefused', 'consentform');
@@ -91,9 +93,9 @@ if ($data = $mform->get_data()) {
                 'context' => $PAGE->context
             )
         );
+        $event->trigger();
     }
 
-    $event->trigger();
 
     $redirecturl = new moodle_url('/mod/consentform/confirmation.php', array('id' => $id));
     $SESSION->consentform_reloadiframe = "1";
