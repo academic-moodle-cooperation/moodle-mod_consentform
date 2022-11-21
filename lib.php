@@ -317,7 +317,7 @@ function consentform_reset_course_form_defaults($course) {
 /**
  * Adds module specific settings to the settings block
  *
- * @param settings_navigation $settings The settings navigation object
+ * @param settings_navigation $settingsnav The settings navigation object
  * @param navigation_node $consentformnode The node to add module settings to
  * @throws coding_exception
  * @throws moodle_exception
