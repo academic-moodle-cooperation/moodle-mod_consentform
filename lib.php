@@ -317,16 +317,43 @@ function consentform_reset_course_form_defaults($course) {
 /**
  * Adds module specific settings to the settings block
  *
- * @param settings_navigation $settings The settings navigation object
+ * @param settings_navigation $settingsnav The settings navigation object
  * @param navigation_node $consentformnode The node to add module settings to
+ * @throws coding_exception
+ * @throws moodle_exception
  */
-function consentform_extend_settings_navigation(settings_navigation $settings, navigation_node $consentformnode) {
+function consentform_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $consentformnode) {
 
-    $context = context_module::instance($settings->get_page()->cm->id);
-
-    if (has_capability('mod/consentform:submit', $context)) {
-        $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settings->get_page()->cm->id));
-        $consentformnode->add(get_string('listusers', 'consentform'), $url, navigation_node::TYPE_SETTING, null, 'listusers', null);
+    if (empty($settingsnav->get_page()->cm->context)) {
+        $settingsnav->get_page()->cm->context = context_module::instance($settingsnav->get_page()->cm->instance);
+    }
+    if (!has_capability('mod/consentform:submit', $settingsnav->get_page()->context)) {
+        return;
     }
 
+    // Find appropriate key where our link should come. Probably won't work, but at least try.
+    $keys = [
+        'contextlocking' => navigation_node::TYPE_SETTING
+    ];
+    $beforekey = null;
+    foreach ($keys as $key => $type) {
+        if ($foundnode = $consentformnode->find($key, $type)) {
+            $beforekey = $key;
+            break;
+        }
+    }
+
+    $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settingsnav->get_page()->cm->id));
+    $title = get_string('listusers', 'consentform');
+    $childnode = navigation_node::create(
+        $title,
+        $url,
+        navigation_node::TYPE_SETTING,
+        'agreements',
+        'listusers'
+    );
+
+    $node = $consentformnode->add_node($childnode, $beforekey);
+
 }
+

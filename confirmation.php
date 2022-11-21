@@ -107,21 +107,13 @@ if ($data = $mform->get_data()) {
         // Reload parent after form processing.
         echo html_writer::script('parent.location.reload();');
     } else {
-        // Show inline form only if there is no user's action yet.
-        if (!$DB->record_exists('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
-            // Display agreement form to participant.
-            $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
-            $PAGE->set_title(format_string($consentform->name));
-            $PAGE->set_pagelayout('login');
-            echo $OUTPUT->header();
-            echo $OUTPUT->box_start('', 'consentform_main_cointainer');
-            $mform->display();
-            echo $OUTPUT->box_end();
-        } else {
-            $jscode = "window.onload=function(){var myIframe;if (myIframe = window.parent.document.getElementsByName('";
-            $jscode .= "consentformiframe$consentform->id')[0]) {";
-            $jscode .= "myIframe.remove();}}";
-            echo html_writer::script($jscode);
-        }
+        // Display agreement form to participant.
+        $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
+        $PAGE->set_title(format_string($consentform->name));
+        $PAGE->set_pagelayout('popup');
+        echo $OUTPUT->header();
+        echo $OUTPUT->box_start('', 'consentform_main_cointainer');
+        $mform->display();
+        echo $OUTPUT->box_end();
     }
 }
