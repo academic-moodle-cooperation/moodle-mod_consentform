@@ -48,16 +48,16 @@ $csvrows = array();
 foreach ($listusers as $record) {
     switch ($record->state) {
         case CONSENTFORM_STATUS_AGREED:
-            $status = get_string("agreed", "consentform");
+            $record->state = get_string("agreed", "consentform");
             break;
         case CONSENTFORM_STATUS_REVOKED:
-            $status = get_string("revoked", "consentform");
+            $record->state = get_string("revoked", "consentform");
             break;
         case CONSENTFORM_STATUS_REFUSED:
-            $status = get_string("refused", "consentform");
+            $record->state = get_string("refused", "consentform");
             break;
         default:
-            $status = get_string("noaction", "consentform");
+            $record->state = get_string("noaction", "consentform");
     }
     $csvrow = array(
         get_string('lastname') => $record->lastname,
@@ -65,7 +65,7 @@ foreach ($listusers as $record) {
         get_string('email') => $record->email,
         get_string('timestamp', 'consentform') =>
             $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
-        get_string('state') => $status
+        get_string('state') => $record->state
     );
     $csvrows[] = $csvrow;
 } // End loop records.

@@ -70,7 +70,7 @@ $capabilities = array(
 
     'mod/consentform:submit' => array(
         'riskbitmask' => RISK_SPAM,
-        'captype' => 'write',
+        'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
