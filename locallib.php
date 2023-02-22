@@ -697,21 +697,28 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
  * Enter grade value for all agreements when usegrade has been switched to on.
  *
  * @param int $cmid id of this instance's coursemodule
+ * @param object $consentform data of the mod_form plus id
  * @return bool
  * @throws dml_exception
  */
-function consentform_usegradechange_writegrades($cmid) {
-    global $DB;
+function consentform_usegradechange_writegrades($consentform) {
+    global $DB, $PAGE;
 
-    $instanceid = $DB->get_field('course_modules', 'instance', array('id' => $cmid));
-    $consentform = $DB->get_record('consentform', array('id' => $instanceid));
-
-    $records = $DB->get_records('consentform_state', ["consentformcmid" => $cmid, "state" => CONSENTFORM_STATUS_AGREED]);
-    foreach ($records as $record) {
-        consentform_set_user_grade($consentform, $record->userid, GRADEVALUETOWRITE);
+    $context = $PAGE->cm->context;
+    $cmid = $PAGE->cm->id;
+    $participants = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
+    foreach ($participants as $participant) {
+        $state = $DB->get_field('consentform_state', 'state',
+            array('consentformcmid' => $cmid, 'userid' => $participant->id));
+        if ($state == CONSENTFORM_STATUS_AGREED) {
+            consentform_set_user_grade($consentform, $participant->userid, GRADEVALUETOWRITE);
+        } else {
+            $DB->delete_records('course_modules_completion',
+                array('coursemoduleid' => $cmid, 'userid' => $participant->id));
+        }
     }
 
-    rebuild_course_cache($consentform->course, false);
+    rebuild_course_cache($consentform->course);
 
     return true;
 }

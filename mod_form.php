@@ -133,17 +133,6 @@ class mod_consentform_mod_form extends moodleform_mod {
             if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
                 $data->showdescription = 1;
             }
-            if ($data->update) {
-                $dbusegrade = $DB->get_field('consentform', 'usegrade', ["id" => $data->instance]);
-                if ($dbusegrade != $data->usegrade) {
-                    if ($data->usegrade) {
-                        consentform_usegradechange_writegrades($data->coursemodule);
-                    } else {
-                        $consentform = $DB->get_record('consentform', array('id' => $data->instance));
-                        consentform_grade_item_delete($consentform);
-                    }
-                }
-            }
         }
         return $data;
     }
