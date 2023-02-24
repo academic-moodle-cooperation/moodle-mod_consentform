@@ -698,7 +698,7 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
 /**
  * Enter grade value for all agreements when usegrade has been switched on.
  *
- * @param int $cmid id of this instance's coursemodule
+ * @param int $consentform data of mod_form
  * @return bool
  * @throws dml_exception
  */
@@ -721,6 +721,7 @@ function consentform_usegradechange_writegrades($consentform) {
  *
  * @param int $cmid course module id of this consentform instance
  * @param int $agreed agreement/refusal/revocation
+ * @param int $userid optional userid, otherwise current user
  * @return bool
  * @throws coding_exception
  * @throws moodle_exception
