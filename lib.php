@@ -128,17 +128,23 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
     global $DB;
 
     $consentform->timemodified = time();
+    $consentform->completionunlocked = false;
     $consentform->id = $consentform->instance;
+
+    $consentformdb = $DB->get_record('consentform', ["id" => $consentform->id]);
+    if ($consentformdb->usegrade != $consentform->usegrade) {
+        if ($consentform->usegrade) {
+            consentform_grade_item_update($consentform);
+            consentform_usegradechange_writegrades($consentform);
+        } else {
+            consentform_grade_item_delete($consentform);
+        }
+    }
 
     $result = $DB->update_record('consentform', $consentform);
 
-    if ($consentform->usegrade) {
-        consentform_grade_item_update($consentform);
-    } else {
-        consentform_grade_item_delete($consentform);
-    }
-
     return $result;
+
 }
 
 /**
