@@ -696,31 +696,22 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
 }
 
 /**
- * Enter grade value for all agreements when usegrade has been switched to on.
+ * Enter grade value for all agreements when usegrade has been switched on.
  *
  * @param int $cmid id of this instance's coursemodule
- * @param object $consentform data of the mod_form plus id
  * @return bool
  * @throws dml_exception
  */
 function consentform_usegradechange_writegrades($consentform) {
-    global $DB, $PAGE;
+    global $DB;
 
-    $context = $PAGE->cm->context;
-    $cmid = $PAGE->cm->id;
-    $participants = get_enrolled_users($context, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
-    foreach ($participants as $participant) {
-        $state = $DB->get_field('consentform_state', 'state',
-            array('consentformcmid' => $cmid, 'userid' => $participant->id));
-        if ($state == CONSENTFORM_STATUS_AGREED) {
-            consentform_set_user_grade($consentform, $participant->userid, GRADEVALUETOWRITE);
-        } else {
-            $DB->delete_records('course_modules_completion',
-                array('coursemoduleid' => $cmid, 'userid' => $participant->id));
-        }
+    $records = $DB->get_records('consentform_state',
+        ["consentformcmid" => $consentform->coursemodule, "state" => CONSENTFORM_STATUS_AGREED]);
+    foreach ($records as $record) {
+        consentform_set_user_grade($consentform, $record->userid, GRADEVALUETOWRITE);
     }
 
-    rebuild_course_cache($consentform->course);
+    rebuild_course_cache($consentform->course, false);
 
     return true;
 }
@@ -734,13 +725,16 @@ function consentform_usegradechange_writegrades($consentform) {
  * @throws coding_exception
  * @throws moodle_exception
  */
-function consentform_update_completionstate($cmid, $agreed) {
+function consentform_update_completionstate($cmid, $agreed, $userid = 0) {
     global $USER;
 
+    if (!$userid) {
+        $userid = $USER->id;
+    }
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
     $cminfo = new completion_info($course);
-    $current = $cminfo->get_data($cm, false, $USER->id);
+    $current = $cminfo->get_data($cm, false, $userid);
     $current->completionstate = $agreed;
     $current->timemodified    = time();
     $cminfo->internal_set_data($cm, $current);
