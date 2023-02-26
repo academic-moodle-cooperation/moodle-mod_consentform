@@ -696,19 +696,17 @@ function consentform_completionstate_record($id, $userid, $agreed, $cmid) {
 }
 
 /**
- * Enter grade value for all agreements when usegrade has been switched to on.
+ * Enter grade value for all agreements when usegrade has been switched on.
  *
- * @param int $cmid id of this instance's coursemodule
+ * @param object $consentform data of mod_form
  * @return bool
  * @throws dml_exception
  */
-function consentform_usegradechange_writegrades($cmid) {
+function consentform_usegradechange_writegrades($consentform) {
     global $DB;
 
-    $instanceid = $DB->get_field('course_modules', 'instance', array('id' => $cmid));
-    $consentform = $DB->get_record('consentform', array('id' => $instanceid));
-
-    $records = $DB->get_records('consentform_state', ["consentformcmid" => $cmid, "state" => CONSENTFORM_STATUS_AGREED]);
+    $records = $DB->get_records('consentform_state',
+        ["consentformcmid" => $consentform->coursemodule, "state" => CONSENTFORM_STATUS_AGREED]);
     foreach ($records as $record) {
         consentform_set_user_grade($consentform, $record->userid, GRADEVALUETOWRITE);
     }
@@ -723,17 +721,21 @@ function consentform_usegradechange_writegrades($cmid) {
  *
  * @param int $cmid course module id of this consentform instance
  * @param int $agreed agreement/refusal/revocation
+ * @param int $userid optional userid, otherwise current user
  * @return bool
  * @throws coding_exception
  * @throws moodle_exception
  */
-function consentform_update_completionstate($cmid, $agreed) {
+function consentform_update_completionstate($cmid, $agreed, $userid = 0) {
     global $USER;
 
+    if (!$userid) {
+        $userid = $USER->id;
+    }
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
     $cminfo = new completion_info($course);
-    $current = $cminfo->get_data($cm, false, $USER->id);
+    $current = $cminfo->get_data($cm, false, $userid);
     $current->completionstate = $agreed;
     $current->timemodified    = time();
     $cminfo->internal_set_data($cm, $current);
@@ -773,9 +775,9 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, 2 as state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
         $sqlwhere = "WHERE (c.consentformcmid = :cmid) ";
-        $sqlorderby = "ORDER BY :sqlsortkey :sqlsortorder";
+        $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
         $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
-        $params = array('cmid' => $cm->id, 'sqlsortkey' => $sqlsortkey, 'sqlsortorder' => $sqlsortorder);
+        $params = array('cmid' => $cm->id);
         $withaction = $DB->get_records_sql($query, $params);
         $listusers = array_diff_key($enrolledview, $enrolledsubmit, $withaction);
         foreach ($listusers as &$row) {
@@ -826,9 +828,9 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $sqlselect = "SELECT u.id, u.lastname, u.firstname, u.email, c.timestamp, c.state ";
         $sqlfrom = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
         $sqlwhere = "WHERE (c.consentformcmid = :cmid AND c.state = :tab) ";
-        $sqlorderby = "ORDER BY :sqlsortkey :sqlsortorder";
+        $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
         $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
-        $params = array('cmid' => $cm->id, 'tab' => $tab, 'sqlsortkey' => $sqlsortkey, 'sqlsortorder' => $sqlsortorder);
+        $params = array('cmid' => $cm->id, 'tab' => $tab);
         $listusers = $DB->get_records_sql($query, $params);
         $listusers = array_intersect_key($listusers, $enrolled);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
