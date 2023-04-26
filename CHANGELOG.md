@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+4.1.1 (2023-02-24)
+-------------------
+
+* [FIXED] #7475 Activating use grade-option when editing instance settings sets all participants to completion_complete
+
+
 4.1.0 (2022-11-16)
 -------------------
 
