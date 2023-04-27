@@ -1002,12 +1002,15 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
     if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
         array('consentformcmid' => $cmid, 'userid' => $userid))) {
         if ($status == CONSENTFORM_STATUS_AGREED) {
-            return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)), 'success');
+            return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)),
+                'success', false);
         } else {
             if ($status == CONSENTFORM_STATUS_REVOKED) {
-                return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)), 'warning');
+                return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)),
+                    'warning', false);
             } else if ($status == CONSENTFORM_STATUS_REFUSED) {
-                return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)), 'error');
+                return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)),
+                    'error', false);
             }
         }
     }
@@ -1029,4 +1032,68 @@ function consentform_showheaderwithoutintro($id) {
     echo $OUTPUT->header();
     $DB->set_field('consentform', 'intro', $intro, array('id' => $id));
     return true;
+}
+
+/**
+ * Tells user that course module list is deactivated.
+ *
+ * @param int $id of the consentform instance
+ * @return bool all is good
+ */
+function consentform_shownocoursemodulelistinfo($id)
+{
+    $link = new moodle_url('/course/modedit.php', array('update' => $id));
+    $linktext = get_string("linktexttomodulesettings", "mod_consentform");
+    echo html_writer::start_div('row');
+    echo html_writer::div("&nbsp;", "col-3");
+    echo html_writer::div(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
+        html_writer::link($link, $linktext), "col-6 text-left mb-3");
+    echo html_writer::div("&nbsp;", "col-3");
+    echo html_writer::end_div();
+    return true;
+}
+
+/**
+ * Checks if Moodle completion, course completion and module completion is activated.
+ *
+ * @param int $id of the consentform instance
+ * @param object $context of the consentform instance
+ * @param object $course of the consentform instance
+ * @param int $cmcompletion flag if module completion is on
+ * @return string $nocompletion if not empty: completion is not ok
+ */
+function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
+    global $CFG;
+    $nocompletion = "";
+    if (!$CFG->enablecompletion) {
+        if (has_capability('mod/consentform:submit', $context, null, false)) {
+            $link = "https://docs.moodle.org/en/Activity_completion_settings#Required_site_settings";
+            $linktext = get_string("nocompletionlinktext", "mod_consentform");
+            $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform")." ".html_writer::link($link,
+                    $linktext, array('target' => '_blank')));
+        } else {
+            $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform"));
+        }
+    }
+    if (!$course->enablecompletion) {
+        if (has_capability('mod/consentform:submit', $context, null, false)) {
+            $link = new moodle_url('/course/edit.php', array('id' => $course->id));
+            $linktext = get_string("nocompletioncourselinktext", "mod_consentform");
+            $nocompletion .= html_writer::div(get_string("nocompletioncourse", "mod_consentform")." ".
+                html_writer::link($link, $linktext));
+        } else {
+            $nocompletion .= html_writer::div(get_string("nocompletioncourse", "mod_consentform"));
+        }
+    }
+    if (!$cmcompletion) {
+        if (has_capability('mod/consentform:submit', $context, null, false)) {
+            $link = new moodle_url('/course/modedit.php', array('update' => $id));
+            $linktext = get_string("nocompletionmodulelinktext", "mod_consentform");
+            $nocompletion .= html_writer::div(get_string("nocompletionmodule", "mod_consentform")." ".
+                html_writer::link($link, $linktext));
+        } else {
+            $nocompletion .= html_writer::div(get_string("nocompletionmodule", "mod_consentform"));
+        }
+    }
+    return $nocompletion;
 }
