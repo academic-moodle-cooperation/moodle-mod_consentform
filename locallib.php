@@ -446,34 +446,34 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $ret = 0;
-    $availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled));
-    $availability = json_decode($availability);
-    if (isset($availability->c) && isset($availability->op)) {
-        if (count($availability->c) > 0) {
-            $condition = $availability->c[0];
-        } else {
-            return $ret;
-        }
-        // Genuine consentform condition?
-        if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
-            if ($condition->cm == $cmidcontroller) {
-                $ret = 1;
+    if ($availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
+        $availability = json_decode($availability);
+        if (isset($availability->c) && isset($availability->op)) {
+            if (count($availability->c) > 0) {
+                $condition = $availability->c[0];
+            } else {
+                return $ret;
             }
-        }
-        // Negative user entry?
-        if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "!&") {
-            if ($condition->cm == $cmidcontroller) {
-                $ret = -1;
+            // Genuine consentform condition?
+            if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
+                if ($condition->cm == $cmidcontroller) {
+                    $ret = 1;
+                }
             }
-        }
-        // Otherwise user condition anywhere in availability?
-        if (!$ret) {
-            if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontrolled, $cmidcontroller)) {
-                $ret = 2;
+            // Negative user entry?
+            if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "!&") {
+                if ($condition->cm == $cmidcontroller) {
+                    $ret = -1;
+                }
+            }
+            // Otherwise user condition anywhere in availability?
+            if (!$ret) {
+                if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontrolled, $cmidcontroller)) {
+                    $ret = 2;
+                }
             }
         }
     }
-
     return $ret;
 }
 
@@ -1002,12 +1002,15 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
     if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
         array('consentformcmid' => $cmid, 'userid' => $userid))) {
         if ($status == CONSENTFORM_STATUS_AGREED) {
-            return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)), 'success');
+            return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)),
+                'success', false);
         } else {
             if ($status == CONSENTFORM_STATUS_REVOKED) {
-                return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)), 'warning');
+                return $OUTPUT->notification(get_string('revokelogentry', 'consentform', userdate($timestamp)),
+                    'warning', false);
             } else if ($status == CONSENTFORM_STATUS_REFUSED) {
-                return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)), 'error');
+                return $OUTPUT->notification(get_string('refuselogentry', 'consentform', userdate($timestamp)),
+                    'error', false);
             }
         }
     }
@@ -1029,4 +1032,123 @@ function consentform_showheaderwithoutintro($id) {
     echo $OUTPUT->header();
     $DB->set_field('consentform', 'intro', $intro, array('id' => $id));
     return true;
+}
+
+/**
+ * Tells user that course module list is deactivated.
+ *
+ * @param int $id of the consentform instance
+ * @return bool all is good
+ */
+function consentform_shownocoursemodulelistinfo($id) {
+    $link = new moodle_url('/course/modedit.php', array('update' => $id));
+    $linktext = get_string("linktexttomodulesettings", "mod_consentform");
+    echo html_writer::start_div('row');
+    echo html_writer::div("&nbsp;", "col-3");
+    echo html_writer::div(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
+        html_writer::link($link, $linktext), "col-6 text-left mb-3");
+    echo html_writer::div("&nbsp;", "col-3");
+    echo html_writer::end_div();
+    return true;
+}
+
+/**
+ * Checks if Moodle completion, course completion and module completion is activated.
+ *
+ * @param int $id of the consentform instance
+ * @param object $context of the consentform instance
+ * @param object $course of the consentform instance
+ * @param int $cmcompletion flag if module completion is on
+ * @return string $nocompletion if not empty: completion is not ok
+ */
+function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
+    global $CFG;
+    $nocompletion = "";
+    if (!$CFG->enablecompletion) {
+        if (has_capability('mod/consentform:submit', $context, null, false)) {
+            $link = "https://docs.moodle.org/en/Activity_completion_settings#Required_site_settings";
+            $linktext = get_string("nocompletionlinktext", "mod_consentform");
+            $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform")." ".html_writer::link($link,
+                    $linktext, array('target' => '_blank')));
+        } else {
+            $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform"));
+        }
+    }
+    if (!$course->enablecompletion) {
+        if (has_capability('mod/consentform:submit', $context, null, false)) {
+            $link = new moodle_url('/course/edit.php', array('id' => $course->id));
+            $linktext = get_string("nocompletioncourselinktext", "mod_consentform");
+            $nocompletion .= html_writer::div(get_string("nocompletioncourse", "mod_consentform")." ".
+                html_writer::link($link, $linktext));
+        } else {
+            $nocompletion .= html_writer::div(get_string("nocompletioncourse", "mod_consentform"));
+        }
+    }
+    if (!$cmcompletion) {
+        if (has_capability('mod/consentform:submit', $context, null, false)) {
+            $link = new moodle_url('/course/modedit.php', array('update' => $id));
+            $linktext = get_string("nocompletionmodulelinktext", "mod_consentform");
+            $nocompletion .= html_writer::div(get_string("nocompletionmodule", "mod_consentform")." ".
+                html_writer::link($link, $linktext));
+        } else {
+            $nocompletion .= html_writer::div(get_string("nocompletionmodule", "mod_consentform"));
+        }
+    }
+    return $nocompletion;
+}
+
+/**
+ * Statistics user reactions stati.
+ *
+ * @param object $coursecontext context course
+ * @param int $cmid ID of course module
+ * @return array stats: sumagreed, sumrefused, sumrevoked, sumnoaction, sumall
+ * @throws dml_exception
+ */
+function consentform_statistics_listusers($coursecontext, $cmid) {
+    global $DB;
+
+    // All active participants.
+    $enrolledview = get_enrolled_users($coursecontext, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
+    // All trainers and admins.
+    $enrolledsubmit = get_enrolled_users($coursecontext, 'mod/consentform:submit', 0, 'u.id');
+    // All participants who are not trainers.
+    $enrolled = array_diff_key($enrolledview, $enrolledsubmit);
+
+    // Get all users with action.
+    $sqlselect = "SELECT u.id ";
+    $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
+    $sqlwhere  = "WHERE (c.consentformcmid = :cmid) ";
+    $query = "$sqlselect $sqlfrom $sqlwhere";
+    $userswithaction = $DB->get_records_sql($query, array('cmid' => $cmid));
+
+    // Get sum users without action.
+    $usersnoactions = array_diff_key($enrolled, $userswithaction);
+    $sumnoaction = count($usersnoactions);
+
+    // Get sum ALL.
+    $sumall = count($enrolled);
+
+    // Get sum agreed.
+    $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_AGREED;
+    $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+    $usersagreed = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersagreed = array_intersect_key($enrolled, $usersagreed);
+    $sumagreed = count($usersagreed);
+
+    // Get sum refused.
+    $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REFUSED;
+    $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+    $usersrefused = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersrefused = array_intersect_key($enrolled, $usersrefused);
+    $sumrefused = count($usersrefused);
+
+    // Get sum revoked.
+    $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REVOKED;
+    $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+    $usersrevoked = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersrevoked = array_intersect_key($enrolled, $usersrevoked);
+    $sumrevoked = count($usersrevoked);
+
+    return array($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall);
 }

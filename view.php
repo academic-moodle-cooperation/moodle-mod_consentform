@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of consentform
+ * Main page of module consentform
  *
  * @package    mod_consentform
  * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
@@ -53,11 +53,11 @@ if ($context->locked) {
 }
 
 $event = \mod_consentform\event\course_module_viewed::create(array(
-    'objectid' => $PAGE->cm->instance,
-    'context' => $PAGE->context,
+    'objectid' => $cm->id,
+    'context' => $context,
 ));
-$event->add_record_snapshot('course', $PAGE->course);
-$event->add_record_snapshot($PAGE->cm->modname, $consentform);
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot($cm->modname, $consentform);
 $event->trigger();
 
 $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
@@ -68,49 +68,71 @@ $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
 
-$nogostring = "";
-$nogostrcon = "";
-if (!$CFG->enablecompletion) {
-    $nogostring .= get_string("nocompletion", "mod_consentform");
-    $nogostrcon = " ";
-}
-if (!$course->enablecompletion) {
-    $nogostring .= $nogostrcon . get_string("nocompletioncourse", "mod_consentform");
-    $nogostrcon = " ";
-}
-if (!$cm->completion) {
-    $nogostring .= $nogostrcon . get_string("nocompletionmodule", "mod_consentform");
-    $nogostrcon = " ";
-}
+$nocompletion = consentform_checkcompletion($id, $context, $course, $cm->completion);
 
-if ($nogostring) {
+if ($nocompletion) {
 
+    // Display error messages if completion settings are not sufficient.
     echo $OUTPUT->header();
-    $nogostring = get_string("nocompletiontitle", "mod_consentform"). $nogostrcon . $nogostring;
-    echo $OUTPUT->notification($nogostring, 'info', false);
+    $nocompletion = html_writer::div(get_string("nocompletiontitle", "mod_consentform"),
+            'font-weight-bold').$nocompletion;
+    echo $OUTPUT->notification($nocompletion, 'error', false);
 
 } else {
 
     if (has_capability('mod/consentform:submit', $context, null, false)) {
+
+        // Print header and start_div.
+        echo $OUTPUT->header();
+        echo html_writer::start_div();
+
+        // Link buttons to module list (optional) and users list
+        $mllink = new moodle_url('modulelist.php', array('id' => $id));
+        $mllinktext = get_string('modulelistlinktext', 'consentform');
+        $lulink = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
+        $lulinktext = get_string('listusers', 'consentform');
+        // Show information message if course module list is deactivated.
         if ($consentform->nocoursemoduleslist) {
-            redirect(new moodle_url('/mod/consentform/listusers.php', array('id' => $id)));
+            consentform_shownocoursemodulelistinfo($id);
+        } else {
+            echo html_writer::link($mllink, $mllinktext,  ['class' => 'btn btn-primary']);
         }
-        consentform_showheaderwithoutintro($consentform->id);
+        echo html_writer::link($lulink, $lulinktext,  ['class' => 'btn btn-secondary ml-2']);
 
-        // List of course modules, teacher's view.
-        $table = new html_table();
-        $table->id = 'consentform_activitytable';
-        $table->attributes['class'] = 'flexible generaltable generalbox';
-        $table->head = consentform_generate_coursemodulestable_header();
-        $table->data = consentform_generate_coursemodulestable_content($course, $cm->id, $locked);
+        // Print list of user reaction statistics.
+        $coursecontext = context_course::instance($course->id);
+        list($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall) =
+            consentform_statistics_listusers($coursecontext, $cm->id);
+        $linkclass = array("class" => "list-group-item d-flex justify-content-between align-items-center");
+        $badgeclass = "badge badge-primary badge-pill";
+        $badgeclassnull = "badge badge-secondary badge-pill";
+        echo html_writer::start_div('list-group mt-4 w-50');
+        $lulink->param('tab', CONSENTFORM_STATUS_AGREED);
+        $lulinktext = get_string('titleagreed', 'consentform').
+            html_writer::span($sumagreed, $sumagreed ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_STATUS_REFUSED);
+        $lulinktext = get_string('titlerefused', 'consentform').
+            html_writer::span($sumrefused, $sumrefused ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_STATUS_REVOKED);
+        $lulinktext = get_string('titlerevoked', 'consentform').
+            html_writer::span($sumrevoked, $sumrevoked ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_STATUS_NOACTION);
+        $lulinktext = get_string('titlenone', 'consentform').
+            html_writer::span($sumnoaction, $sumnoaction ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_ALL);
+        $lulinktext = get_string('titleall', 'consentform').
+            html_writer::span($sumall, $sumall ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
 
-        echo consentform_render_coursemodulestable($table);
+        echo html_writer::end_div(); // Reactions list.
 
-        $jsparams = array('cmid' => $cm->id);
-        $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));
-        $PAGE->requires->js_call_amd('mod_consentform/checkboxcontroller', 'init');
+        echo html_writer::end_div(); // Content main page.
 
-    } else {  // Participant's view, lack the right to submit.
+    } else {  // Participant's view, lacks the right to submit.
         // Agreement form, participant's view.
         $mform = new \mod_consentform\consentform_agreement_form(null,
             array('id' => $id,

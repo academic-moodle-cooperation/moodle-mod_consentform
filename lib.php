@@ -348,6 +348,18 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
         }
     }
 
+    $url = new moodle_url('/mod/consentform/modulelist.php', array('id' => $settingsnav->get_page()->cm->id));
+    $title = get_string('dependencies', 'mod_consentform');
+    $childnode = navigation_node::create(
+        $title,
+        $url,
+        navigation_node::TYPE_SETTING,
+        'dependencies',
+        'modulelist'
+    );
+
+    $consentformnode->add_node($childnode, $beforekey);
+
     $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settingsnav->get_page()->cm->id));
     $title = get_string('listusers', 'consentform');
     $childnode = navigation_node::create(
