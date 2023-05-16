@@ -1097,3 +1097,59 @@ function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
     }
     return $nocompletion;
 }
+
+/**
+ * Statistics user reactions stati.
+ *
+ * @param object $coursecontext context course
+ * @param int $cmid ID of course module
+ * @return array stats: sumagreed, sumrefused, sumrevoked, sumnoaction, sumall
+ * @throws dml_exception
+ */
+function consentform_statistics_listusers($coursecontext, $cmid) {
+    global $DB;
+
+    // All active participants.
+    $enrolledview = get_enrolled_users($coursecontext, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
+    // All trainers and admins.
+    $enrolledsubmit = get_enrolled_users($coursecontext, 'mod/consentform:submit', 0, 'u.id');
+    // All participants who are not trainers.
+    $enrolled = array_diff_key($enrolledview, $enrolledsubmit);
+
+    // Get all users with action.
+    $sqlselect = "SELECT u.id ";
+    $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
+    $sqlwhere  = "WHERE (c.consentformcmid = :cmid) ";
+    $query = "$sqlselect $sqlfrom $sqlwhere";
+    $userswithaction = $DB->get_records_sql($query, array('cmid' => $cmid));
+
+    // Get sum users without action.
+    $usersnoactions = array_diff_key($enrolled, $userswithaction);
+    $sumnoaction = count($usersnoactions);
+
+    // Get sum ALL.
+    $sumall = count($enrolled);
+
+    // Get sum agreed.
+    $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_AGREED;
+    $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+    $usersagreed = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersagreed = array_intersect_key($enrolled, $usersagreed);
+    $sumagreed = count($usersagreed);
+
+    // Get sum refused.
+    $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REFUSED;
+    $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+    $usersrefused = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersrefused = array_intersect_key($enrolled, $usersrefused);
+    $sumrefused = count($usersrefused);
+
+    // Get sum revoked.
+    $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REVOKED;
+    $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
+    $usersrevoked = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersrevoked = array_intersect_key($enrolled, $usersrevoked);
+    $sumrevoked = count($usersrevoked);
+
+    return array($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall);
+}

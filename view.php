@@ -82,20 +82,55 @@ if ($nocompletion) {
 
     if (has_capability('mod/consentform:submit', $context, null, false)) {
 
+        // Print header and start_div.
+        echo $OUTPUT->header();
+        echo html_writer::start_div();
+
+        // Link buttons to module list (optional) and users list
         $mllink = new moodle_url('modulelist.php', array('id' => $id));
         $mllinktext = get_string('modulelistlinktext', 'consentform');
         $lulink = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
         $lulinktext = get_string('listusers', 'consentform');
-        echo $OUTPUT->header();
-        echo html_writer::start_div('text-center');
         // Show information message if course module list is deactivated.
         if ($consentform->nocoursemoduleslist) {
             consentform_shownocoursemodulelistinfo($id);
         } else {
             echo html_writer::link($mllink, $mllinktext,  ['class' => 'btn btn-primary']);
         }
-        echo html_writer::link($lulink, $lulinktext,  ['class' => 'btn btn-primary ml-2']);
-        echo html_writer::end_div();
+        echo html_writer::link($lulink, $lulinktext,  ['class' => 'btn btn-secondary ml-2']);
+
+        // Print list of user reaction statistics.
+        $coursecontext = context_course::instance($course->id);
+        list($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall) =
+            consentform_statistics_listusers($coursecontext, $cm->id);
+        $linkclass = array("class" => "list-group-item d-flex justify-content-between align-items-center");
+        $badgeclass = "badge badge-primary badge-pill";
+        $badgeclassnull = "badge badge-secondary badge-pill";
+        echo html_writer::start_div('list-group mt-3');
+        $lulink->param('tab', CONSENTFORM_STATUS_AGREED);
+        $lulinktext = get_string('titleagreed', 'consentform').
+            html_writer::span($sumagreed, $sumagreed ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_STATUS_REFUSED);
+        $lulinktext = get_string('titlerefused', 'consentform').
+            html_writer::span($sumrefused, $sumrefused ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_STATUS_REVOKED);
+        $lulinktext = get_string('titlerevoked', 'consentform').
+            html_writer::span($sumrevoked, $sumrevoked ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_STATUS_NOACTION);
+        $lulinktext = get_string('titlenone', 'consentform').
+            html_writer::span($sumnoaction, $sumnoaction ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+        $lulink->param('tab', CONSENTFORM_ALL);
+        $lulinktext = get_string('titleall', 'consentform').
+            html_writer::span($sumall, $sumall ? $badgeclass : $badgeclassnull);
+        echo html_writer::link($lulink, $lulinktext, $linkclass);
+
+        echo html_writer::end_div(); // Reactions list.
+
+        echo html_writer::end_div(); // Content main page.
 
     } else {  // Participant's view, lacks the right to submit.
         // Agreement form, participant's view.

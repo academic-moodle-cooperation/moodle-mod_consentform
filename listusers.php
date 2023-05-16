@@ -75,47 +75,9 @@ $PAGE->add_body_class('limitedwidth');
 consentform_showheaderwithoutintro($consentform->id);
 
 $coursecontext = context_course::instance($course->id);
-// All active participants.
-$enrolledview = get_enrolled_users($coursecontext, 'mod/consentform:view', 0, 'u.id', null, 0, 0, true);
-// All trainers and admins.
-$enrolledsubmit = get_enrolled_users($coursecontext, 'mod/consentform:submit', 0, 'u.id');
-// All participants who are not trainers.
-$enrolled = array_diff_key($enrolledview, $enrolledsubmit);
 
-// Get all users with action.
-$sqlselect = "SELECT u.id ";
-$sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
-$sqlwhere  = "WHERE (c.consentformcmid = :cmid) ";
-$query = "$sqlselect $sqlfrom $sqlwhere";
-$userswithaction = $DB->get_records_sql($query, array('cmid' => $cm->id));
-
-// Get sum users without action.
-$usersnoactions = array_diff_key($enrolled, $userswithaction);
-$sumnoaction = count($usersnoactions);
-
-// Get sum ALL.
-$sumall = count($enrolled);
-
-// Get sum agreed.
-$sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_AGREED;
-$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$usersagreed = $DB->get_records_sql($query, array('cmid' => $cm->id));
-$usersagreed = array_intersect_key($enrolled, $usersagreed);
-$sumagreed = count($usersagreed);
-
-// Get sum refused.
-$sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REFUSED;
-$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$usersrefused = $DB->get_records_sql($query, array('cmid' => $cm->id));
-$usersrefused = array_intersect_key($enrolled, $usersrefused);
-$sumrefused = count($usersrefused);
-
-// Get sum revoked.
-$sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REVOKED;
-$query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-$usersrevoked = $DB->get_records_sql($query, array('cmid' => $cm->id));
-$usersrevoked = array_intersect_key($enrolled, $usersrevoked);
-$sumrevoked = count($usersrevoked);
+list($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall) =
+    consentform_statistics_listusers($coursecontext, $cm->id);
 
 $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
 // Get tabs for display.
@@ -144,7 +106,6 @@ $thirdnav[$thirdnavlink[CONSENTFORM_ALL]] =
     get_string('titleall', 'consentform')." (".$sumall.")";
 
 $urlselector = new \url_select($thirdnav, $thirdnavlink[$tab]);
-echo $OUTPUT->render($urlselector);
 
 $download = false;
 $title = "";
@@ -179,18 +140,23 @@ switch ($tab) {
         }
         $title = get_string('titleall', 'consentform');
 }
-echo html_writer::tag('h2', $title);
 
-$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $coursecontext, $cm);
+echo html_writer::start_div('d-inline-block');
+echo $OUTPUT->render($urlselector);
+echo html_writer::end_div();
 
 if ($download) {
     $exportlink = new moodle_url('exportcsv.php', array(
         'id' => $id, 'tab' => $tab, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
     $exporttext = get_string('downloadbuttonlabel', 'consentform');
-    echo html_writer::start_div('consentformexportlink');
+    echo html_writer::start_div('d-inline-block ml-3');
     echo html_writer::link($exportlink, $exporttext,  ['class' => 'btn btn-primary']);
     echo html_writer::end_div();
 }
+
+echo html_writer::tag('h2', $title, array("class" => "mt-3"));
+
+$listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $coursecontext, $cm);
 
 // Display users and their status.
 echo consentform_display_participants($listusers, $cm->id, consentform_get_sqlsortkey($sortkey), $sortorder, $tab);
