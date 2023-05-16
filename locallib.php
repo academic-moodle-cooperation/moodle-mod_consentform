@@ -446,34 +446,34 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $ret = 0;
-    $availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled));
-    $availability = json_decode($availability);
-    if (isset($availability->c) && isset($availability->op)) {
-        if (count($availability->c) > 0) {
-            $condition = $availability->c[0];
-        } else {
-            return $ret;
-        }
-        // Genuine consentform condition?
-        if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
-            if ($condition->cm == $cmidcontroller) {
-                $ret = 1;
+    if ($availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
+        $availability = json_decode($availability);
+        if (isset($availability->c) && isset($availability->op)) {
+            if (count($availability->c) > 0) {
+                $condition = $availability->c[0];
+            } else {
+                return $ret;
             }
-        }
-        // Negative user entry?
-        if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "!&") {
-            if ($condition->cm == $cmidcontroller) {
-                $ret = -1;
+            // Genuine consentform condition?
+            if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
+                if ($condition->cm == $cmidcontroller) {
+                    $ret = 1;
+                }
             }
-        }
-        // Otherwise user condition anywhere in availability?
-        if (!$ret) {
-            if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontrolled, $cmidcontroller)) {
-                $ret = 2;
+            // Negative user entry?
+            if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "!&") {
+                if ($condition->cm == $cmidcontroller) {
+                    $ret = -1;
+                }
+            }
+            // Otherwise user condition anywhere in availability?
+            if (!$ret) {
+                if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontrolled, $cmidcontroller)) {
+                    $ret = 2;
+                }
             }
         }
     }
-
     return $ret;
 }
 
@@ -1040,8 +1040,7 @@ function consentform_showheaderwithoutintro($id) {
  * @param int $id of the consentform instance
  * @return bool all is good
  */
-function consentform_shownocoursemodulelistinfo($id)
-{
+function consentform_shownocoursemodulelistinfo($id) {
     $link = new moodle_url('/course/modedit.php', array('update' => $id));
     $linktext = get_string("linktexttomodulesettings", "mod_consentform");
     echo html_writer::start_div('row');
