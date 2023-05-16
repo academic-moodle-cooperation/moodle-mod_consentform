@@ -35,12 +35,45 @@ namespace mod_consentform\event;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_viewed extends \core\event\course_module_viewed {
-
     /**
      * Initialize the event
      */
     protected function init() {
+        $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'consentform';
-        parent::init();
+    }
+
+    /**
+     * Get name of instance
+     *
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
+    public static function get_name() {
+        return get_string('moduleviewed', 'mod_consentform');
+    }
+
+    /**
+     * Get description of instance
+     *
+     * @return \lang_string|string|null
+     * @throws \coding_exception
+     */
+    public function get_description() {
+        $a = new \stdClass();
+        $a->userid = $this->userid;
+        $a->contextinstanceid = $this->objectid;
+        return get_string('modulevieweddesc', 'mod_consentform', $a);
+    }
+
+    /**
+     * Get url of instance
+     *
+     * @return \moodle_url
+     * @throws \moodle_exception
+     */
+    public function get_url() {
+        return new \moodle_url('/mod/consentform/listusers.php', array('id' => $this->objectid));
     }
 }

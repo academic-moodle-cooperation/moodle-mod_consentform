@@ -53,11 +53,11 @@ if ($context->locked) {
 }
 
 $event = \mod_consentform\event\course_module_viewed::create(array(
-    'objectid' => $PAGE->cm->instance,
-    'context' => $PAGE->context,
+    'objectid' => $cm->id,
+    'context' => $context,
 ));
-$event->add_record_snapshot('course', $PAGE->course);
-$event->add_record_snapshot($PAGE->cm->modname, $consentform);
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot($cm->modname, $consentform);
 $event->trigger();
 
 $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
@@ -106,7 +106,7 @@ if ($nocompletion) {
         $linkclass = array("class" => "list-group-item d-flex justify-content-between align-items-center");
         $badgeclass = "badge badge-primary badge-pill";
         $badgeclassnull = "badge badge-secondary badge-pill";
-        echo html_writer::start_div('list-group mt-3');
+        echo html_writer::start_div('list-group mt-4 w-50');
         $lulink->param('tab', CONSENTFORM_STATUS_AGREED);
         $lulinktext = get_string('titleagreed', 'consentform').
             html_writer::span($sumagreed, $sumagreed ? $badgeclass : $badgeclassnull);

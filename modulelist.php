@@ -27,16 +27,25 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
-    $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
-    die('You must specify a course_module ID');
+    die('You must specify a course module ID');
 }
 
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
+
+$event = \mod_consentform\event\course_module_instance_list_viewed::create(array(
+    'objectid' => $cm->id,
+    'context' => context_course::instance($cm->course),
+));
+$event->add_record_snapshot('course', $PAGE->course);
+$event->add_record_snapshot($PAGE->cm->modname, $consentform);
+$event->trigger();
+
 $locked = false;
 if ($context->locked) {
     $locked = true;
@@ -51,14 +60,6 @@ if ($context->locked) {
         }
     }
 }
-
-$event = \mod_consentform\event\course_module_viewed::create(array(
-    'objectid' => $PAGE->cm->instance,
-    'context' => $PAGE->context,
-));
-$event->add_record_snapshot('course', $PAGE->course);
-$event->add_record_snapshot($PAGE->cm->modname, $consentform);
-$event->trigger();
 
 $redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
 
