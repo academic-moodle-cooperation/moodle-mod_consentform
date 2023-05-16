@@ -43,9 +43,20 @@ class mod_consentform_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $OUTPUT;
 
         $mform = $this->_form;
+
+        $nocompletion = consentform_checkcompletion(null, $this->context, $this->_course, "nocheckcm");
+        if ($nocompletion) {
+            $nocompletion = html_writer::div(get_string("nocompletiontitle", "mod_consentform"),
+                    'font-weight-bold').$nocompletion;
+            $nocompletion = $OUTPUT->notification($nocompletion, 'error', false);
+            $mform->addElement('html', $nocompletion);
+            $mform->addElement('hidden', 'update', "");
+            $mform->setType('update', PARAM_ALPHANUM);
+            return;
+        }
 
         $settings = get_config('consentform');
 
