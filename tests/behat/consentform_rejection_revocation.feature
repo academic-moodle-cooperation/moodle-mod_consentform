@@ -34,6 +34,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
     And I add a "Forum" to section "1" and I fill the form with:
       | Forum name | forum - Revoke |
     And I am on the "consentform - Revoke" "consentform activity" page
+    And I follow "Define modulelist dependencies"
     Then I should see "forum - Revoke"
     And I click on "selectcoursemodule[]" "checkbox"
     And I am on the "consentform - Revoke" "consentform activity" page logged in as "student1"
@@ -66,6 +67,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
     And I add a "Forum" to section "1" and I fill the form with:
       | Forum name | forum - Refusal |
     And I am on the "consentform - Refusal" "consentform activity" page
+    And I follow "Define modulelist dependencies"
     Then I should see "forum - Refusal"
     And I click on "selectcoursemodule[]" "checkbox"
     And I log in as "student1"

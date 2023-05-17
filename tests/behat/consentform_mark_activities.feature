@@ -10,8 +10,8 @@ Feature: In a course, a teacher should be able to add the control of an activity
       | config           | value |
       | enablecompletion | 1     |
     And the following "courses" exist:
-      | fullname | shortname | category | groupmode | enablecompletion |
-      | Course 1 | C1        | 0        | 0         | 1                |
+      | fullname | shortname | category | groupmode | enablecompletion | showcompletionconditions |
+      | Course 1 | C1        | 0        | 0         | 1                | 1                        |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | 1        | teacher1@teacher.com |
@@ -37,6 +37,7 @@ Feature: In a course, a teacher should be able to add the control of an activity
       | Feedback for the response 'False'. | So you think it is false                |
     When I am on "Course 1" course homepage
     And I am on the "My consent form" "Consentform activity" page
+    And I follow "Define modulelist dependencies"
     Then I should see "Test quiz name"
     And I click on "selectcoursemodule[]" "checkbox"
     When I am on "Course 1" course homepage
