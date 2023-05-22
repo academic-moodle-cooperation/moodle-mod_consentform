@@ -29,3 +29,26 @@ Feature: In a course, a teacher should be able to add a new consentform
     And I log out
     And I am on the "consentform name" "consentform activity" page logged in as student1
     Then I should see "Add a consentform to the current course (Description)"
+
+  @javascript
+  Scenario: Adding a consentform instance not possible if completion is set OFF
+    Given the following config values are set as admin:
+      | config           | value |
+      | enablecompletion | 0     |
+    And the following "courses" exist:
+      | fullname | shortname | category | groupmode | enablecompletion |
+      | Course 1 | C1        | 0        | 0         | 0                |
+    And the following "users" exist:
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@teacher.com |
+      | student1 | Student   | 1        | student1@students.com |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
+    And I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I turn editing mode on
+    And I click on "[data-sectionid=\"0\"]" "css_element"
+    And I follow "Consentform"
+    Then I should see "Completion not active"
