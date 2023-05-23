@@ -328,6 +328,7 @@ function consentform_reset_course_form_defaults($course) {
  * @throws moodle_exception
  */
 function consentform_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $consentformnode) {
+    global $DB;
 
     if (empty($settingsnav->get_page()->cm->context)) {
         $settingsnav->get_page()->cm->context = context_module::instance($settingsnav->get_page()->cm->instance);
@@ -348,17 +349,20 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
         }
     }
 
-    $url = new moodle_url('/mod/consentform/modulelist.php', array('id' => $settingsnav->get_page()->cm->id));
-    $title = get_string('dependencies', 'mod_consentform');
-    $childnode = navigation_node::create(
-        $title,
-        $url,
-        navigation_node::TYPE_SETTING,
-        'dependencies',
-        'modulelist'
-    );
+    $instanceid = $settingsnav->get_page()->cm->instance;
+    if (!$DB->get_field('consentform', 'nocoursemoduleslist', array('id' => $instanceid))) {
+        $url = new moodle_url('/mod/consentform/modulelist.php', array('id' => $settingsnav->get_page()->cm->id));
+        $title = get_string('dependencies', 'mod_consentform');
+        $childnode = navigation_node::create(
+            $title,
+            $url,
+            navigation_node::TYPE_SETTING,
+            'dependencies',
+            'modulelist'
+        );
+        $consentformnode->add_node($childnode, $beforekey);
+    }
 
-    $consentformnode->add_node($childnode, $beforekey);
 
     $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settingsnav->get_page()->cm->id));
     $title = get_string('listusers', 'consentform');

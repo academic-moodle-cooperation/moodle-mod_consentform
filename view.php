@@ -93,7 +93,7 @@ if ($nocompletion) {
         $lulinktext = get_string('listusers', 'consentform');
         // Show information message if course module list is deactivated.
         if ($consentform->nocoursemoduleslist) {
-            consentform_shownocoursemodulelistinfo($id);
+            echo consentform_shownocoursemodulelistinfo($id);
         } else {
             echo html_writer::link($mllink, $mllinktext,  ['class' => 'btn btn-primary']);
         }
