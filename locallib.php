@@ -1041,15 +1041,12 @@ function consentform_showheaderwithoutintro($id) {
  * @return bool all is good
  */
 function consentform_shownocoursemodulelistinfo($id) {
+    global $OUTPUT;
     $link = new moodle_url('/course/modedit.php', array('update' => $id));
     $linktext = get_string("linktexttomodulesettings", "mod_consentform");
-    echo html_writer::start_div('row');
-    echo html_writer::div("&nbsp;", "col-3");
-    echo html_writer::div(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
-        html_writer::link($link, $linktext), "col-6 text-left mb-3");
-    echo html_writer::div("&nbsp;", "col-3");
-    echo html_writer::end_div();
-    return true;
+    $outstr =  $OUTPUT->notification(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
+        html_writer::link($link, $linktext), 'info', false);
+    return $outstr;
 }
 
 /**

@@ -84,7 +84,7 @@ if ($nocompletion) {
     if (has_capability('mod/consentform:submit', $context, null, false)) {
         if ($consentform->nocoursemoduleslist) {
             echo $OUTPUT->header();
-            consentform_shownocoursemodulelistinfo($id);
+            echo consentform_shownocoursemodulelistinfo($id);
         } else {
             // Display course modules list to the users with the submit right.
             consentform_showheaderwithoutintro($consentform->id);
