@@ -104,7 +104,7 @@ if ($nocompletion) {
         }
     } else {  // If user has no right to submit.
         echo $OUTPUT->header();
-        $OUTPUT->notification(get_string('noright', 'consentform'), 'error', false);
+        echo $OUTPUT->notification(get_string('nopermissiontoviewpage', 'error'), 'error', false);
     }
 }
 
