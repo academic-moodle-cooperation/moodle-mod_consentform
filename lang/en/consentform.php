@@ -58,7 +58,6 @@ $string['eventagreementrefusedesc'] = 'The user with id {$a->userid} REFUSED the
 $string['eventagreementrevoke'] = 'User REVOKED';
 $string['instancelistviewed'] = 'Instance list viewed';
 $string['instancelistvieweddesc'] = 'The user with id {$a->userid} viewed the instance list of module {$a->contextinstanceid}.';
-$string['listempty'] = 'No entries found.';
 $string['linktexttomodulesettings'] = 'Link to the module settings';
 $string['listempty'] = 'No entries found.';
 $string['listusers'] = 'Agreements overview';
