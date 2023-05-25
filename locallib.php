@@ -1028,7 +1028,8 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
 function consentform_showheaderwithoutintro($id) {
     global $DB, $OUTPUT;
     $intro = $DB->get_field('consentform', 'intro', array('id' => $id));
-    $DB->set_field('consentform', 'intro', null, array('id' => $id));
+    $DB->set_field('consentform', 'intro', get_string('dependencies_description', 'mod_consentform'),
+        array('id' => $id));
     echo $OUTPUT->header();
     $DB->set_field('consentform', 'intro', $intro, array('id' => $id));
     return true;
