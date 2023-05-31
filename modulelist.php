@@ -87,7 +87,8 @@ if ($nocompletion) {
             echo consentform_shownocoursemodulelistinfo($id);
         } else {
             // Display course modules list to the users with the submit right.
-            consentform_showheaderwithoutintro($consentform->id);
+            consentform_showheaderwithoutintro($consentform->id,
+                get_string('dependencies_description', 'mod_consentform'));
 
             // List of course modules.
             $table = new html_table();
