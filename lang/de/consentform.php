@@ -58,6 +58,7 @@ $string['eventagreementrevokedesc'] = 'Nutzer/in mit der ID {$a->userid} hat die
 $string['linktexttomodulesettings'] = 'Zu den Einstellungen';
 $string['listempty'] = 'Keine Einträge vorhanden.';
 $string['listusers'] = 'Zustimmungen';
+$string['modulelistlinktext'] = 'Abhängigkeiten Modulliste festlegen';
 $string['modulename'] = 'Einverständniserklärung';
 $string['modulename_help'] = 'Mit diesem Modul machen Sie den Zugang zu anderen Aktivitäten und Arbeitsmaterialien dieses Kurses von einer Einverständniserklärung abhängig, welche Sie in diesem Modul in den Moduleigenschaften definieren.';
 $string['modulenameplural'] = 'Einverständniserklärungen';
