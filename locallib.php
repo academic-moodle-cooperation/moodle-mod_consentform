@@ -1063,7 +1063,7 @@ function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
     global $CFG;
     $nocompletion = "";
     if (!$CFG->enablecompletion) {
-        if (has_capability('mod/consentform:submit', $context, null, false)) {
+        if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
             $link = "https://docs.moodle.org/en/Activity_completion_settings#Required_site_settings";
             $linktext = get_string("nocompletionlinktext", "mod_consentform");
             $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform")." ".html_writer::link($link,
@@ -1073,7 +1073,7 @@ function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
         }
     }
     if (!$course->enablecompletion) {
-        if (has_capability('mod/consentform:submit', $context, null, false)) {
+        if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
             $link = new moodle_url('/course/edit.php', array('id' => $course->id));
             $linktext = get_string("nocompletioncourselinktext", "mod_consentform");
             $nocompletion .= html_writer::div(get_string("nocompletioncourse", "mod_consentform")." ".
@@ -1083,7 +1083,7 @@ function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
         }
     }
     if (!$cmcompletion) {
-        if (has_capability('mod/consentform:submit', $context, null, false)) {
+        if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
             $link = new moodle_url('/course/modedit.php', array('update' => $id));
             $linktext = get_string("nocompletionmodulelinktext", "mod_consentform");
             $nocompletion .= html_writer::div(get_string("nocompletionmodule", "mod_consentform")." ".
