@@ -333,7 +333,7 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
     if (empty($settingsnav->get_page()->cm->context)) {
         $settingsnav->get_page()->cm->context = context_module::instance($settingsnav->get_page()->cm->instance);
     }
-    if (!has_capability('mod/consentform:submit', $settingsnav->get_page()->context)) {
+    if (!(has_capability('mod/consentform:submit', $settingsnav->get_page()->context) || is_siteadmin())) {
         return;
     }
 

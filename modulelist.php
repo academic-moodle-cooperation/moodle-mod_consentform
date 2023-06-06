@@ -81,7 +81,7 @@ if ($nocompletion) {
 
 } else {
 
-    if (has_capability('mod/consentform:submit', $context, null, false)) {
+    if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
         if ($consentform->nocoursemoduleslist) {
             echo $OUTPUT->header();
             echo consentform_shownocoursemodulelistinfo($id);

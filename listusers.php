@@ -42,7 +42,7 @@ $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-if (!has_capability('mod/consentform:submit', $context)) {
+if (!(has_capability('mod/consentform:submit', $context) || is_siteadmin())) {
     redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id, 'sesskey' => sesskey())));
 }
 
