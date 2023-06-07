@@ -70,15 +70,4 @@ class agreement_agree extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/consentform/view.php', array('id' => $this->objectid));
     }
-
-    /**
-     * Get legacy logdata
-     *
-     * @return array
-     */
-    public function get_legacy_logdata() {
-        // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_consentform', 'add',
-            $this->objectid, $this->contextinstanceid);
-    }
 }
