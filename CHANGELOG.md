@@ -1,7 +1,19 @@
 CHANGELOG
 =========
 
-4.1.1 (2023-02-24)
+4.2.0 (2023-06-08)
+-------------------
+
+* [FIXED] #7612 Deprecated event log function
+* [FEATURE] #7600 Add description to module list
+* [FIXED] #7599 New behavior if course module list is deactivated
+* [FIXED] #7512 New message if completion is not active, instance creating is not possible anymore
+* [FIXED] #7509 Add consentform:submit-like rights for admins
+* [FEATURE] #7494 New navigation structure
+* Moodle 4.2.0 compatible version
+
+* 
+* 4.1.1 (2023-02-24)
 -------------------
 
 * [FIXED] #7475 Activating use grade-option when editing instance settings sets all participants to completion_complete
