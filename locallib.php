@@ -1045,7 +1045,7 @@ function consentform_shownocoursemodulelistinfo($id) {
     global $OUTPUT;
     $link = new moodle_url('/course/modedit.php', array('update' => $id));
     $linktext = get_string("linktexttomodulesettings", "mod_consentform");
-    $outstr =  $OUTPUT->notification(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
+    $outstr = $OUTPUT->notification(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
         html_writer::link($link, $linktext), 'info', false);
     return $outstr;
 }

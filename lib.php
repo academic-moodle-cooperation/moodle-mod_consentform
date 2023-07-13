@@ -365,7 +365,6 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
         $consentformnode->add_node($childnode, $beforekey);
     }
 
-
     $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settingsnav->get_page()->cm->id));
     $title = get_string('listusers', 'consentform');
     $childnode = navigation_node::create(
