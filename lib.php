@@ -98,9 +98,11 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $url = $CFG->wwwroot."/mod/consentform/confirmation.php?id=".$consentform->id;
         $iframeparms["src"] = $url;
         $iframeparms["scrolling"] = "no";
-        $iframeparms["onload"] = "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+        $js = "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+        $js .= "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
+        $iframeparms["onload"] = $js;
         $iframeparms["frameborder"] = "0";
-        $iframeparms["style"] = "min-width:450px;";
+        $iframeparms["class"] = "w-75";
         $iframeparms["name"] = "consentformiframe$consentform->id";
         $html = html_writer::tag("iframe", null, $iframeparms);
         $consentformintro = $html;
@@ -362,7 +364,6 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
         );
         $consentformnode->add_node($childnode, $beforekey);
     }
-
 
     $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settingsnav->get_page()->cm->id));
     $title = get_string('listusers', 'consentform');
