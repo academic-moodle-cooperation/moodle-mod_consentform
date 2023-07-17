@@ -90,7 +90,7 @@ if ($nocompletion) {
         $mllink = new moodle_url('modulelist.php', array('id' => $id));
         $mllinktext = get_string('modulelistlinktext', 'consentform');
         $lulink = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
-        $lulinktext = get_string('listusers', 'consentform');
+        $lulinktext = get_string('listusersbutton', 'consentform');
         // Show information message if course module list is deactivated.
         if ($consentform->nocoursemoduleslist) {
             echo consentform_shownocoursemodulelistinfo($id);
