@@ -10,6 +10,7 @@ CHANGELOG
 * [FIXED] #7512 New message if completion is not active, instance creating is not possible anymore
 * [FIXED] #7509 Add consentform:submit-like rights for admins
 * [FEATURE] #7494 New navigation structure
+* [FEATURE] #7391 Changes of button and links lang strings
 * Moodle 4.2.0 compatible version
 
 * 
