@@ -5,7 +5,10 @@ Feature: A teacher should be able to add the options of revocation and rejection
   I need to activate the revocation and/or rejection option within the instance settings.
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | config           | value |
+      | enablecompletion | 1     |
+    And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | 1        | teacher1@example.com |
       | student1 | Student   | 1        | student1@example.com |
@@ -19,11 +22,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
 
   @javascript
   Scenario: As a teacher I add a consentform with standard settings to the course. The option to revoke should be active.
-    Given I log in as "admin"
-    And I navigate to "General > Advanced features" in site administration
-    And I set the field "Enable completion tracking" to "1"
-    And I log out
-    And I log in as "teacher1"
+    Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I turn editing mode on
     And I add a "Consentform" to section "1" and I fill the form with:
@@ -34,7 +33,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
     And I add a "Forum" to section "1" and I fill the form with:
       | Forum name | forum - Revoke |
     And I am on the "consentform - Revoke" "consentform activity" page
-    And I follow "Define modulelist dependencies"
+    And I follow "Define dependencies"
     Then I should see "forum - Revoke"
     And I click on "selectcoursemodule[]" "checkbox"
     And I am on the "consentform - Revoke" "consentform activity" page logged in as "student1"
@@ -46,11 +45,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
 
   @javascript
   Scenario: As a teacher I add a consentform with standard settings to the course. The option to refuse can be activated.
-    Given I log in as "admin"
-    And I navigate to "General > Advanced features" in site administration
-    And I set the field "Enable completion tracking" to "1"
-    And I log out
-    And I log in as "teacher1"
+    Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I turn editing mode on
     And I add a "Consentform" to section "1" and I fill the form with:
@@ -67,7 +62,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
     And I add a "Forum" to section "1" and I fill the form with:
       | Forum name | forum - Refusal |
     And I am on the "consentform - Refusal" "consentform activity" page
-    And I follow "Define modulelist dependencies"
+    And I follow "Define dependencies"
     Then I should see "forum - Refusal"
     And I click on "selectcoursemodule[]" "checkbox"
     And I log in as "student1"

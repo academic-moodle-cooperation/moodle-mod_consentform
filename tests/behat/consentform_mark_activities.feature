@@ -37,7 +37,7 @@ Feature: In a course, a teacher should be able to add the control of an activity
       | Feedback for the response 'False'. | So you think it is false                |
     When I am on "Course 1" course homepage
     And I am on the "My consent form" "Consentform activity" page
-    And I follow "Define modulelist dependencies"
+    And I follow "Define dependencies"
     Then I should see "Test quiz name"
     And I click on "selectcoursemodule[]" "checkbox"
     When I am on "Course 1" course homepage
