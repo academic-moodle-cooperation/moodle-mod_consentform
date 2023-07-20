@@ -63,7 +63,7 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
 if ($data = $mform->get_data()) {
     $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
     $PAGE->set_title(format_string($consentform->name));
-    $PAGE->set_pagelayout('embedded');
+    $PAGE->set_pagelayout('popup');
     if (isset( $data->agreement) && $data->agreement == $consentform->textagreementbutton) {
         $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
         $message = get_string('msgagreed', 'consentform');
