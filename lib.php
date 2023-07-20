@@ -98,7 +98,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $url = $CFG->wwwroot."/mod/consentform/confirmation.php?id=".$consentform->id;
         $iframeparms["src"] = $url;
         $iframeparms["scrolling"] = "no";
-        $js = "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+        $js = "this.style.height=this.contentWindow.document.documentElement.clientHeight + 'px';";
         $js .= "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
         $iframeparms["onload"] = $js;
         $iframeparms["frameborder"] = "0";
