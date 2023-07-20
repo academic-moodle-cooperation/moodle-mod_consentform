@@ -102,7 +102,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $js .= "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
         $iframeparms["onload"] = $js;
         $iframeparms["frameborder"] = "0";
-        $iframeparms["class"] = "w-75";
+        $iframeparms["class"] = "w-100";
         $iframeparms["name"] = "consentformiframe$consentform->id";
         $html = html_writer::tag("iframe", null, $iframeparms);
         $consentformintro = $html;
