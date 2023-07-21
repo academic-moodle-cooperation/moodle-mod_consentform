@@ -97,12 +97,12 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $iframeparms = array();
         $url = $CFG->wwwroot."/mod/consentform/confirmation.php?id=".$consentform->id;
         $iframeparms["src"] = $url;
-        $iframeparms["scrolling"] = "no";
+        $iframeparms["scrolling"] = "auto";
         $js = "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
         $js .= "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
         $iframeparms["onload"] = $js;
         $iframeparms["frameborder"] = "0";
-        $iframeparms["class"] = "w-75";
+        $iframeparms["class"] = "w-100";
         $iframeparms["name"] = "consentformiframe$consentform->id";
         $html = html_writer::tag("iframe", null, $iframeparms);
         $consentformintro = $html;
