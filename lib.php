@@ -101,8 +101,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $js = "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
         $js .= "this.contentWindow.document.getElementById('page').style.marginBottom='0px';";
         $js .= "this.contentWindow.document.getElementById('page-content').classList.remove('pb-3');";
-        $js .= "this.contentWindow.document.getElementById('yui3-css-stamp').remove();";
-        $js .= "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+        $js .= "this.style.height=this.contentWindow.document.documentElement.scrollHeight*0.96 + 'px';";
         $iframeparms["onload"] = $js;
         $iframeparms["frameborder"] = "0";
         $iframeparms["class"] = "w-100";
