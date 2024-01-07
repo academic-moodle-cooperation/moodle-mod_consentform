@@ -112,8 +112,6 @@ if ($data = $mform->get_data()) {
         $PAGE->set_title(format_string($consentform->name));
         $PAGE->set_pagelayout('popup');
         echo $OUTPUT->header();
-//        echo $OUTPUT->box_start('', 'consentform_main_cointainer');
         $mform->display();
-//        echo $OUTPUT->box_end();
     }
 }

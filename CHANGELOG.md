@@ -1,7 +1,14 @@
 CHANGELOG
 =========
 
-4.2.0 (2023-06-08)
+4.3.0 (2024-01-07)
+-------------------
+
+* [FIXED] #7649 Bottom margin of inline consentform in course main page too high
+* Moodle 4.3.0 compatible version
+
+
+* 4.2.0 (2023-06-08)
 -------------------
 
 * [FIXED] #7612 Deprecated event log function
@@ -13,8 +20,7 @@ CHANGELOG
 * [FEATURE] #7391 Changes of button and links lang strings
 * Moodle 4.2.0 compatible version
 
-* 
-* 4.1.1 (2023-02-24)
+4.1.1 (2023-02-24)
 -------------------
 
 * [FIXED] #7475 Activating use grade-option when editing instance settings sets all participants to completion_complete

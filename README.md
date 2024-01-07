@@ -5,7 +5,7 @@ This file is part of the mod_consentform plugin for Moodle - <http://moodle.org/
 
 *Author:*   Thomas Niedermaier
 
-*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
@@ -32,8 +32,6 @@ consent form module will be accessible.
 
 Requirements
 ------------
-
-The plugin is available for Moodle 3.11+.
 
 The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1.
 Otherwise consentform will not work!
@@ -63,6 +61,13 @@ administrators in the consentform module:
 * default instance setting title revocation button (textfield)
 * default instance setting "Agreement in course overview" (checkbox)
 * default instance setting "No course module list" (checkbox)
+
+
+Privacy API
+--------------
+
+The plugin fully implements the Moodle Privacy API.
+
 
 Documentation
 -------------
