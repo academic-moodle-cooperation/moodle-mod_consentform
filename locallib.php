@@ -447,7 +447,7 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
 
     $ret = 0;
     if ($availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
-        $availability = json_decode($availability);
+        $availability = json_decode($availability ?? '');
         if (isset($availability->c) && isset($availability->op)) {
             if (count($availability->c) > 0) {
                 $condition = $availability->c[0];
@@ -521,7 +521,7 @@ function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidco
     if ($availabilityjsonstring == '{"op":"&","c":[],"showc":[]}') {
         $availabilityjsonstring = "";
     }
-    $availabilityold = json_decode($availabilityjsonstring);
+    $availabilityold = json_decode($availabilityjsonstring ?? '');
     $availabilitynew = new stdClass();
     $availabilitynew->op = "&";
     $availabilitynew->c = array();
@@ -556,7 +556,7 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
     global $DB;
 
     $availabilityjsonstring = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled]);
-    $availability = json_decode($availabilityjsonstring);
+    $availability = json_decode($availabilityjsonstring ?? '');
     $found = false;
     if (isset($availability->c)) {
         $conditionslength = count($availability->c);
