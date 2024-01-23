@@ -33,8 +33,8 @@ consent form module will be accessible.
 Requirements
 ------------
 
-The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1.
-Otherwise consentform will not work!
+The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1,
+otherwise consentform will not work!
 
 
 Installation
@@ -46,21 +46,6 @@ Installation
 
 * Open the administration area (http://your-moodle-site/admin) to start the installation
   automatically.
-
-
-Admin Settings
---------------
-
-As an administrator you can set the default values instance-wide on the settings page for
-administrators in the consentform module:
-
-* default instance setting "Allow refusals" (checkbox)
-* default instance setting "Allow revocations" (checkbox)
-* default instance setting title agreement button (textfield)
-* default instance setting title refusal button (textfield)
-* default instance setting title revocation button (textfield)
-* default instance setting "Agreement in course overview" (checkbox)
-* default instance setting "No course module list" (checkbox)
 
 
 Privacy API
