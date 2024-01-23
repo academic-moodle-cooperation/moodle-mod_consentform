@@ -8,7 +8,7 @@ CHANGELOG
 * Moodle 4.3.0 compatible version
 
 
-* 4.2.0 (2023-06-08)
+4.2.0 (2023-06-08)
 -------------------
 
 * [FIXED] #7612 Deprecated event log function
@@ -19,6 +19,7 @@ CHANGELOG
 * [FEATURE] #7494 New navigation structure
 * [FEATURE] #7391 Changes of button and links lang strings
 * Moodle 4.2.0 compatible version
+
 
 4.1.1 (2023-02-24)
 -------------------
