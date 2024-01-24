@@ -100,8 +100,8 @@ class mod_consentform_mod_form extends moodleform_mod {
             $mform->setType($label, PARAM_TEXT);
             $mform->setDefault($label, $settings->$label);
             $mform->addRule($label, get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
+            $mform->addRule($label, null, 'required', null, 'client');
         }
-        $mform->addRule('textagreementbutton', null, 'required', null, 'client');
 
         // Adding the "configurations" fieldset, where all the consentform configuration options are configured.
         $mform->addElement('header', 'textfields', get_string('configurations', 'consentform'));
