@@ -84,6 +84,11 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         // Create the consentform instance.
         $newitemid = $DB->insert_record('consentform', $data);
+        if ($data->confirmincourseoverview) {
+            $data->intro = str_replace("confirmation.php?id=".$data->id, "confirmation.php?id=".$newitemid, $data->intro);
+            $data->id = $newitemid;
+            $DB->update_record('consentform', $data);
+        }
         $this->newcfid = $newitemid;
         $this->apply_activity_instance($newitemid);
     }
