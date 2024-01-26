@@ -1,4 +1,4 @@
-Consentform Module
+Consentform 
 ================
 
 This file is part of the mod_consentform plugin for Moodle - <http://moodle.org/>
@@ -13,34 +13,26 @@ This file is part of the mod_consentform plugin for Moodle - <http://moodle.org/
 Description
 -----------
 
-The Consentform module allows trainers to hide/reveal course elements in dependence of a consentform agreement/refusal.
+The activity Consentform enables teachers to display or hide course content for participants depending on their consent/refusal.
 
 
-Example
+Usage
 -------
 
-With consentform a trainer is able to hide selected elements of the course for participants as long as they have not
-agreed to a declaration of consent.
-To achieve this a trainer adds one or more consent form instances to a course, providing a declaration of agreement for
-each instance.
-Now, if trainers click at such an instance a list of all the modules of the course are presented to them and they can
-set the availability of each one of them as dependent on the consentform.
-Later on, if participants click at this consent form instance the declaration of consent is shown to them and they are asked to
-confirm or (optionally) to refuse, or revoke their confirmation. If the participant agrees, the elements of the course dependent on this
-consent form module will be accessible.
+Students should take part in an online exam in Moodle. Before doing so, however, they must read the information on study law, otherwise they will not be allowed to start the quiz. To obtain consent, the teacher will create a consent form activity with a corresponding text. The quiz is initially hidden from students in the course. Only after a student has called up the consent form and actively agreed to it the quiz will become accessible to them.
 
 
 Requirements
 ------------
 
-The admin config setting "enablecompletion" as well as the course setting "enablecompletion" must be set to 1,
+The admin config setting *enablecompletion* as well as the course setting *enablecompletion* must be activated,
 otherwise consentform will not work!
 
 
 Installation
 ------------
 
-* Copy the module code directly to the mod/consentform directory.
+* Copy the code directly to the mod/consentform directory.
 
 * Log into Moodle as administrator.
 
@@ -57,9 +49,7 @@ The plugin fully implements the Moodle Privacy API.
 Documentation
 -------------
 
-You can find a cheat sheet for the plugin here: 
-English - https://m3e.meduniwien.ac.at/m3e/Consentform_311-EN.pdf
-German - https://www.academic-moodle-cooperation.org/fileadmin/user_upload/p_aec/Cheat_Sheets/Einverstaendniserklaerung_einholen-DE.pdf
+You can find a documentation for the plugin on the [AMC website](https://academic-moodle-cooperation.org/mod_consentform/).
 
 
 Bug Reports / Support
