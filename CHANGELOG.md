@@ -4,6 +4,8 @@ CHANGELOG
 4.3.0 (2024-01-07)
 -------------------
 
+* [FIXED] #7829 Fix bug when copying inline consentform instance (wrong page is loaded in iframe)
+* [FIXED] #7825 Make all button texts mandatory
 * [FIXED] #7649 Bottom margin of inline consentform in course main page too high
 * Moodle 4.3.0 compatible version
 
