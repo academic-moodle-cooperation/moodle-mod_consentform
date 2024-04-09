@@ -71,6 +71,6 @@ class course_module_instance_list_viewed extends \core\event\course_module_insta
      * @throws \moodle_exception
      */
     public function get_url() {
-        return new \moodle_url('/mod/consentform/modulelist.php', array('id' => $this->objectid));
+        return new \moodle_url('/mod/consentform/modulelist.php', ['id' => $this->objectid]);
     }
 }

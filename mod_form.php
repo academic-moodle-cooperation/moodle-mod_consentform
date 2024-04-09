@@ -67,7 +67,7 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('consentformname', 'consentform'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('consentformname', 'consentform'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -88,13 +88,13 @@ class mod_consentform_mod_form extends moodleform_mod {
         // The text to agree to.
         $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
         if (isset($this->current->confirmationtext)) {
-            $editor->setValue(array('text' => $this->current->confirmationtext, 'format' => 1));
+            $editor->setValue(['text' => $this->current->confirmationtext, 'format' => 1]);
         }
         $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
         // Agreement buttons labels.
-        $labels = array('textagreementbutton', 'textrefusalbutton', 'textrevocationbutton' );
+        $labels = ['textagreementbutton', 'textrefusalbutton', 'textrevocationbutton'];
         foreach ($labels as $label) {
             $mform->addElement('text', $label, get_string($label, 'consentform'), 'size="32"');
             $mform->setType($label, PARAM_TEXT);
@@ -106,9 +106,9 @@ class mod_consentform_mod_form extends moodleform_mod {
         // Adding the "configurations" fieldset, where all the consentform configuration options are configured.
         $mform->addElement('header', 'textfields', get_string('configurations', 'consentform'));
 
-        $options = array ('optionrefuse', 'optionrevoke', 'usegrade', 'confirmincourseoverview', 'nocoursemoduleslist');
+        $options = ['optionrefuse', 'optionrevoke', 'usegrade', 'confirmincourseoverview', 'nocoursemoduleslist'];
         foreach ($options as $option) {
-            $mform->addElement('advcheckbox', $option, get_string($option, 'consentform'), null, null, array(0, 1));
+            $mform->addElement('advcheckbox', $option, get_string($option, 'consentform'), null, null, [0, 1]);
             $mform->setType($option, PARAM_INT);
             if ($option == 'usegrade') {
                 $mform->setDefault($option, 0);

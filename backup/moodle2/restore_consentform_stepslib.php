@@ -43,7 +43,7 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
      */
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('consentform', '/activity/consentform');
 
         $userinfo = $this->get_setting_value('userinfo');
@@ -106,9 +106,9 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
         $data = (object) $data;
         $oldid = $data->id;
 
-        $moduleid = $DB->get_field('course_modules', 'module', array('id' => $data->consentformcmid));
+        $moduleid = $DB->get_field('course_modules', 'module', ['id' => $data->consentformcmid]);
         $newcmid = $DB->get_field('course_modules', 'id',
-            array('module' => $moduleid, 'instance' => $this->newcfid));
+            ['module' => $moduleid, 'instance' => $this->newcfid]);
         $data->consentformcmid = $newcmid;
 
         $newitemid = $DB->insert_record('consentform_state', $data);

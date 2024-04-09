@@ -94,7 +94,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
     $consentform->id = $DB->insert_record('consentform', $consentform);
 
     if ($consentform->confirmincourseoverview) {
-        $iframeparms = array();
+        $iframeparms = [];
         $url = $CFG->wwwroot."/mod/consentform/confirmation.php?id=".$consentform->id;
         $iframeparms["src"] = $url;
         $iframeparms["scrolling"] = "auto";
@@ -108,7 +108,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $iframeparms["name"] = "consentformiframe$consentform->id";
         $html = html_writer::tag("iframe", null, $iframeparms);
         $consentformintro = $html;
-        $DB->set_field("consentform", "intro", $consentformintro, array("id" => $consentform->id));
+        $DB->set_field("consentform", "intro", $consentformintro, ["id" => $consentform->id]);
     }
     if ($consentform->usegrade) {
         consentform_grade_item_update($consentform);
@@ -167,13 +167,13 @@ function consentform_delete_instance($id) {
 
     // Get cm and consentform.
     $cm = get_coursemodule_from_instance('consentform', $id);
-    if (!$consentform = $DB->get_record('consentform', array('id' => $id))) {
+    if (!$consentform = $DB->get_record('consentform', ['id' => $id])) {
         return false;
     }
 
     // Delete dataset in consentform and dependent entries in consentform_state.
-    $DB->delete_records('consentform', array('id' => $consentform->id));
-    $DB->delete_records('consentform_state', array('consentformcmid' => $cm->id));
+    $DB->delete_records('consentform', ['id' => $consentform->id]);
+    $DB->delete_records('consentform_state', ['consentformcmid' => $cm->id]);
 
     consentform_grade_item_update($consentform);
 
@@ -197,7 +197,7 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    $item = array();
+    $item = [];
     $item['itemname'] = clean_param($consentform->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
     $item['grademax']  = 1;
@@ -223,7 +223,7 @@ function consentform_grade_item_delete($consentform) {
     require_once($CFG->libdir.'/gradelib.php');
 
     return grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
-            $consentform->id, 0, null, array('deleted' => 1));
+            $consentform->id, 0, null, ['deleted' => 1]);
 }
 
 /**
@@ -240,7 +240,7 @@ function consentform_update_grades(stdClass $consentform, $userid = 0) {
     require_once($CFG->libdir.'/gradelib.php');
 
     // Populate array of grade objects indexed by userid.
-    $grades = array();
+    $grades = [];
 
     grade_update('mod/consentform', $consentform->course, 'mod', 'consentform', $consentform->id, 0, $grades);
 }
@@ -298,17 +298,17 @@ function consentform_reset_userdata($data) {
     global $DB;
 
     $componentstr = get_string('modulenameplural', 'consentform');
-    $status = array();
+    $status = [];
 
     if (!empty($data->reset_consentform)) {
-        $consentformmoduleid = $DB->get_field('modules', 'id', array('name' => 'consentform'));
-        $cms = $DB->get_records('course_modules', array('course' => $data->courseid, 'module' => $consentformmoduleid));
+        $consentformmoduleid = $DB->get_field('modules', 'id', ['name' => 'consentform']);
+        $cms = $DB->get_records('course_modules', ['course' => $data->courseid, 'module' => $consentformmoduleid]);
         foreach ($cms as $cm) {
-            $DB->delete_records('consentform_state', array('consentformcmid' => $cm->id));
-            $consentform = $DB->get_record('consentform', array('id' => $cm->instance), '*');
+            $DB->delete_records('consentform_state', ['consentformcmid' => $cm->id]);
+            $consentform = $DB->get_record('consentform', ['id' => $cm->instance], '*');
             consentform_grade_item_delete($consentform);
         }
-        $status[] = array('component' => $componentstr, 'item' => get_string('resetok', 'consentform'), 'error' => false);
+        $status[] = ['component' => $componentstr, 'item' => get_string('resetok', 'consentform'), 'error' => false];
     }
     return $status;
 }
@@ -320,7 +320,7 @@ function consentform_reset_userdata($data) {
  * @return int[]
  */
 function consentform_reset_course_form_defaults($course) {
-    return array('reset_consentform' => 1);
+    return ['reset_consentform' => 1];
 }
 
 /**
@@ -343,7 +343,7 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
 
     // Find appropriate key where our link should come. Probably won't work, but at least try.
     $keys = [
-        'contextlocking' => navigation_node::TYPE_SETTING
+        'contextlocking' => navigation_node::TYPE_SETTING,
     ];
     $beforekey = null;
     foreach ($keys as $key => $type) {
@@ -354,8 +354,8 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     $instanceid = $settingsnav->get_page()->cm->instance;
-    if (!$DB->get_field('consentform', 'nocoursemoduleslist', array('id' => $instanceid))) {
-        $url = new moodle_url('/mod/consentform/modulelist.php', array('id' => $settingsnav->get_page()->cm->id));
+    if (!$DB->get_field('consentform', 'nocoursemoduleslist', ['id' => $instanceid])) {
+        $url = new moodle_url('/mod/consentform/modulelist.php', ['id' => $settingsnav->get_page()->cm->id]);
         $title = get_string('dependencies', 'mod_consentform');
         $childnode = navigation_node::create(
             $title,
@@ -367,7 +367,7 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
         $consentformnode->add_node($childnode, $beforekey);
     }
 
-    $url = new moodle_url('/mod/consentform/listusers.php', array('id' => $settingsnav->get_page()->cm->id));
+    $url = new moodle_url('/mod/consentform/listusers.php', ['id' => $settingsnav->get_page()->cm->id]);
     $title = get_string('listusers', 'consentform');
     $childnode = navigation_node::create(
         $title,

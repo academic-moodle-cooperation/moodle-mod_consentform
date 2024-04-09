@@ -24,12 +24,12 @@
  */
 namespace mod_consentform\privacy;
 
-use \core_privacy\local\metadata\collection;
-use \core_privacy\local\metadata\provider as metadataprovider;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\metadata\provider as metadataprovider;
 use core_privacy\local\request\userlist;
-use \core_privacy\local\request\core_userlist_provider;
-use \core_privacy\local\request\contextlist;
-use \core_privacy\local\request\plugin\provider as pluginprovider;
+use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\plugin\provider as pluginprovider;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\helper;
@@ -63,7 +63,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'consentform_state',
             [
                 'userid' => 'privacy:metadata:userid',
-                'state' => 'privacy:metadata:state'
+                'state' => 'privacy:metadata:state',
             ],
             'privacy:metadata:consentform_state'
         );
@@ -86,7 +86,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
 
         $params = [
             'contextid' => $context->id,
-            'contextlevel' => CONTEXT_MODULE
+            'contextlevel' => CONTEXT_MODULE,
         ];
 
         $sql = "SELECT cs.userid
@@ -107,7 +107,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
 
         $params = [
             'contextlevel' => CONTEXT_MODULE,
-            'userid' => $userid
+            'userid' => $userid,
         ];
 
         $sql = "SELECT ctx.id
@@ -197,7 +197,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'refused' => get_string('refused', 'consentform'),
             'action' => get_string('action', 'moodle'),
             'consentform' => $consentformid,
-            'userid' => $user->id
+            'userid' => $user->id,
         ];
 
         $sql = "SELECT cs.id, cs.timestamp,

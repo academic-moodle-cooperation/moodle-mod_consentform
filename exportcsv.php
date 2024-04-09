@@ -28,8 +28,8 @@ require_once(dirname(__FILE__) . '/locallib.php');
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
     $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
+    $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $consentform  = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
 
 } else {
     die('You must specify a course_module ID');
@@ -44,7 +44,7 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
 $listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm);
-$csvrows = array();
+$csvrows = [];
 foreach ($listusers as $record) {
     switch ($record->state) {
         case CONSENTFORM_STATUS_AGREED:
@@ -59,14 +59,14 @@ foreach ($listusers as $record) {
         default:
             $record->state = get_string("noaction", "consentform");
     }
-    $csvrow = array(
+    $csvrow = [
         get_string('lastname') => $record->lastname,
         get_string('firstname') => $record->firstname,
         get_string('email') => $record->email,
         get_string('timestamp', 'consentform') =>
             $record->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($record->timestamp) : CONSENTFORM_NOTIMESTAMP,
-        get_string('state') => $record->state
-    );
+        get_string('state') => $record->state,
+    ];
     $csvrows[] = $csvrow;
 } // End loop records.
 

@@ -27,9 +27,9 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
-    $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $consentform = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
 } else {
     die('You must specify a course_module ID');
 }
@@ -52,18 +52,18 @@ if ($context->locked) {
     }
 }
 
-$event = \mod_consentform\event\course_module_viewed::create(array(
+$event = \mod_consentform\event\course_module_viewed::create([
     'objectid' => $cm->id,
     'context' => $context,
-));
+]);
 $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot($cm->modname, $consentform);
 $event->trigger();
 
-$redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
+$redirecturl = new moodle_url('/course/view.php', ['id' => $course->id]);
 
 // Print the page header.
-$PAGE->set_url('/mod/consentform/view.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/consentform/view.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
@@ -86,10 +86,10 @@ if ($nocompletion) {
         echo $OUTPUT->header();
         echo html_writer::start_div();
 
-        // Link buttons to module list (optional) and users list
-        $mllink = new moodle_url('modulelist.php', array('id' => $id));
+        // Link buttons to module list (optional) and users list.
+        $mllink = new moodle_url('modulelist.php', ['id' => $id]);
         $mllinktext = get_string('modulelistlinktext', 'consentform');
-        $lulink = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
+        $lulink = new moodle_url('/mod/consentform/listusers.php', ['id' => $id]);
         $lulinktext = get_string('listusersbutton', 'consentform');
         // Show information message if course module list is deactivated.
         if ($consentform->nocoursemoduleslist) {
@@ -103,7 +103,7 @@ if ($nocompletion) {
         $coursecontext = context_course::instance($course->id);
         list($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall) =
             consentform_statistics_listusers($coursecontext, $cm->id);
-        $linkclass = array("class" => "list-group-item d-flex justify-content-between align-items-center");
+        $linkclass = ["class" => "list-group-item d-flex justify-content-between align-items-center"];
         $badgeclass = "badge badge-primary badge-pill";
         $badgeclassnull = "badge badge-secondary badge-pill";
         echo html_writer::start_div('list-group mt-4 w-50');
@@ -135,42 +135,42 @@ if ($nocompletion) {
     } else {  // Participant's view, lacks the right to submit.
         // Agreement form, participant's view.
         $mform = new \mod_consentform\consentform_agreement_form(null,
-            array('id' => $id,
+            ['id' => $id,
                 'cmid' => $cm->id,
                 'courseid' => $course->id,
                 'consentform' => $consentform,
                 'userid' => $USER->id,
                 'confirmationtextclass' => 'consentform_confirmationtext',
-                'locked' => $locked
-            ));
+                'locked' => $locked,
+            ]);
         // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {
             if (isset($data->agreement)) {
                 $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
                 $message = get_string('msgagreed', 'consentform');
                 $event = \mod_consentform\event\agreement_agree::create(
-                    array(
+                    [
                         'objectid' => $PAGE->cm->id,
-                        'context' => $PAGE->context
-                    )
+                        'context' => $PAGE->context,
+                    ]
                 );
             } else if (isset($data->revocation)) {
                 $ok = consentform_save_agreement(CONSENTFORM_STATUS_REVOKED, $USER->id, $cm->id);
                 $message = get_string('msgrevoked', 'consentform');
                 $event = \mod_consentform\event\agreement_revoke::create(
-                    array(
+                    [
                         'objectid' => $PAGE->cm->id,
-                        'context' => $PAGE->context
-                    )
+                        'context' => $PAGE->context,
+                    ]
                 );
             } else if (isset($data->refusal)) {
                 $ok = consentform_save_agreement(CONSENTFORM_STATUS_REFUSED, $USER->id, $cm->id);
                 $message = get_string('msgrefused', 'consentform');
                 $event = \mod_consentform\event\agreement_refuse::create(
-                    array(
+                    [
                         'objectid' => $PAGE->cm->id,
-                        'context' => $PAGE->context
-                    )
+                        'context' => $PAGE->context,
+                    ]
                 );
             }
             $event->trigger();

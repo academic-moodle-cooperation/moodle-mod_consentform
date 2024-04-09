@@ -27,8 +27,8 @@ require_once(__DIR__ . "../../../config.php");
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
-    $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 } else {
     die('You must specify a course_module ID');
 }

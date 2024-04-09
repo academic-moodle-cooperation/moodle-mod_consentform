@@ -27,9 +27,9 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
-    $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $consentform = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
 } else {
     die('You must specify a course module ID');
 }
@@ -38,10 +38,10 @@ require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 
-$event = \mod_consentform\event\course_module_instance_list_viewed::create(array(
+$event = \mod_consentform\event\course_module_instance_list_viewed::create([
     'objectid' => $cm->id,
     'context' => context_course::instance($cm->course),
-));
+]);
 $event->add_record_snapshot('course', $PAGE->course);
 $event->add_record_snapshot($PAGE->cm->modname, $consentform);
 $event->trigger();
@@ -61,10 +61,10 @@ if ($context->locked) {
     }
 }
 
-$redirecturl = new moodle_url('/course/view.php', array('id' => $course->id));
+$redirecturl = new moodle_url('/course/view.php', ['id' => $course->id]);
 
 // Print the page header.
-$PAGE->set_url('/mod/consentform/modulelist.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/consentform/modulelist.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
@@ -99,8 +99,8 @@ if ($nocompletion) {
 
             echo consentform_render_coursemodulestable($table);
 
-            $jsparams = array('cmid' => $cm->id);
-            $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', array($jsparams));
+            $jsparams = ['cmid' => $cm->id];
+            $PAGE->requires->js_call_amd('mod_consentform/checkboxclicked', 'init', [$jsparams]);
             $PAGE->requires->js_call_amd('mod_consentform/checkboxcontroller', 'init');
         }
     } else {  // If user has no right to submit.

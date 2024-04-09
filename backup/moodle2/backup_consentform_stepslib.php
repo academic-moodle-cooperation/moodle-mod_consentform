@@ -43,25 +43,25 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
     protected function define_structure() {
 
         // Define the root element describing the consentform instance.
-        $consentform = new backup_nested_element('consentform', array('id'), array(
+        $consentform = new backup_nested_element('consentform', ['id'], [
             'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'grade', 'confirmationtext', 'optionrevoke',
             'optionrefuse', 'textagreementbutton', 'textrefusalbutton', 'textrevocationbutton', 'usegrade',
-            'confirmincourseoverview'));
+            'confirmincourseoverview']);
 
         // Define data source.
-        $consentform->set_source_table('consentform', array('id' => backup::VAR_ACTIVITYID));
+        $consentform->set_source_table('consentform', ['id' => backup::VAR_ACTIVITYID]);
 
         $userinfo = $this->get_setting_value('userinfo');
         // If userinfo is requested backup consentformstate as well.
         if ($userinfo) {
             $consentformstates = new backup_nested_element('consentformstates');
             $consentformstate = new backup_nested_element(
-                'consentformstate', array('id'), array('consentformcmid', 'userid', 'state', 'timestamp')
+                'consentformstate', ['id'], ['consentformcmid', 'userid', 'state', 'timestamp']
             );
             // Build the tree.
             $consentform->add_child($consentformstates);
             $consentformstates->add_child($consentformstate);
-            $consentformstate->set_source_table('consentform_state', array('consentformcmid' => backup::VAR_MODID));
+            $consentformstate->set_source_table('consentform_state', ['consentformcmid' => backup::VAR_MODID]);
             $consentformstate->annotate_ids('user', 'userid');
         }
 

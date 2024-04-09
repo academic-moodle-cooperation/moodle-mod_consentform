@@ -27,7 +27,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Instance ID.
 
-$consentform  = $DB->get_record('consentform', array('id' => $id), '*', MUST_EXIST);
+$consentform  = $DB->get_record('consentform', ['id' => $id], '*', MUST_EXIST);
 
 list($course, $cm) = get_course_and_cm_from_instance($id, 'consentform', $consentform->course);
 
@@ -51,53 +51,53 @@ if ($contextcoursecat->locked) {
 
 // Agreement form, participant's view.
 $mform = new \mod_consentform\consentform_agreement_form(null,
-    array('id' => $id,
+    ['id' => $id,
         'cmid' => $cm->id,
         'courseid' => $course->id,
         'consentform' => $consentform,
         'userid' => $USER->id,
         'confirmationtextclass' => 'consentform_confirmationtext_incourseoverview',
-        'locked' => $locked
-    ));
+        'locked' => $locked,
+    ]);
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {
-    $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
+    $PAGE->set_url('/mod/consentform/confirmation.php', ['id' => $cm->id]);
     $PAGE->set_title(format_string($consentform->name));
     $PAGE->set_pagelayout('embedded');
     if (isset( $data->agreement) && $data->agreement == $consentform->textagreementbutton) {
         $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
         $message = get_string('msgagreed', 'consentform');
         $event = \mod_consentform\event\agreement_agree::create(
-            array(
+            [
                 'objectid' => $PAGE->cm->id,
-                'context' => $PAGE->context
-            )
+                'context' => $PAGE->context,
+            ]
         );
         $event->trigger();
     } else if (isset($data->revocation) && $data->revocation == $consentform->textrevocationbutton) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REVOKED, $USER->id, $cm->id);
         $message = get_string('msgrevoked', 'consentform');
         $event = \mod_consentform\event\agreement_revoke::create(
-            array(
+            [
                 'objectid' => $PAGE->cm->id,
-                'context' => $PAGE->context
-            )
+                'context' => $PAGE->context,
+            ]
         );
         $event->trigger();
     } else if (isset($data->refusal) && $data->refusal == $consentform->textrefusalbutton) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REFUSED, $USER->id, $cm->id);
         $message = get_string('msgrefused', 'consentform');
         $event = \mod_consentform\event\agreement_refuse::create(
-            array(
+            [
                 'objectid' => $PAGE->cm->id,
-                'context' => $PAGE->context
-            )
+                'context' => $PAGE->context,
+            ]
         );
         $event->trigger();
     }
 
 
-    $redirecturl = new moodle_url('/mod/consentform/confirmation.php', array('id' => $id));
+    $redirecturl = new moodle_url('/mod/consentform/confirmation.php', ['id' => $id]);
     $SESSION->consentform_reloadiframe = "1";
     redirect($redirecturl);
 
@@ -108,7 +108,7 @@ if ($data = $mform->get_data()) {
         echo html_writer::script('parent.location.reload();');
     } else {
         // Display agreement form to participant.
-        $PAGE->set_url('/mod/consentform/confirmation.php', array('id' => $cm->id));
+        $PAGE->set_url('/mod/consentform/confirmation.php', ['id' => $cm->id]);
         $PAGE->set_title(format_string($consentform->name));
         $PAGE->set_pagelayout('popup');
         echo $OUTPUT->header();

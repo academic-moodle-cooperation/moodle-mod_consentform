@@ -66,7 +66,7 @@ class consentform_agreement_form extends \moodleform {
 
         // Show state of confirmation of this user.
         $state = $DB->get_field('consentform_state', 'state',
-                array('consentformcmid' => $data['cmid'], 'userid' => $data['userid'])) ?? false;
+                ['consentformcmid' => $data['cmid'], 'userid' => $data['userid']]) ?? false;
         $mform->addElement('html', consentform_get_agreementlogentry($data['cmid'], $data['userid'], $state));
 
         if (!$data['locked']) {
@@ -76,12 +76,12 @@ class consentform_agreement_form extends \moodleform {
                     $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
                 }
             } else {
-                $buttonarray = array();
+                $buttonarray = [];
                 $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
                 if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
                     $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
                 }
-                $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+                $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
             }
         }
     }

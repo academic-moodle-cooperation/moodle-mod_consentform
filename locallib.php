@@ -49,7 +49,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
     $coursemodules = $modinfo->get_cms();
     $sections = $modinfo->get_section_info_all();
 
-    $rows = array();
+    $rows = [];
     $sectionibefore = "";
     $usercanviewsection = true;
     $cmindex = 0;
@@ -95,7 +95,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $cmidcontrolled = $cmid;
                     $cfcontrolled = consentform_find_entry_availability($cmidcontrolled, $cmidcontroller);
                     $checked = $cfcontrolled <= 0 ? 0 : 1;
-                    $checkboxattributes = array('class' => "selectcoursemodule section$sectioni");
+                    $checkboxattributes = ['class' => "selectcoursemodule section$sectioni"];
                     if ($cfcontrolled == 2 || $cfcontrolled == -1 || $locked) {
                         $checkboxattributes['disabled'] = "disabled";
                     }
@@ -110,11 +110,11 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     }
                     $cell->attributes['class'] = 'consentform_activitytable_checkboxcolumn';
                     $row->cells[] = $cell;
-                    $viewurl = new moodle_url('/course/modedit.php', array('update' => $cmid));
-                    $activitylink = html_writer::empty_tag('img', array('src' => $cminfo->get_icon_url(),
+                    $viewurl = new moodle_url('/course/modedit.php', ['update' => $cmid]);
+                    $activitylink = html_writer::empty_tag('img', ['src' => $cminfo->get_icon_url(),
                             'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname,
-                            'title' => $cminfo->modfullname, 'role' => 'presentation')) .
-                            html_writer::tag('span', $cminfo->name, array('class' => 'leftmargin'));
+                            'title' => $cminfo->modfullname, 'role' => 'presentation']) .
+                            html_writer::tag('span', $cminfo->name, ['class' => 'leftmargin']);
                     $row->cells[] = new html_table_cell(
                         html_writer::start_div('activity').html_writer::link($viewurl, $activitylink).
                             html_writer::end_div()
@@ -140,7 +140,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
 function consentform_geticon_userentry() {
     global $OUTPUT;
 
-    $attributes = array();
+    $attributes = [];
     $attributes['data-toggle'] = "tooltip";
     $string = get_string("warninguserentry", "mod_consentform");
     $attributes['title'] = $string;
@@ -158,7 +158,7 @@ function consentform_geticon_userentry() {
 function consentform_geticon_userentry_negative() {
     global $OUTPUT;
 
-    $attributes = array();
+    $attributes = [];
     $attributes['data-toggle'] = "tooltip";
     $string = get_string("warninguserentry", "mod_consentform");
     $attributes['title'] = $string;
@@ -176,7 +176,7 @@ function consentform_geticon_userentry_negative() {
 function consentform_generate_coursemodulestable_header() {
     global $PAGE;
 
-    $header = array();
+    $header = [];
     $nourl = $PAGE->url . "#";
     $cell = new html_table_cell(
         \html_writer::link($nourl, get_string('all', 'moodle'), ['class' => 'co_all']).' / '.
@@ -248,23 +248,23 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
     // Explicitly assigned properties override those defined via $table->attributes.
     $table->attributes['class'] = trim($table->attributes['class']);
     $attributes = array_merge(
-        $table->attributes, array(
+        $table->attributes, [
             'id'            => $table->id,
             'summary'       => $table->summary,
-        )
+        ]
     );
     $output = html_writer::start_tag('table', $attributes) . "\n";
 
     $countcols = 0;
 
-    $headfoot = $printfooter ? array('thead', 'tfoot') : array('thead');
+    $headfoot = $printfooter ? ['thead', 'tfoot'] : ['thead'];
 
     if (!empty($table->head)) {
         foreach ($headfoot as $tag) {
             $countcols = count($table->head);
 
-            $output .= html_writer::start_tag($tag, array()) . "\n";
-            $output .= html_writer::start_tag('tr', array()) . "\n";
+            $output .= html_writer::start_tag($tag, []) . "\n";
+            $output .= html_writer::start_tag('tr', []) . "\n";
             $keys = array_keys($table->head);
             $lastkey = end($keys);
 
@@ -299,11 +299,11 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
                 }
                 $heading->attributes['class'] = trim($heading->attributes['class']);
                 $attributes = array_merge(
-                    $heading->attributes, array(
+                    $heading->attributes, [
                         'style'     => $table->align[$key] . $table->size[$key] . $heading->style,
                         'scope'     => $heading->scope,
                         'colspan'   => $heading->colspan,
-                    )
+                    ]
                 );
 
                 $tagtype = 'td';
@@ -319,8 +319,8 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
         if (empty($table->data)) {
             // For valid XHTML strict every table must contain either a valid tr
             // or a valid tbody... both of which must contain a valid td.
-            $output .= html_writer::start_tag('tbody', array('class' => 'empty'));
-            $output .= html_writer::tag('tr', html_writer::tag('td', '', array('colspan' => count($table->head))));
+            $output .= html_writer::start_tag('tbody', ['class' => 'empty']);
+            $output .= html_writer::tag('tr', html_writer::tag('td', '', ['colspan' => count($table->head)]));
             $output .= html_writer::end_tag('tbody');
         }
     }
@@ -329,13 +329,13 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
         $oddeven    = 1;
         $keys       = array_keys($table->data);
         $lastrowkey = end($keys);
-        $output .= html_writer::start_tag('tbody', array());
+        $output .= html_writer::start_tag('tbody', []);
 
         foreach ($table->data as $key => $row) {
             if (($row === 'hr') && ($countcols)) {
                 $output .= html_writer::tag(
-                    'td', html_writer::tag('div', '', array('class' => 'tabledivider')),
-                    array('colspan' => $countcols)
+                    'td', html_writer::tag('div', '', ['class' => 'tabledivider']),
+                    ['colspan' => $countcols]
                 );
             } else {
                 // Convert array rows to html_table_rows and cell strings to html_table_cell objects.
@@ -369,8 +369,8 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
 
                 $output .= html_writer::start_tag(
                         'tr',
-                        array('class' => trim($row->attributes['class']),
-                            'style' => $row->style, 'id' => $row->id, 'name' => trim($row->attributes['name']))
+                        ['class' => trim($row->attributes['class']),
+                            'style' => $row->style, 'id' => $row->id, 'name' => trim($row->attributes['name'])]
                     )
                     . "\n";
                 $keys2 = array_keys($row->cells);
@@ -408,14 +408,14 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
                     $tdstyle .= isset($table->wrap[$key]) ? $table->wrap[$key] : '';
                     $cell->attributes['class'] = trim($cell->attributes['class']);
                     $tdattributes = array_merge(
-                        $cell->attributes, array(
+                        $cell->attributes, [
                             'style' => $tdstyle . $cell->style,
                             'colspan' => $cell->colspan,
                             'rowspan' => $cell->rowspan,
                             'id' => $cell->id,
                             'abbr' => $cell->abbr,
                             'scope' => $cell->scope,
-                        )
+                        ]
                     );
                     $tagtype = 'td';
                     if ($cell->header === true) {
@@ -429,7 +429,7 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
         $output .= html_writer::end_tag('tbody') . "\n";
     }
     $output .= html_writer::end_tag('table') . "\n";
-    $output = html_writer::tag('div', $output, array('style' => 'overflow: auto; width: 100%'));
+    $output = html_writer::tag('div', $output, ['style' => 'overflow: auto; width: 100%']);
     return $output;
 }
 
@@ -446,7 +446,7 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
     global $DB;
 
     $ret = 0;
-    if ($availability = $DB->get_field('course_modules', 'availability', array('id' => $cmidcontrolled))) {
+    if ($availability = $DB->get_field('course_modules', 'availability', ['id' => $cmidcontrolled])) {
         $availability = json_decode($availability ?? '');
         if (isset($availability->c) && isset($availability->op)) {
             if (count($availability->c) > 0) {
@@ -524,8 +524,8 @@ function consentform_make_entry_availability($courseid, $cmidcontrolled, $cmidco
     $availabilityold = json_decode($availabilityjsonstring ?? '');
     $availabilitynew = new stdClass();
     $availabilitynew->op = "&";
-    $availabilitynew->c = array();
-    $availabilitynew->showc = array();
+    $availabilitynew->c = [];
+    $availabilitynew->showc = [];
     $newcondition = new stdClass();
     $newcondition->type = "completion";
     $newcondition->cm = $cmidcontroller;
@@ -578,7 +578,7 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
                     if (isset($subcondition->op) && ($subcondition->op == "&" || $subcondition->op == "!|")) {
                         // No showc.
                         if (!isset($subcondition->showc) || count($subcondition->showc) != count($subcondition->c)) {
-                            $subcondition->showc = array();
+                            $subcondition->showc = [];
                             foreach ($subcondition->c as $c) {
                                 $subcondition->showc[] = true;
                             }
@@ -602,8 +602,8 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
                     } else { // Second condition is not a list.
                         $newcondition = new stdClass();
                         $newcondition->op = "&";
-                        $newcondition->c = array($subcondition);
-                        $newcondition->showc = array(true);
+                        $newcondition->c = [$subcondition];
+                        $newcondition->showc = [true];
                         $availabilityjsonstring = json_encode($newcondition);
                     }
                     $found = true;
@@ -644,7 +644,7 @@ function consentform_save_agreement($status, $userid, $cmid) {
     global $DB;
 
     if ($id = $DB->get_field(
-        'consentform_state', 'id', array('consentformcmid' => $cmid, 'userid' => $userid))) {
+        'consentform_state', 'id', ['consentformcmid' => $cmid, 'userid' => $userid])) {
         $record = consentform_completionstate_record($id, $userid, $status, $cmid);
         $DB->update_record('consentform_state', $record);
     } else {
@@ -658,8 +658,8 @@ function consentform_save_agreement($status, $userid, $cmid) {
         consentform_update_completionstate($cmid, 0);
     }
 
-    $instanceid = $DB->get_field('course_modules', 'instance', array('id' => $cmid));
-    $consentform = $DB->get_record('consentform', array('id' => $instanceid));
+    $instanceid = $DB->get_field('course_modules', 'instance', ['id' => $cmid]);
+    $consentform = $DB->get_record('consentform', ['id' => $instanceid]);
 
     if ($consentform->usegrade) {
         if ($status == CONSENTFORM_STATUS_AGREED) {
@@ -749,7 +749,7 @@ function consentform_update_completionstate($cmid, $agreed, $userid = 0) {
  * @param string $sortkey which user's field should be used to sort list
  * @param string $sortorder sort order of sorting (asc/desc)
  * @param int $tab which list of users (only agreed/refused/etc..)
- * @param \context $context used by system function to get enrolled users of course
+ * @param context $context used by system function to get enrolled users of course
  * @param stdClass $cm
  * @return array list of participants, id,lastname,firstname,email(,status)
  * @throws coding_exception
@@ -777,7 +777,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $sqlwhere = "WHERE (c.consentformcmid = :cmid) ";
         $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
         $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
-        $params = array('cmid' => $cm->id);
+        $params = ['cmid' => $cm->id];
         $withaction = $DB->get_records_sql($query, $params);
         $listusers = array_diff_key($enrolledview, $enrolledsubmit, $withaction);
         foreach ($listusers as &$row) {
@@ -792,7 +792,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $listusers = array_diff_key($enrolledview, $enrolledsubmit);
         foreach ($listusers as &$row) {
             if ($fields = $DB->get_record('consentform_state',
-                array('userid' => $row->id, 'consentformcmid' => $cm->id), 'timestamp, state')) {
+                ['userid' => $row->id, 'consentformcmid' => $cm->id], 'timestamp, state')) {
                 $row->timestamp = $fields->timestamp;
                 $row->state = $fields->state;
             } else {
@@ -830,7 +830,7 @@ function consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm) {
         $sqlwhere = "WHERE (c.consentformcmid = :cmid AND c.state = :tab) ";
         $sqlorderby = "ORDER BY $sqlsortkey $sqlsortorder";
         $query = "$sqlselect $sqlfrom $sqlwhere $sqlorderby";
-        $params = array('cmid' => $cm->id, 'tab' => $tab);
+        $params = ['cmid' => $cm->id, 'tab' => $tab];
         $listusers = $DB->get_records_sql($query, $params);
         $listusers = array_intersect_key($listusers, $enrolled);
         $enrolledsubmit = get_enrolled_users($context, 'mod/consentform:submit', 0,
@@ -883,7 +883,7 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
     $index = 0;
 
     $table = new html_table();
-    $table->head = array(
+    $table->head = [
         "",
         consentform_participantstable_headercolumn("lastname", get_string('lastname'),
             $sortkey, $sortorder, $cmid, $tab),
@@ -894,16 +894,16 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
         consentform_participantstable_headercolumn("timestamp", get_string('timestamp', 'consentform'),
             $sortkey, $sortorder, $cmid, $tab),
         consentform_participantstable_headercolumn("state", get_string('status'),
-            $sortkey, $sortorder, $cmid, $tab)
-    );
-    $table->align = array(
+            $sortkey, $sortorder, $cmid, $tab),
+    ];
+    $table->align = [
         'right',
         'left',
         'left',
         'left',
         'center',
         'center',
-    );
+    ];
 
     foreach ($listusers as $row) {
 
@@ -923,20 +923,20 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
                 $state = html_writer::span(get_string("noaction", "consentform"));
                 break;
         }
-        $table->data[]  = array(
+        $table->data[]  = [
             $index,
             $row->lastname,
             $row->firstname,
             $row->email,
             $row->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($row->timestamp) : CONSENTFORM_NOTIMESTAMP,
             $state,
-        );
+        ];
 
     }  // For each user row.
 
     if ($index == 0) {
         $html = html_writer::tag('p', get_string('listempty', 'consentform'),
-            array('class' => 'alert-warning', 'style' => 'margin-top:0.5em;'));
+            ['class' => 'alert-warning', 'style' => 'margin-top:0.5em;']);
     } else {
         $html = html_writer::table($table);
     }
@@ -965,19 +965,19 @@ function consentform_participantstable_headercolumn($column, $columntitle, $sort
 
     if ($column == $sortkey) {
         if ($sortorder == "DESC") {
-            $icon = $OUTPUT->image_icon('t/sort_desc', get_string('sort'), 'moodle', array(
-                'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-            $url = new moodle_url($urlinit, array('sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
-                'tab' => $tab, 'sortorder' => 'ASC'));
+            $icon = $OUTPUT->image_icon('t/sort_desc', get_string('sort'), 'moodle', [
+                'style' => 'cursor:pointer;margin-left:2px;nowrap']);
+            $url = new moodle_url($urlinit, ['sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
+                'tab' => $tab, 'sortorder' => 'ASC']);
         } else {
-            $icon = $OUTPUT->image_icon('t/sort_asc', get_string('sort'), 'moodle', array(
-                'style' => 'cursor:pointer;margin-left:2px;nowrap'));
-            $url = new moodle_url($urlinit, array('sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
-                'tab' => $tab, 'sortorder' => 'DESC'));
+            $icon = $OUTPUT->image_icon('t/sort_asc', get_string('sort'), 'moodle', [
+                'style' => 'cursor:pointer;margin-left:2px;nowrap']);
+            $url = new moodle_url($urlinit, ['sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
+                'tab' => $tab, 'sortorder' => 'DESC']);
         }
     } else {
-        $url = new moodle_url($urlinit, array('sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
-            'tab' => $tab, 'sortorder' => 'ASC'));
+        $url = new moodle_url($urlinit, ['sortkey' => $column, 'id' => $cmid, 'sesskey' => sesskey(),
+            'tab' => $tab, 'sortorder' => 'ASC']);
     }
 
     $linkstr = html_writer::link($url, $columntitle . $icon);
@@ -1000,7 +1000,7 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
     global $DB, $OUTPUT;
 
     if ($timestamp = $DB->get_field('consentform_state', 'timestamp',
-        array('consentformcmid' => $cmid, 'userid' => $userid))) {
+        ['consentformcmid' => $cmid, 'userid' => $userid])) {
         if ($status == CONSENTFORM_STATUS_AGREED) {
             return $OUTPUT->notification(get_string('agreementlogentry', 'consentform', userdate($timestamp)),
                 'success', false);
@@ -1028,10 +1028,10 @@ function consentform_get_agreementlogentry($cmid, $userid, $status) {
  */
 function consentform_showheaderwithoutintro($id, $alternatetext = "") {
     global $DB, $OUTPUT;
-    $intro = $DB->get_field('consentform', 'intro', array('id' => $id));
-    $DB->set_field('consentform', 'intro', $alternatetext, array('id' => $id));
+    $intro = $DB->get_field('consentform', 'intro', ['id' => $id]);
+    $DB->set_field('consentform', 'intro', $alternatetext, ['id' => $id]);
     echo $OUTPUT->header();
-    $DB->set_field('consentform', 'intro', $intro, array('id' => $id));
+    $DB->set_field('consentform', 'intro', $intro, ['id' => $id]);
     return true;
 }
 
@@ -1043,7 +1043,7 @@ function consentform_showheaderwithoutintro($id, $alternatetext = "") {
  */
 function consentform_shownocoursemodulelistinfo($id) {
     global $OUTPUT;
-    $link = new moodle_url('/course/modedit.php', array('update' => $id));
+    $link = new moodle_url('/course/modedit.php', ['update' => $id]);
     $linktext = get_string("linktexttomodulesettings", "mod_consentform");
     $outstr = $OUTPUT->notification(get_string("nocoursemoduleslist_help", "mod_consentform")." ".
         html_writer::link($link, $linktext), 'info', false);
@@ -1067,14 +1067,14 @@ function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
             $link = "https://docs.moodle.org/en/Activity_completion_settings#Required_site_settings";
             $linktext = get_string("nocompletionlinktext", "mod_consentform");
             $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform")." ".html_writer::link($link,
-                    $linktext, array('target' => '_blank')));
+                    $linktext, ['target' => '_blank']));
         } else {
             $nocompletion .= html_writer::div(get_string("nocompletion", "mod_consentform"));
         }
     }
     if (!$course->enablecompletion) {
         if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
-            $link = new moodle_url('/course/edit.php', array('id' => $course->id));
+            $link = new moodle_url('/course/edit.php', ['id' => $course->id]);
             $linktext = get_string("nocompletioncourselinktext", "mod_consentform");
             $nocompletion .= html_writer::div(get_string("nocompletioncourse", "mod_consentform")." ".
                 html_writer::link($link, $linktext));
@@ -1084,7 +1084,7 @@ function consentform_checkcompletion($id, $context, $course, $cmcompletion) {
     }
     if (!$cmcompletion) {
         if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
-            $link = new moodle_url('/course/modedit.php', array('update' => $id));
+            $link = new moodle_url('/course/modedit.php', ['update' => $id]);
             $linktext = get_string("nocompletionmodulelinktext", "mod_consentform");
             $nocompletion .= html_writer::div(get_string("nocompletionmodule", "mod_consentform")." ".
                 html_writer::link($link, $linktext));
@@ -1118,7 +1118,7 @@ function consentform_statistics_listusers($coursecontext, $cmid) {
     $sqlfrom   = "FROM {consentform_state} c INNER JOIN {user} u ON c.userid = u.id ";
     $sqlwhere  = "WHERE (c.consentformcmid = :cmid) ";
     $query = "$sqlselect $sqlfrom $sqlwhere";
-    $userswithaction = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $userswithaction = $DB->get_records_sql($query, ['cmid' => $cmid]);
 
     // Get sum users without action.
     $usersnoactions = array_diff_key($enrolled, $userswithaction);
@@ -1130,23 +1130,23 @@ function consentform_statistics_listusers($coursecontext, $cmid) {
     // Get sum agreed.
     $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_AGREED;
     $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-    $usersagreed = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersagreed = $DB->get_records_sql($query, ['cmid' => $cmid]);
     $usersagreed = array_intersect_key($enrolled, $usersagreed);
     $sumagreed = count($usersagreed);
 
     // Get sum refused.
     $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REFUSED;
     $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-    $usersrefused = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersrefused = $DB->get_records_sql($query, ['cmid' => $cmid]);
     $usersrefused = array_intersect_key($enrolled, $usersrefused);
     $sumrefused = count($usersrefused);
 
     // Get sum revoked.
     $sqlwhere2 = "AND c.state = ".CONSENTFORM_STATUS_REVOKED;
     $query = "$sqlselect $sqlfrom $sqlwhere $sqlwhere2";
-    $usersrevoked = $DB->get_records_sql($query, array('cmid' => $cmid));
+    $usersrevoked = $DB->get_records_sql($query, ['cmid' => $cmid]);
     $usersrevoked = array_intersect_key($enrolled, $usersrevoked);
     $sumrevoked = count($usersrevoked);
 
-    return array($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall);
+    return [$sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall];
 }

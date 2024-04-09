@@ -26,47 +26,47 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
-    $cm           = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $consentform  = $DB->get_record('consentform', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $consentform = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
 } else {
     die('You must specify a course_module ID');
 }
 
 $deleteuseraction = optional_param('delete', null, PARAM_INT); // User-ID to delete own test action.
-$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname|firstname|email|timestamp.
+$sortkey = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname|firstname|email|timestamp.
 $sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC).
-$tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
+$tab = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
 if (!(has_capability('mod/consentform:submit', $context) || is_siteadmin())) {
-    redirect(new moodle_url('/mod/consentform/view.php', array('id' => $id, 'sesskey' => sesskey())));
+    redirect(new moodle_url('/mod/consentform/view.php', ['id' => $id, 'sesskey' => sesskey()]));
 }
 
 if ($deleteuseraction) {
     require_sesskey();
     $thisurl = new moodle_url('/mod/consentform/listusers.php',
-        array('id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder, 'sesskey' => sesskey()));
-    if ($DB->delete_records('consentform_state', array('consentformcmid' => $cm->id, 'userid' => $USER->id))) {
+        ['id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder, 'sesskey' => sesskey()]);
+    if ($DB->delete_records('consentform_state', ['consentformcmid' => $cm->id, 'userid' => $USER->id])) {
         redirect($thisurl, get_string("deletetestmessage", "consentform"), 0, 'notify');
     } else {
         redirect($thisurl, get_string("deletetesterrormessage", "consentform"), 0, 'error');
     }
 }
 
-$event = \mod_consentform\event\course_module_viewed::create(array(
+$event = \mod_consentform\event\course_module_viewed::create([
     'objectid' => $PAGE->cm->instance,
     'context' => $PAGE->context,
-));
+]);
 $event->add_record_snapshot('course', $PAGE->course);
 $event->add_record_snapshot($PAGE->cm->modname, $consentform);
 $event->trigger();
 
 // Print the page header.
-$PAGE->set_url('/mod/consentform/listusers.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/consentform/listusers.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($consentform->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
@@ -79,10 +79,10 @@ $coursecontext = context_course::instance($course->id);
 list($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall) =
     consentform_statistics_listusers($coursecontext, $cm->id);
 
-$url = new moodle_url('/mod/consentform/listusers.php', array('id' => $id));
+$url = new moodle_url('/mod/consentform/listusers.php', ['id' => $id]);
 // Get tabs for display.
 
-$thirdnav = array();
+$thirdnav = [];
 $url->param('tab', CONSENTFORM_STATUS_AGREED);
 $thirdnavlink[CONSENTFORM_STATUS_AGREED] = $url->out();
 $url->param('tab', CONSENTFORM_STATUS_REFUSED);
@@ -146,15 +146,15 @@ echo $OUTPUT->render($urlselector);
 echo html_writer::end_div();
 
 if ($download) {
-    $exportlink = new moodle_url('exportcsv.php', array(
-        'id' => $id, 'tab' => $tab, 'sortkey' => $sortkey, 'sortorder' => $sortorder));
+    $exportlink = new moodle_url('exportcsv.php', [
+        'id' => $id, 'tab' => $tab, 'sortkey' => $sortkey, 'sortorder' => $sortorder]);
     $exporttext = get_string('downloadbuttonlabel', 'consentform');
     echo html_writer::start_div('d-inline-block ml-3');
     echo html_writer::link($exportlink, $exporttext,  ['class' => 'btn btn-primary']);
     echo html_writer::end_div();
 }
 
-echo html_writer::tag('h2', $title, array("class" => "mt-3"));
+echo html_writer::tag('h2', $title, ["class" => "mt-3"]);
 
 $listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $coursecontext, $cm);
 

@@ -62,13 +62,13 @@ class mtablepdf extends \pdf {
     /** @var boolean show header and footer */
     private $showheaderfooter = false;
     /** @var array columns widths */
-    private $columnwidths = array();
+    private $columnwidths = [];
     /** @var array titles */
     private $titles = null;
     /** @var array format of columns */
     private $columnformat;
     /** @var array data */
-    private $data = array();
+    private $data = [];
 
     /**
      * Constructor of pdf class
@@ -149,7 +149,7 @@ class mtablepdf extends \pdf {
 
         if ($fastmode) {
             // Fast mode.
-            $tmp = array();
+            $tmp = [];
 
             foreach ($row as $idx => $value) {
                 if (is_array($value)) {
@@ -157,14 +157,14 @@ class mtablepdf extends \pdf {
                     exit();
                 }
 
-                $tmp[] = array("rowspan" => 0, "data" => $value);
+                $tmp[] = ["rowspan" => 0, "data" => $value];
             }
 
             $row = $tmp;
         } else {
             foreach ($row as $idx => $value) {
                 if (!is_array($value)) {
-                    $row[$idx] = array("rowspan" => 0, "data" => $value);
+                    $row[$idx] = ["rowspan" => 0, "data" => $value];
                 } else if (!isset($value["data"])) {
                     echo "Error: you need to set a value for [\"data\"]";
                     exit();
@@ -222,11 +222,11 @@ class mtablepdf extends \pdf {
         $time = userdate($time);
         $worksheet = $workbook->add_worksheet($time);
 
-        $headlineprop = array('size' => 12,
+        $headlineprop = ['size' => 12,
             'bold' => 1,
             'HAlign' => 'center',
             'bottom' => 1,
-            'VAlign' => 'vcenter');
+            'VAlign' => 'vcenter'];
         $headlineformat = $workbook->add_format($headlineprop);
         $headlineformat->set_left(1);
         $headlineformat->set_align('center');
@@ -243,8 +243,8 @@ class mtablepdf extends \pdf {
         $hdrright->set_align('left');
         $hdrright->set_align('vcenter');
 
-        $textprop = array('size' => 10,
-            'align' => 'left');
+        $textprop = ['size' => 10,
+            'align' => 'left'];
         $text = $workbook->add_format($textprop);
         $text->set_left(1);
         $text->set_align('vcenter');
@@ -325,7 +325,7 @@ class mtablepdf extends \pdf {
      */
     public function get_csv($filename, $sep = "\t") {
 
-        $lines = array();
+        $lines = [];
 
         // Table header.print.
         $lines[] = join($sep, $this->titles);
@@ -334,7 +334,7 @@ class mtablepdf extends \pdf {
 
         // Data.
         foreach ($this->data as $row) {
-            $r = array();
+            $r = [];
             foreach ($row as $idx => $cell) {
                 if (is_null($cell['data'])) {
                     $cell['data'] = $prev[$idx]['data'];

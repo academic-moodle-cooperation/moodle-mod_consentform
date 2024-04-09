@@ -61,20 +61,20 @@ class consentform_export {
     public function print_file() {
         global $USER;
 
-        $export = new \mod_consentform\mtablepdf(array_fill(0, 5, array('mode' => 'Fixed', 'value' => 20)));
+        $export = new \mod_consentform\mtablepdf(array_fill(0, 5, ['mode' => 'Fixed', 'value' => 20]));
 
         // Set document information.
         $export->SetCreator('MOODLE');
         $export->SetAuthor(fullname($USER));
         $export->set_outputformat(4);
 
-        $titles = array(
+        $titles = [
             get_string('lastname'),
             get_string('firstname'),
             get_string('email'),
             get_string('timestamp', 'consentform'),
-            get_string('status')
-        );
+            get_string('status'),
+        ];
 
         // Title row.
         $export->set_titles($titles);

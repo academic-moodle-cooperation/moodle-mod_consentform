@@ -56,7 +56,7 @@ class custom_completion extends activity_custom_completion {
     public static function get_defined_custom_rules(): array {
         return [
             'completionview',
-            'completionsubmit'
+            'completionsubmit',
         ];
     }
 
@@ -67,7 +67,7 @@ class custom_completion extends activity_custom_completion {
      */
     public function get_custom_rule_descriptions(): array {
         return [
-            'completionsubmit' => get_string('completiondetail:submit', 'consentform')
+            'completionsubmit' => get_string('completiondetail:submit', 'consentform'),
         ];
     }
 

@@ -68,6 +68,6 @@ class agreement_agree extends \core\event\base {
      * @throws \moodle_exception
      */
     public function get_url() {
-        return new \moodle_url('/mod/consentform/view.php', array('id' => $this->objectid));
+        return new \moodle_url('/mod/consentform/view.php', ['id' => $this->objectid]);
     }
 }

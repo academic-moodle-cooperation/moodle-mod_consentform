@@ -74,6 +74,6 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @throws \moodle_exception
      */
     public function get_url() {
-        return new \moodle_url('/mod/consentform/listusers.php', array('id' => $this->objectid));
+        return new \moodle_url('/mod/consentform/listusers.php', ['id' => $this->objectid]);
     }
 }
