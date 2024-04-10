@@ -52,7 +52,7 @@ if ($contextcoursecat->locked) {
 if ($consentform->cssclassesstring ?? false) {
     $cssclassesstring = $consentform->cssclassesstring;
 } else {
-    $cssclassesstring = 'consentform_confirmationtext_incourseoverview';
+    $cssclassesstring = CONSENTFORM_DEFAULTCSSCLASS_INLINE;
 }
 // Agreement form, participant's view.
 $mform = new \mod_consentform\consentform_agreement_form(null,

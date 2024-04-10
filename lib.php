@@ -37,6 +37,8 @@ define('CONSENTFORM_STATUS_REFUSED', -1);
 define('CONSENTFORM_STATUS_NOACTION', 2);
 define('CONSENTFORM_ALL', 99);
 define('CONSENTFORM_NOTIMESTAMP', '-');
+define('CONSENTFORM_DEFAULTCSSCLASS', 'consentform_confirmationtext');
+define('CONSENTFORM_DEFAULTCSSCLASS_INLINE', 'consentform_confirmationtext_incourseoverview');
 
 /* Moodle core API */
 

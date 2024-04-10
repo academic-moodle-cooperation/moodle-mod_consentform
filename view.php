@@ -134,13 +134,19 @@ if ($nocompletion) {
 
     } else {  // Participant's view, lacks the right to submit.
         // Agreement form, participant's view.
+        // Get css classnames of instance settings if there is one.
+        if ($consentform->cssclassesstring ?? false) {
+            $cssclassesstring = $consentform->cssclassesstring;
+        } else {
+            $cssclassesstring = CONSENTFORM_DEFAULTCSSCLASS;
+        }
         $mform = new \mod_consentform\consentform_agreement_form(null,
             ['id' => $id,
                 'cmid' => $cm->id,
                 'courseid' => $course->id,
                 'consentform' => $consentform,
                 'userid' => $USER->id,
-                'confirmationtextclass' => 'consentform_confirmationtext',
+                'confirmationtextclass' => $cssclassesstring,
                 'locked' => $locked,
             ]);
         // Process participant's agreement form data and redirect.
