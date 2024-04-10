@@ -145,7 +145,7 @@ function xmldb_consentform_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021021101, 'consentform');
     }
 
-    if ($oldversion < 2024040900) {
+    if ($oldversion < 2024041000) {
 
         $table = new xmldb_table('consentform');
 
@@ -155,7 +155,7 @@ function xmldb_consentform_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2024040900, 'consentform');
+        upgrade_mod_savepoint(true, 2024041000, 'consentform');
     }
 
     return true;

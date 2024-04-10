@@ -17,14 +17,19 @@
 {{!
     @template mod_consentform/confirmation_panel
 
-    Renders confirmation text to agree to
+    Renders confirmation text to agree to.
 
-    Example context (json):
-    {
-        "cmid": "1",
-        "cssclasses": "p-3 m-3 text-warning",
-        "confirmationtext": "I therefore agree...",
-    }
+   Classes required for JS:
+   * None
+
+   Data attibutes required for JS:
+   * None
+
+   Example context (json):
+   {
+        "cmid": 1
+   }
+
 }}
 <div id="consentform_confirmationtext_{{cmid}}" class="{{{cssclasses}}}">
     {{{confirmationtext}}}
