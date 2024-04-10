@@ -64,7 +64,7 @@ class consentform_agreement_form extends \moodleform {
         $paneldata->cmid = $data['cmid'];
         $paneldata->cssclasses = $data['confirmationtextclass'];
         $paneldata->confirmationtext = format_text($data['consentform']->confirmationtext);
-        $confirmationtexthtml = $OUTPUT->render_from_template('mod_consentform/confirmation_panel', $data);
+        $confirmationtexthtml = $OUTPUT->render_from_template('mod_consentform/confirmation_panel', $paneldata);
         $mform->addElement('html', $confirmationtexthtml);
 
         // Show state of confirmation of this user.
