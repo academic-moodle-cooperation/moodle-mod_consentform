@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+4.4.0 (2024-04-09)
+-------------------
+
+* [FIXED] #7907 Fix all codechecker warnings and errors
+* [FEATURE] #7843 confirmation's cssclasses as instance setting
+* Moodle 4.4.0 compatible version
+
+
 4.3.0 (2024-01-07)
 -------------------
 

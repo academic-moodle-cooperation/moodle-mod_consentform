@@ -47,7 +47,7 @@ class consentform_agreement_form extends \moodleform {
      * Defines forms elements
      */
     public function definition() {
-        global $DB;
+        global $DB, $OUTPUT;
 
         $mform = $this->_form;
         $data = &$this->_customdata;
@@ -60,8 +60,11 @@ class consentform_agreement_form extends \moodleform {
         $mform->setType('sesskey', PARAM_ALPHANUM);
 
         // Display confirmation text.
-        $confirmationtexthtml = '<div class="' . $data['confirmationtextclass'] . '">' .
-            $data['consentform']->confirmationtext . '</div>';
+        $paneldata = new \stdClass();
+        $paneldata->cmid = $data['cmid'];
+        $paneldata->cssclasses = $data['confirmationtextclass'];
+        $paneldata->confirmationtext = format_text($data['consentform']->confirmationtext);
+        $confirmationtexthtml = $OUTPUT->render_from_template('mod_consentform/confirmation_panel', $data);
         $mform->addElement('html', $confirmationtexthtml);
 
         // Show state of confirmation of this user.

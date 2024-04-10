@@ -117,10 +117,14 @@ class mod_consentform_mod_form extends moodleform_mod {
             }
             $mform->addHelpButton($option, $option, 'consentform');
         }
-
         if ($this->_instance) {
             $mform->disabledIf('confirmincourseoverview', 'sesskey', 'neq', '');
         }
+
+        // Field for user defined css classes string for the confirmation text panel.
+        $mform->addElement('text', 'cssclassesstring', get_string('cssclassesstring', 'consentform'), 'size="64"');
+        $mform->setType('cssclassesstring', PARAM_TEXT);
+        $mform->addHelpButton('cssclassesstring', 'cssclassesstring', 'consentform');
 
         $this->standard_coursemodule_elements();
 

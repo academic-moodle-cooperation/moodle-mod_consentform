@@ -48,7 +48,12 @@ if ($contextcoursecat->locked) {
         }
     }
 }
-
+// Get css classnames of instance settings if there is one.
+if ($consentform->cssclassesstring ?? false) {
+    $cssclassesstring = $consentform->cssclassesstring;
+} else {
+    $cssclassesstring = 'consentform_confirmationtext_incourseoverview';
+}
 // Agreement form, participant's view.
 $mform = new \mod_consentform\consentform_agreement_form(null,
     ['id' => $id,
@@ -56,7 +61,7 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
         'courseid' => $course->id,
         'consentform' => $consentform,
         'userid' => $USER->id,
-        'confirmationtextclass' => 'consentform_confirmationtext_incourseoverview',
+        'confirmationtextclass' => $cssclassesstring,
         'locked' => $locked,
     ]);
 // Process participant's agreement form data and redirect.
@@ -95,7 +100,6 @@ if ($data = $mform->get_data()) {
         );
         $event->trigger();
     }
-
 
     $redirecturl = new moodle_url('/mod/consentform/confirmation.php', ['id' => $id]);
     $SESSION->consentform_reloadiframe = "1";

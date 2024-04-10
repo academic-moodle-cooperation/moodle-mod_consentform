@@ -145,5 +145,18 @@ function xmldb_consentform_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021021101, 'consentform');
     }
 
+    if ($oldversion < 2024040900) {
+
+        $table = new xmldb_table('consentform');
+
+        $field = new xmldb_field('cssclassesstring', XMLDB_TYPE_TEXT, null, null, null, null, null,
+            'nocoursemoduleslist');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2024040900, 'consentform');
+    }
+
     return true;
 }

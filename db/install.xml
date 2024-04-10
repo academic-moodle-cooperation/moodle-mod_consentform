@@ -22,6 +22,7 @@
         <FIELD NAME="usegrade" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Write a grade value of 1 for every agreement"/>
         <FIELD NAME="confirmincourseoverview" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Confirmation takes place in course overview"/>
         <FIELD NAME="nocoursemoduleslist" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="No course module list is used"/>
+        <FIELD NAME="cssclassesstring" TYPE="char" LENGTH="200" NOTNULL="true" SEQUENCE="false" COMMENT="User defined css classes for confirmation panel"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
