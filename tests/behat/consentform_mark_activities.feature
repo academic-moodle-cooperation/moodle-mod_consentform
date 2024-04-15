@@ -18,14 +18,11 @@ Feature: In a course, a teacher should be able to add the control of an activity
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I turn editing mode on
-    When I add a "Consentform" to section "1" and I fill the form with:
+    When I log in as "teacher1"
+    And I add a consentform activity to course "Course 1" section "1" and I fill the form with:
       | Name                         | My consent form |
       | Consentform text to agree to | Text.....      |
-    When I am on "Course 1" course homepage
-    And I add a "Quiz" to section "1" and I fill the form with:
+    And I add a quiz activity to course "Course 1" section "1" and I fill the form with:
       | Name        | Test quiz name        |
       | Description | Test quiz description |
     And I add a "True/False" question to the "Test quiz name" quiz with:

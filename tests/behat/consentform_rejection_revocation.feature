@@ -23,14 +23,12 @@ Feature: A teacher should be able to add the options of revocation and rejection
   @javascript
   Scenario: As a teacher I add a consentform with standard settings to the course. The option to revoke should be active.
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I turn editing mode on
-    And I add a "Consentform" to section "1" and I fill the form with:
+    And I add a consentform activity to course "Course 1" section "1" and I fill the form with:
       | Name                         |consentform - Revoke   |
       | Consentform text to agree to | consentform text      |
       | Label Agreement Button       | I agree               |
       | Label Revocation Button      | I revoke my agreement |
-    And I add a "Forum" to section "1" and I fill the form with:
+    And I add a forum activity to course "Course 1" section "1" and I fill the form with:
       | Forum name | forum - Revoke |
     And I am on the "consentform - Revoke" "consentform activity" page
     And I follow "Define dependencies"
@@ -46,9 +44,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
   @javascript
   Scenario: As a teacher I add a consentform with standard settings to the course. The option to refuse can be activated.
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I turn editing mode on
-    And I add a "Consentform" to section "1" and I fill the form with:
+    And I add a consentform activity to course "Course 1" section "1" and I fill the form with:
       | Name                         | consentform - Refusal |
       | Consentform text to agree to | consentform text      |
       | Label Agreement Button       | I agree               |
@@ -59,7 +55,7 @@ Feature: A teacher should be able to add the options of revocation and rejection
     And I set the field "optionrefuse" to "1"
     And I press "Save and return to course"
     And I am on "Course 1" course homepage
-    And I add a "Forum" to section "1" and I fill the form with:
+    And I add a forum activity to course "Course 1" section "1" and I fill the form with:
       | Forum name | forum - Refusal |
     And I am on the "consentform - Refusal" "consentform activity" page
     And I follow "Define dependencies"

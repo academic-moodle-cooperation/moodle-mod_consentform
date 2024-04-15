@@ -20,10 +20,8 @@ Feature: In a course, a teacher should be able to add a new consentform
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I turn editing mode on
-    When I add a "consentform" to section "1" and I fill the form with:
+    When I log in as "teacher1"
+    And I add a consentform activity to course "Course 1" section "1" and I fill the form with:
       | Name | consentform name      |
       | Consentform text to agree to | Add a consentform to the current course (Description) |
     And I log out
