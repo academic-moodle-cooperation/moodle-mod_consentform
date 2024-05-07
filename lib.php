@@ -390,5 +390,5 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
  */
 function consentform_get_editor_options() {
     return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-        'trusttext'=>true);
+        'trusttext' => true);
 }

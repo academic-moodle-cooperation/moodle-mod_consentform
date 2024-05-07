@@ -145,7 +145,6 @@ class mod_consentform_mod_form extends moodleform_mod {
      * Activate show description option if confirmincourseoverview option is on
      */
     public function get_data() {
-        global $DB;
 
         if ($data = parent::get_data()) {
             if (isset($data->confirmationtext)) {
