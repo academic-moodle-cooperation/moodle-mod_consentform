@@ -383,3 +383,12 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
 
 }
 
+/**
+ * This gets an array with default options for the editor
+ *
+ * @return array the options
+ */
+function consentform_get_editor_options() {
+    return array('maxfiles' => EDITOR_UNLIMITED_FILES,
+        'trusttext'=>true);
+}

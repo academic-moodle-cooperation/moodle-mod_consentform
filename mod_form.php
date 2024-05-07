@@ -45,6 +45,8 @@ class mod_consentform_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $OUTPUT;
 
+        $editoroptions = consentform_get_editor_options();
+
         $mform = $this->_form;
 
         $nocompletion = consentform_checkcompletion(null, $this->context, $this->_course, "nocheckcm");
@@ -86,11 +88,12 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addElement('header', 'textfields', get_string('textfields', 'consentform'));
 
         // The text to agree to.
-        $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
-        if (isset($this->current->confirmationtext)) {
-            $editor->setValue(['text' => $this->current->confirmationtext, 'format' => 1]);
-        }
-        $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
+        $mform->addElement('editor',
+            'confirmationtext',
+            get_string("confirmationtext", "consentform"),
+            null,
+            $editoroptions);
+        $mform->setType('confirmationtext', PARAM_RAW);
         $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
 
         // Agreement buttons labels.
@@ -154,6 +157,34 @@ class mod_consentform_mod_form extends moodleform_mod {
             }
         }
         return $data;
+    }
+
+    public function data_preprocessing(&$default_values) {
+
+        $editoroptions = consentform_get_editor_options();
+
+        if ($this->current->instance) {
+            // editing an existing consentform - let us prepare the added editor elements (intro done automatically)
+            $draftitemid = file_get_submitted_draft_itemid('confirmationtext');
+            $default_values['confirmationtext']['text'] =
+                file_prepare_draft_area($draftitemid, $this->context->id,
+                    'mod_consentform', 'confirmationtext', false,
+                    $editoroptions,
+                    $default_values['confirmationtext']);
+
+            $default_values['confirmationtext']['format'] = $default_values['confirmationtextformat'];
+            $default_values['confirmationtext']['itemid'] = $draftitemid;
+        } else {
+            // adding a new consentform instance
+            $draftitemid = file_get_submitted_draft_itemid('confirmationtext');
+
+            // no context yet, itemid not used
+            file_prepare_draft_area($draftitemid, null, 'mod_consentform', 'confirmationtext', false);
+            $default_values['confirmationtext']['text'] = '';
+            $default_values['confirmationtext']['format'] = editors_get_preferred_format();
+            $default_values['confirmationtext']['itemid'] = $draftitemid;
+        }
+
     }
 
     /**
