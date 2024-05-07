@@ -158,32 +158,47 @@ class mod_consentform_mod_form extends moodleform_mod {
         return $data;
     }
 
-    public function data_preprocessing(&$default_values) {
+    public function data_preprocessing(&$defaultvalues) {
 
         $editoroptions = consentform_get_editor_options();
 
         if ($this->current->instance) {
             // editing an existing consentform - let us prepare the added editor elements (intro done automatically)
-            $draftitemid = file_get_submitted_draft_itemid('confirmationtext');
-            $default_values['confirmationtext']['text'] =
+            $draftitemid = file_get_submitted_draft_itemid('confirmationtextarea');
+            $defaultvalues['confirmationtext']['text'] =
                 file_prepare_draft_area($draftitemid, $this->context->id,
-                    'mod_consentform', 'confirmationtext', false,
+                    'mod_consentform', 'confirmationtextarea', false,
                     $editoroptions,
-                    $default_values['confirmationtext']);
+                    $defaultvalues['confirmationtextarea']);
 
-            $default_values['confirmationtext']['format'] = $default_values['confirmationtextformat'];
-            $default_values['confirmationtext']['itemid'] = $draftitemid;
+            $defaultvalues['confirmationtext']['format'] = $defaultvalues['confirmationtextformat'];
+            $defaultvalues['confirmationtext']['itemid'] = $draftitemid;
         } else {
             // adding a new consentform instance
-            $draftitemid = file_get_submitted_draft_itemid('confirmationtext');
+            $draftitemid = file_get_submitted_draft_itemid('confirmationtextarea');
 
             // no context yet, itemid not used
             file_prepare_draft_area($draftitemid, null, 'mod_consentform', 'confirmationtext', false);
-            $default_values['confirmationtext']['text'] = '';
-            $default_values['confirmationtext']['format'] = editors_get_preferred_format();
-            $default_values['confirmationtext']['itemid'] = $draftitemid;
+            $defaultvalues['confirmationtext']['text'] = '';
+            $defaultvalues['confirmationtext']['format'] = editors_get_preferred_format();
+            $defaultvalues['confirmationtext']['itemid'] = $draftitemid;
         }
 
+    }
+
+    /**
+     * Allows module to modify the data returned by form get_data().
+     * This method is also called in the bulk activity completion form.
+     *
+     * Only available on moodleform_mod.
+     *
+     * @param stdClass $data the form data to be modified.
+     */
+    public function data_postprocessing($data) {
+        parent::data_postprocessing($data);
+        if (isset($data->confirmationtext)) {
+            $data->confirmationtextformat = $data->confirmationtext['format'];
+        }
     }
 
     /**
