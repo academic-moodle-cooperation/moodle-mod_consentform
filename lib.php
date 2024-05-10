@@ -422,6 +422,18 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
     $node = $consentformnode->add_node($childnode, $beforekey);
 }
 
+/**
+ * Prints out editor files
+ * @param $course
+ * @param $cm
+ * @param $context
+ * @param $filearea
+ * @param $args
+ * @param $forcedownload
+ * @param array $options
+ * @return false|void
+ * @throws coding_exception
+ */
 function consentform_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $CFG;
     require_once("$CFG->libdir/resourcelib.php");
@@ -436,7 +448,7 @@ function consentform_pluginfile($course, $cm, $context, $filearea, $args, $force
     }
 
     if ($filearea !== 'consentform') {
-        // intro is handled automatically in pluginfile.php
+        // Intro is handled automatically in pluginfile.php.
         return false;
     }
 
@@ -445,7 +457,7 @@ function consentform_pluginfile($course, $cm, $context, $filearea, $args, $force
     $fullpath = "/$context->id/mod_consentform/$filearea/$relativepath";
     $file = $fs->get_file_by_hash(sha1($fullpath));
 
-    // finally send the file
+    // Finally send the file.
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
 

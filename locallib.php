@@ -1154,6 +1154,7 @@ function consentform_statistics_listusers($coursecontext, $cmid) {
 /**
  * This gets an array with default options for the editor
  *
+ * @param object $context
  * @return array the options
  */
 function consentform_get_editor_options($context) {

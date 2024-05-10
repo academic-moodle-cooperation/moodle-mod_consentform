@@ -154,6 +154,11 @@ class mod_consentform_mod_form extends moodleform_mod {
         return $data;
     }
 
+    /**
+     * Preparations for uploading files in confirmationtext editor.
+     * @param $defaultvalues
+     * @return void
+     */
     public function data_preprocessing(&$defaultvalues) {
         if ($this->current->instance) {
             $draftitemid = file_get_submitted_draft_itemid('confirmationtext_editor');
