@@ -424,12 +424,12 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
 
 /**
  * Prints out editor files
- * @param $course
- * @param $cm
- * @param $context
- * @param $filearea
- * @param $args
- * @param $forcedownload
+ * @param object $course
+ * @param object $cm
+ * @param object $context
+ * @param string $filearea
+ * @param array $args
+ * @param bool $forcedownload
  * @param array $options
  * @return false|void
  * @throws coding_exception

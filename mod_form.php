@@ -156,7 +156,7 @@ class mod_consentform_mod_form extends moodleform_mod {
 
     /**
      * Preparations for uploading files in confirmationtext editor.
-     * @param $defaultvalues
+     * @param array $defaultvalues
      * @return void
      */
     public function data_preprocessing(&$defaultvalues) {
