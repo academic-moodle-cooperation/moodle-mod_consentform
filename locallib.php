@@ -116,7 +116,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                             'title' => $cminfo->modfullname, 'role' => 'presentation']) .
                             html_writer::tag('span', $cminfo->name, ['class' => 'leftmargin']);
                     $row->cells[] = new html_table_cell(
-                        html_writer::start_div('activity').html_writer::link($viewurl, $activitylink).
+                        html_writer::start_div().html_writer::link($viewurl, $activitylink).
                             html_writer::end_div()
                     );
                     $row->attributes['class'] = "consentform_activitytable_activityrow";
