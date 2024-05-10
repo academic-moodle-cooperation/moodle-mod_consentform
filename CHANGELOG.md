@@ -5,6 +5,7 @@ CHANGELOG
 -------------------
 
 * [UPDATE]  New Moodle 4.4 plugin icon
+* [FIXED]   Use uploaded pictures and other files in conformation text editor now
 * [FIXED]   Fix all codechecker warnings and errors
 * [FEATURE] Confirmation's cssclasses as instance setting
 * Moodle 4.4.0 compatible version
