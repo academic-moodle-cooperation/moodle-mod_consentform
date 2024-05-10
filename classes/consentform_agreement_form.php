@@ -63,7 +63,15 @@ class consentform_agreement_form extends \moodleform {
         $paneldata = new \stdClass();
         $paneldata->cmid = $data['cmid'];
         $paneldata->cssclasses = $data['confirmationtextclass'];
-        $paneldata->confirmationtext = format_text($data['consentform']->confirmationtext);
+        $text = $data['consentform']->confirmationtext;
+        $text = file_rewrite_pluginfile_urls(
+            $text,
+            'pluginfile.php',
+            $data['contextid'],
+            'mod_consentform',
+            'consentform',
+            0);
+        $paneldata->confirmationtext = format_text($text);
         $confirmationtexthtml = $OUTPUT->render_from_template('mod_consentform/confirmation_panel', $paneldata);
         $mform->addElement('html', $confirmationtexthtml);
 
@@ -96,7 +104,7 @@ class consentform_agreement_form extends \moodleform {
      */
     public function get_data() {
         if ($data = parent::get_data()) {
-            if (isset($data->confirmationtext)) {
+            if (isset($data->confirmationtext['text'])) {
                 $data->confirmationtext = $data->confirmationtext['text'];
             }
         }

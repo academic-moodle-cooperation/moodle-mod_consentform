@@ -148,6 +148,7 @@ if ($nocompletion) {
                 'userid' => $USER->id,
                 'confirmationtextclass' => $cssclassesstring,
                 'locked' => $locked,
+                'contextid' => $context->id,
             ]);
         // Process participant's agreement form data and redirect.
         if ($data = $mform->get_data()) {

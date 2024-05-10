@@ -1150,3 +1150,19 @@ function consentform_statistics_listusers($coursecontext, $cmid) {
 
     return [$sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall];
 }
+
+/**
+ * This gets an array with default options for the editor
+ *
+ * @return array the options
+ */
+function consentform_get_editor_options($context) {
+    global $CFG;
+    return ['subdirs' => 1,
+        'maxbytes' => $CFG->maxbytes,
+        'maxfiles' => -1,
+        'changeformat' => 1,
+        'context' => $context,
+        'noclean' => 1,
+        'trusttext' => 0];
+}

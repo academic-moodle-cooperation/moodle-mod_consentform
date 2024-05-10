@@ -45,7 +45,7 @@ class mod_consentform_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $OUTPUT;
 
-        $editoroptions = consentform_get_editor_options();
+        $editoroptions = consentform_get_editor_options($this->context);
 
         $mform = $this->_form;
 
@@ -89,12 +89,12 @@ class mod_consentform_mod_form extends moodleform_mod {
 
         // The text to agree to.
         $mform->addElement('editor',
-            'confirmationtext',
+            'confirmationtext_editor',
             get_string("confirmationtext", "consentform"),
             null,
             $editoroptions);
-        $mform->setType('confirmationtext', PARAM_RAW);
-        $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
+        $mform->setType('confirmationtext_editor', PARAM_RAW);
+        $mform->addRule('confirmationtext_editor', get_string('required'), 'required', null, 'client');
 
         // Agreement buttons labels.
         $labels = ['textagreementbutton', 'textrefusalbutton', 'textrevocationbutton'];
@@ -140,16 +140,12 @@ class mod_consentform_mod_form extends moodleform_mod {
     }
 
     /**
-     * Split form editor field array of confirmationtext into two fields
      * Set completion to value 2
      * Activate show description option if confirmincourseoverview option is on
      */
     public function get_data() {
 
         if ($data = parent::get_data()) {
-            if (isset($data->confirmationtext)) {
-                $data->confirmationtext = $data->confirmationtext['text'];
-            }
             $data->completion = 2;
             if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
                 $data->showdescription = 1;
@@ -159,45 +155,12 @@ class mod_consentform_mod_form extends moodleform_mod {
     }
 
     public function data_preprocessing(&$defaultvalues) {
-
-        $editoroptions = consentform_get_editor_options();
-
         if ($this->current->instance) {
-            // editing an existing consentform - let us prepare the added editor elements (intro done automatically)
-            $draftitemid = file_get_submitted_draft_itemid('confirmationtextarea');
-            $defaultvalues['confirmationtext']['text'] =
-                file_prepare_draft_area($draftitemid, $this->context->id,
-                    'mod_consentform', 'confirmationtextarea', false,
-                    $editoroptions,
-                    $defaultvalues['confirmationtextarea']);
-
-            $defaultvalues['confirmationtext']['format'] = $defaultvalues['confirmationtextformat'];
-            $defaultvalues['confirmationtext']['itemid'] = $draftitemid;
-        } else {
-            // adding a new consentform instance
-            $draftitemid = file_get_submitted_draft_itemid('confirmationtextarea');
-
-            // no context yet, itemid not used
-            file_prepare_draft_area($draftitemid, null, 'mod_consentform', 'confirmationtext', false);
-            $defaultvalues['confirmationtext']['text'] = '';
-            $defaultvalues['confirmationtext']['format'] = editors_get_preferred_format();
-            $defaultvalues['confirmationtext']['itemid'] = $draftitemid;
-        }
-
-    }
-
-    /**
-     * Allows module to modify the data returned by form get_data().
-     * This method is also called in the bulk activity completion form.
-     *
-     * Only available on moodleform_mod.
-     *
-     * @param stdClass $data the form data to be modified.
-     */
-    public function data_postprocessing($data) {
-        parent::data_postprocessing($data);
-        if (isset($data->confirmationtext)) {
-            $data->confirmationtextformat = $data->confirmationtext['format'];
+            $draftitemid = file_get_submitted_draft_itemid('confirmationtext_editor');
+            $defaultvalues['confirmationtext_editor']['format'] = 1;
+            $defaultvalues['confirmationtext_editor']['text'] = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_consentform',
+                'consentform', 0, consentform_get_editor_options($this->context), $defaultvalues['confirmationtext']);
+            $defaultvalues['confirmationtext_editor']['itemid'] = $draftitemid;
         }
     }
 
