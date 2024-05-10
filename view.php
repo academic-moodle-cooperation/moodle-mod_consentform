@@ -80,7 +80,7 @@ if ($nocompletion) {
 
 } else {
 
-    if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
+    if (has_capability('mod/consentform:submit', $context, null, false)) {
 
         // Print header and start_div.
         echo $OUTPUT->header();
