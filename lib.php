@@ -91,7 +91,12 @@ function consentform_supports($feature) {
 function consentform_add_instance(stdClass $consentform, mod_consentform_mod_form $mform = null) {
     global $DB, $CFG;
 
+    $cmid = $consentform->coursemodule;
+
     $consentform->timecreated = time();
+    if ($mform) {
+        $consentform->confirmationtext = $consentform->confirmationtext_editor['text'];
+    }
 
     $consentform->id = $DB->insert_record('consentform', $consentform);
 
@@ -109,12 +114,31 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
         $iframeparms["class"] = "w-100";
         $iframeparms["name"] = "consentformiframe$consentform->id";
         $html = html_writer::tag("iframe", null, $iframeparms);
-        $consentformintro = $html;
-        $DB->set_field("consentform", "intro", $consentformintro, ["id" => $consentform->id]);
+        $consentform->intro = $html;
     }
+
     if ($consentform->usegrade) {
         consentform_grade_item_update($consentform);
     }
+
+    // We need to use context now, so we need to make sure all needed info is already in db.
+    $DB->set_field('course_modules', 'instance', $consentform->id, ['id' => $cmid]);
+    $context = context_module::instance($cmid);
+
+    if ($mform && !empty($consentform->confirmationtext_editor['itemid'])) {
+        $draftitemid = $consentform->confirmationtext_editor['itemid'];
+        $consentform->confirmationtext = file_save_draft_area_files(
+            $draftitemid,
+            $context->id,
+            'mod_consentform',
+            'consentform',
+            0,
+            consentform_get_editor_options($context),
+            $consentform->confirmationtext
+        );
+    }
+
+    $DB->update_record('consentform', $consentform);
 
     return $consentform->id;
 }
@@ -145,6 +169,22 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
         } else {
             consentform_grade_item_delete($consentform);
         }
+    }
+
+    $consentform->confirmationtext = $consentform->confirmationtext_editor['text'];
+
+    $draftitemid = $consentform->confirmationtext_editor['itemid'];
+    if ($draftitemid) {
+        $context = context_module::instance($consentform->coursemodule);
+        $consentform->confirmationtext = file_save_draft_area_files(
+            $draftitemid,
+            $context->id,
+            'mod_consentform',
+            'consentform',
+            0,
+            consentform_get_editor_options($context),
+            $consentform->confirmationtext_editor['text']
+        );
     }
 
     $result = $DB->update_record('consentform', $consentform);
@@ -380,6 +420,44 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
     );
 
     $node = $consentformnode->add_node($childnode, $beforekey);
+}
 
+/**
+ * Prints out editor files
+ * @param object $course
+ * @param object $cm
+ * @param object $context
+ * @param string $filearea
+ * @param array $args
+ * @param bool $forcedownload
+ * @param array $options
+ * @return false|void
+ * @throws coding_exception
+ */
+function consentform_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
+    global $CFG;
+    require_once("$CFG->libdir/resourcelib.php");
+
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+
+    require_course_login($course, true, $cm);
+    if (!has_capability('mod/consentform:view', $context)) {
+        return false;
+    }
+
+    if ($filearea !== 'consentform') {
+        // Intro is handled automatically in pluginfile.php.
+        return false;
+    }
+
+    $fs = get_file_storage();
+    $relativepath = implode('/', $args);
+    $fullpath = "/$context->id/mod_consentform/$filearea/$relativepath";
+    $file = $fs->get_file_by_hash(sha1($fullpath));
+
+    // Finally send the file.
+    send_stored_file($file, null, 0, $forcedownload, $options);
 }
 

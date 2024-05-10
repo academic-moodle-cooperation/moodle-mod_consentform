@@ -45,6 +45,8 @@ class mod_consentform_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $OUTPUT;
 
+        $editoroptions = consentform_get_editor_options($this->context);
+
         $mform = $this->_form;
 
         $nocompletion = consentform_checkcompletion(null, $this->context, $this->_course, "nocheckcm");
@@ -86,12 +88,13 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addElement('header', 'textfields', get_string('textfields', 'consentform'));
 
         // The text to agree to.
-        $editor = $mform->addElement('editor', 'confirmationtext', get_string('confirmationtext', 'mod_consentform'));
-        if (isset($this->current->confirmationtext)) {
-            $editor->setValue(['text' => $this->current->confirmationtext, 'format' => 1]);
-        }
-        $mform->setType('confirmationtext', PARAM_RAW); // No XSS prevention here, users must be trusted.
-        $mform->addRule('confirmationtext', get_string('required'), 'required', null, 'client');
+        $mform->addElement('editor',
+            'confirmationtext_editor',
+            get_string("confirmationtext", "consentform"),
+            null,
+            $editoroptions);
+        $mform->setType('confirmationtext_editor', PARAM_RAW);
+        $mform->addRule('confirmationtext_editor', get_string('required'), 'required', null, 'client');
 
         // Agreement buttons labels.
         $labels = ['textagreementbutton', 'textrefusalbutton', 'textrevocationbutton'];
@@ -137,23 +140,33 @@ class mod_consentform_mod_form extends moodleform_mod {
     }
 
     /**
-     * Split form editor field array of confirmationtext into two fields
      * Set completion to value 2
      * Activate show description option if confirmincourseoverview option is on
      */
     public function get_data() {
-        global $DB;
 
         if ($data = parent::get_data()) {
-            if (isset($data->confirmationtext)) {
-                $data->confirmationtext = $data->confirmationtext['text'];
-            }
             $data->completion = 2;
             if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
                 $data->showdescription = 1;
             }
         }
         return $data;
+    }
+
+    /**
+     * Preparations for uploading files in confirmationtext editor.
+     * @param array $defaultvalues
+     * @return void
+     */
+    public function data_preprocessing(&$defaultvalues) {
+        if ($this->current->instance) {
+            $draftitemid = file_get_submitted_draft_itemid('confirmationtext_editor');
+            $defaultvalues['confirmationtext_editor']['format'] = 1;
+            $defaultvalues['confirmationtext_editor']['text'] = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_consentform',
+                'consentform', 0, consentform_get_editor_options($this->context), $defaultvalues['confirmationtext']);
+            $defaultvalues['confirmationtext_editor']['itemid'] = $draftitemid;
+        }
     }
 
     /**
