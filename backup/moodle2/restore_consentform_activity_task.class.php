@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/consentform/backup/moodle2/restore_consentform_stepslib.php');
+require_once($CFG->dirroot . '/mod/consentform/locallib.php');
 
 /**
  * Restore task for the consentform activity module
@@ -112,5 +113,23 @@ class restore_consentform_activity_task extends restore_activity_task {
         $rules[] = new restore_log_rule('consentform', 'view all', 'index.php?id={course}', null);
 
         return $rules;
+    }
+
+    /**
+     * Now restore module dependencies as well if the duplication is within the same course.
+     * @throws dml_exception
+     */
+    public function after_restore(): void {
+        $courseid = $this->get_courseid();
+        if ($this->is_samesite() && $this->get_old_courseid() == $courseid) {
+            $cmold = $this->get_old_moduleid();
+            $cmnew = get_coursemodule_from_instance('consentform', $this->get_activityid(), $courseid);
+            $cms = get_course_mods($courseid);
+            foreach ($cms as $cm) {
+                if (consentform_find_entry_availability($cm->id, $cmold)) {
+                    consentform_make_entry_availability($courseid, $cm->id, $cmnew->id);
+                }
+            }
+        }
     }
 }

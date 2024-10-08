@@ -46,7 +46,7 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
         $consentform = new backup_nested_element('consentform', ['id'], [
             'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'grade', 'confirmationtext', 'optionrevoke',
             'optionrefuse', 'textagreementbutton', 'textrefusalbutton', 'textrevocationbutton', 'usegrade',
-            'confirmincourseoverview']);
+            'confirmincourseoverview', 'nocoursemoduleslist', 'cssclassesstring']);
 
         // Define data source.
         $consentform->set_source_table('consentform', ['id' => backup::VAR_ACTIVITYID]);
