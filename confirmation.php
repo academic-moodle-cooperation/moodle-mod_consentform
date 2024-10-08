@@ -63,6 +63,7 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
         'userid' => $USER->id,
         'confirmationtextclass' => $cssclassesstring,
         'locked' => $locked,
+        'contextid' => $contextmodule->id,
     ]);
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {
