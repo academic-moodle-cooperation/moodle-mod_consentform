@@ -163,8 +163,9 @@ class mod_consentform_mod_form extends moodleform_mod {
         if ($this->current->instance) {
             $draftitemid = file_get_submitted_draft_itemid('confirmationtext_editor');
             $defaultvalues['confirmationtext_editor']['format'] = 1;
-            $defaultvalues['confirmationtext_editor']['text'] = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_consentform',
-                'consentform', 0, consentform_get_editor_options($this->context), $defaultvalues['confirmationtext']);
+            $defaultvalues['confirmationtext_editor']['text'] = file_prepare_draft_area(
+                $draftitemid, $this->context->id, 'mod_consentform', 'consentform', 0,
+                consentform_get_editor_options($this->context), $defaultvalues['confirmationtext']);
             $defaultvalues['confirmationtext_editor']['itemid'] = $draftitemid;
         }
     }

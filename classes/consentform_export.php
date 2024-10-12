@@ -17,6 +17,7 @@
 /**
  * Adapter to fill in the data from the moodleform into the exportclass
  *
+ * @package    mod_consentform
  * @copyright  2021 Thomas Niedermaier, Medical University of Vienna (thomas.niedermaier@meduniwien.ac.at)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
