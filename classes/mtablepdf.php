@@ -59,7 +59,7 @@ class mtablepdf extends \pdf {
 
     /** @var int rows per page */
     private $rowsperpage = 0;
-    /** @var boolean show header and footer */
+    /** @var bool show header and footer */
     private $showheaderfooter = false;
     /** @var array columns widths */
     private $columnwidths = [];
