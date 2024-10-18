@@ -114,7 +114,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $activitylink = html_writer::empty_tag('img', ['src' => $cminfo->get_icon_url(),
                             'class' => 'iconlarge activityicon', 'alt' => $cminfo->modfullname,
                             'title' => $cminfo->modfullname, 'role' => 'presentation']) .
-                            html_writer::tag('span', $cminfo->name, ['class' => 'leftmargin']);
+                            html_writer::tag('span', format_string ($cminfo->name), ['class' => 'leftmargin']);
                     $row->cells[] = new html_table_cell(
                         html_writer::start_div().html_writer::link($viewurl, $activitylink).
                             html_writer::end_div()
