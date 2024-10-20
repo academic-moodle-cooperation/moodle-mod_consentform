@@ -439,7 +439,7 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
  *
  * @param int $cmidcontrolled  course module id of this consentform instance
  * @param int $cmidcontroller  id of course module which relies on this consentform instance
- * @return bool $ret 0...not found, 1...consentform entry found, 2...user entry found
+ * @return bool $ret 0...not found, 1...consentform entry found, 2...consent form entries not the only ones
  * @throws dml_exception
  */
 function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
@@ -457,7 +457,12 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
             // Genuine consentform condition?
             if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
                 if ($condition->cm == $cmidcontroller) {
-                    $ret = 1;
+                    // If not all conditions are consentform conditions return 2.
+                    if (consentform_find_entry_availability_notconsentform($availability->c, $cmidcontroller)) {
+                        $ret = 2;
+                    } else {
+                        $ret = 1;
+                    }
                 }
             }
             // Negative user entry?
@@ -468,8 +473,13 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
             }
             // Otherwise user condition anywhere in availability?
             if (!$ret) {
-                if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontrolled, $cmidcontroller)) {
-                    $ret = 2;
+                if (consentform_find_entry_availability_anywhere($availability->c, $cmidcontroller)) {
+                    // If all conditions are consentform conditions it is ok.
+                    if (consentform_find_entry_availability_notconsentform($availability->c, $cmidcontroller)) {
+                        $ret = 2;
+                    } else {
+                        $ret = 1;
+                    }
                 }
             }
         }
@@ -480,17 +490,16 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
 /**
  * Find completion entry anywhere in availability of course module (recursive)
  *
- * @param array $conditions condition or condiionlist of availability
- * @param int $cmidcontrolled  course module id of this consentform instance
+ * @param array $conditions condition or condition list of availability
  * @param int $cmidcontroller  id of course module which relies on this consentform instance
- * @return bool $ret 0...not found, 1...consentform entry found, 2...user entry found
+ * @return bool returns true if consentform entry was found anywhere in availability
  * @throws dml_exception
  */
-function consentform_find_entry_availability_anywhere($conditions, $cmidcontrolled, $cmidcontroller) {
+function consentform_find_entry_availability_anywhere($conditions, $cmidcontroller) {
 
     foreach ($conditions as $condition) {
-        if (isset($condition->c)) { // If conditionlist.
-            if (consentform_find_entry_availability_anywhere($condition->c, $cmidcontrolled, $cmidcontroller)) {
+        if (isset($condition->c)) { // If condition list.
+            if (consentform_find_entry_availability_anywhere($condition->c, $cmidcontroller)) {
                 return true;
             }
         } else {
@@ -504,6 +513,38 @@ function consentform_find_entry_availability_anywhere($conditions, $cmidcontroll
 
     return false;
 }
+
+/**
+ * Find entry anywhere in availability of course module which is not a consentform condition (recursive)
+ *
+ * @param array $conditions condition or condition list of availability
+ * @param int $cmidcontroller  id of course module which relies on this consentform instance
+ * @return bool returns true if such an entry was found
+ * @throws dml_exception
+ */
+function consentform_find_entry_availability_notconsentform($conditions, $cmidcontroller) {
+
+    foreach ($conditions as $condition) {
+        if (isset($condition->c)) { // If condition list.
+            if (consentform_find_entry_availability_notconsentform($condition->c, $cmidcontroller)) {
+                return true;
+            }
+        } else {
+            if ($condition->type == 'completion') {
+                if ($condition->cm != $cmidcontroller) {
+                    if (!get_coursemodule_from_id('consentform', $condition->cm)) {
+                        return true;
+                    }
+                }
+            } else {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 
 /**
  * Insert condition entry in course_module x
