@@ -5,6 +5,7 @@ CHANGELOG
 -------------------
 
 * [FEATURE] Duplicate module dependencies as well
+* [FEATURE] Support filters in module names in dependencies list
 * Moodle 4.5.0 compatible version
 
 
