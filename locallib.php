@@ -457,7 +457,12 @@ function consentform_find_entry_availability($cmidcontrolled, $cmidcontroller) {
             // Genuine consentform condition?
             if (isset($condition->type) && $condition->type == 'completion' && $availability->op == "&") {
                 if ($condition->cm == $cmidcontroller) {
-                    $ret = 1;
+                    // If not all conditions are consentform conditions return 2.
+                    if (consentform_find_entry_availability_notconsentform($availability->c, $cmidcontroller)) {
+                        $ret = 2;
+                    } else {
+                        $ret = 1;
+                    }
                 }
             }
             // Negative user entry?
