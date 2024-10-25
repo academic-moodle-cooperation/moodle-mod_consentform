@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-4.5.0 (2024-10-08)
+4.5.0 (2024-10-12)
 -------------------
 
 * [FEATURE] Duplicate module dependencies as well
@@ -9,7 +9,7 @@ CHANGELOG
 * Moodle 4.5.0 compatible version
 
 
-* 4.4.0 (2024-04-10)
+4.4.0 (2024-04-10)
 -------------------
 
 * [UPDATE]  New Moodle 4.4 plugin icon
