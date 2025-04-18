@@ -85,10 +85,10 @@ function consentform_supports($feature) {
  * of the new instance.
  *
  * @param stdClass $consentform Submitted data from the form in mod_form.php
- * @param mod_consentform_mod_form $mform The form instance itself (if needed)
+ * @param mod_consentform_mod_form|null $mform The form instance itself (if needed)
  * @return int The id of the newly inserted consentform record
  */
-function consentform_add_instance(stdClass $consentform, mod_consentform_mod_form $mform = null) {
+function consentform_add_instance(stdClass $consentform, mod_consentform_mod_form|null $mform = null) {
     global $DB, $CFG;
 
     $cmid = $consentform->coursemodule;
@@ -151,10 +151,10 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
  * will update an existing instance with new data.
  *
  * @param stdClass $consentform An object from the form in mod_form.php
- * @param mod_consentform_mod_form $mform The form instance itself (if needed)
+ * @param mod_consentform_mod_form|null $mform The form instance itself (if needed)
  * @return boolean Success/Fail
  */
-function consentform_update_instance(stdClass $consentform, mod_consentform_mod_form $mform = null) {
+function consentform_update_instance(stdClass $consentform, mod_consentform_mod_form|null $mform = null) {
     global $DB;
 
     $consentform->timemodified = time();
@@ -389,7 +389,7 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
     ];
     $beforekey = null;
     foreach ($keys as $key => $type) {
-        if ($foundnode = $consentformnode->find($key, $type)) {
+        if ($consentformnode->find($key, $type)) {
             $beforekey = $key;
             break;
         }
@@ -419,7 +419,7 @@ function consentform_extend_settings_navigation(settings_navigation $settingsnav
         'listusers'
     );
 
-    $node = $consentformnode->add_node($childnode, $beforekey);
+    $consentformnode->add_node($childnode, $beforekey);
 }
 
 /**
