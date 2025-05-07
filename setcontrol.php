@@ -18,7 +18,8 @@
  * Code to update if a course module is controlled by a consentform module or not in response to an ajax call.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author     Thomas Niedermaier
+ * @copyright  2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

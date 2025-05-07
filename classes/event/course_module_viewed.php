@@ -18,7 +18,8 @@
  * Defines the view event.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author     Thomas Niedermaier
+ * @copyright  2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +32,8 @@ namespace mod_consentform\event;
  * override methods get_url() and get_legacy_log_data(), too.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author     Thomas Niedermaier
+ * @copyright  2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_viewed extends \core\event\course_module_viewed {

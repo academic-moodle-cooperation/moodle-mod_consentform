@@ -18,8 +18,8 @@
  * Table export class
  *
  * @package       mod_consentform
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Andreas Hruska
+ * @author        Katarzyna Potocka
  * @author        Andreas Weninger
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,8 +38,8 @@ if (isset($CFG)) {
  * Class for exporting reaction lists as files.
  *
  * @package    mod_consentform
- * @author     Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author     Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author     Andreas Hruska
+ * @author     Katarzyna Potocka
  * @author     Andreas Weninger
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

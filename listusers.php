@@ -17,7 +17,8 @@
 /** List of users and their status
  *
  * @package    mod_consentform
- * @copyright  2021 Thomas Niedermaier, Medical University of Vienna (thomas.niedermaier@meduniwien.ac.at)
+ * @author     Thomas Niedermaier
+ * @copyright  2021, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

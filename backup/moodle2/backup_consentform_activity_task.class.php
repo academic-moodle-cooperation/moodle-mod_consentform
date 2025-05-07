@@ -19,7 +19,8 @@
  *
  * @package   mod_consentform
  * @category  backup
- * @copyright 2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author    Thomas Niedermaier
+ * @copyright 2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ require_once($CFG->dirroot . '/mod/consentform/backup/moodle2/backup_consentform
  *
  * @package   mod_consentform
  * @category  backup
- * @copyright 2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author    Thomas Niedermaier
+ * @copyright 2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_consentform_activity_task extends backup_activity_task {
