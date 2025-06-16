@@ -59,14 +59,10 @@ class mtablepdf extends \pdf {
 
     /** @var int rows per page */
     private $rowsperpage = 0;
-    /** @var bool show header and footer */
-    private $showheaderfooter = false;
     /** @var array columns widths */
     private $columnwidths = [];
     /** @var array titles */
     private $titles = null;
-    /** @var array format of columns */
-    private $columnformat;
     /** @var array data */
     private $data = [];
 
@@ -216,8 +212,6 @@ class mtablepdf extends \pdf {
      * @param MoodleExcelWorkbook $workbook workbook to put data into
      */
     public function fill_workbook(&$workbook) {
-        global $DB;
-
         $time = time();
         $time = userdate($time);
         $worksheet = $workbook->add_worksheet($time);
