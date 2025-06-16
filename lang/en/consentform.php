@@ -67,7 +67,7 @@ $string['listusers'] = 'Agreements';
 $string['listusersbutton'] = 'View all agreements';
 $string['modulelistlinktext'] = 'Define dependencies';
 $string['modulename'] = 'Consentform';
-$string['modulename_help'] = 'Use the consentform module to uncover certain activities not before the participant has agreed.';
+$string['modulename_help'] = 'Use the consentform module to uncover certain activities not before the participant has agreed.<p><a href="https://academic-moodle-cooperation.org/anleitungen/einverstandniserklarung-einholen/?lng=en" target="_blank">Consentform: Ask to consent</a></p>';
 $string['modulenameplural'] = 'Consentforms';
 $string['modules'] = 'Activities and Ressources';
 $string['moduleviewed'] = 'Module main page viewed';
