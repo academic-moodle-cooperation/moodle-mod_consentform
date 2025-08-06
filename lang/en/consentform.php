@@ -21,7 +21,8 @@
  * if you like, and it can span multiple lines.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author     Thomas Niedermaier
+ * @copyright  2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -66,7 +67,7 @@ $string['listusers'] = 'Agreements';
 $string['listusersbutton'] = 'View all agreements';
 $string['modulelistlinktext'] = 'Define dependencies';
 $string['modulename'] = 'Consentform';
-$string['modulename_help'] = 'Use the consentform module to uncover certain activities not before the participant has agreed.';
+$string['modulename_help'] = 'Use the consentform module to uncover certain activities not before the participant has agreed.<p><a href="https://academic-moodle-cooperation.org/anleitungen/einverstandniserklarung-einholen/?lng=en" target="_blank">Consentform: Ask to consent</a></p>';
 $string['modulenameplural'] = 'Consentforms';
 $string['modules'] = 'Activities and Ressources';
 $string['moduleviewed'] = 'Module main page viewed';

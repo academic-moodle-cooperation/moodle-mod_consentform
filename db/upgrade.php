@@ -25,7 +25,8 @@
  * here will all be database-neutral, using the functions defined in DLL libraries.
  *
  * @package    mod_consentform
- * @copyright  2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author     Thomas Niedermaier
+ * @copyright  2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -156,6 +157,19 @@ function xmldb_consentform_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2024041000, 'consentform');
+    }
+
+    if ($oldversion < 2025050700) {
+
+        // Changing nullability of field cssclassesstring on table consentform to null.
+        $table = new xmldb_table('consentform');
+        $field = new xmldb_field('cssclassesstring', XMLDB_TYPE_CHAR, '200', null, null, null, null, 'nocoursemoduleslist');
+
+        // Launch change of nullability for field cssclassesstring.
+        $dbman->change_field_notnull($table, $field);
+
+        // Consentform savepoint reached.
+        upgrade_mod_savepoint(true, 2025050700, 'consentform');
     }
 
     return true;

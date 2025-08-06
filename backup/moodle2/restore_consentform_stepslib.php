@@ -19,7 +19,8 @@
  *
  * @package   mod_consentform
  * @category  backup
- * @copyright 2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author    Thomas Niedermaier
+ * @copyright 2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +29,8 @@
  *
  * @package   mod_consentform
  * @category  backup
- * @copyright 2020 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
+ * @author    Thomas Niedermaier
+ * @copyright 2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_consentform_activity_structure_step extends restore_activity_structure_step {
@@ -105,8 +107,7 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $data = (object) $data;
         $oldid = $data->id;
-
-        $moduleid = $DB->get_field('course_modules', 'module', ['id' => $data->consentformcmid]);
+        $moduleid = $DB->get_field('modules', 'id', ['name' => 'consentform']);
         $newcmid = $DB->get_field('course_modules', 'id',
             ['module' => $moduleid, 'instance' => $this->newcfid]);
         $data->consentformcmid = $newcmid;

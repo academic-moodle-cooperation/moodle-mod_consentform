@@ -18,12 +18,10 @@
  *
  * @package
  * @subpackage mod_consentform
- * @copyright 2019 Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
- * @module mod_consentform/checkboxclicked
+ * @author     Thomas Niedermaier
+ * @copyright  2019, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @module     mod_consentform/checkboxclicked
  */
 define(['jquery', 'core/config'], function($, config) {
         /**

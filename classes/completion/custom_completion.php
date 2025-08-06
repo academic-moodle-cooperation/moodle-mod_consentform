@@ -26,9 +26,10 @@ use core_completion\activity_custom_completion;
  * Class for defining mod_consentform's custom completion rules and fetching the completion statuses
  * of the custom completion rules for a given consentform instance and a user.
  *
- * @package mod_consentform
- * @copyright  2022 Thomas Niedermaier, Medical University of Vienna <thomas.niedermaier@meduniwien.ac.at>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_consentform
+ * @author    Thomas Niedermaier
+ * @copyright 2020, Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_completion extends activity_custom_completion {
 
