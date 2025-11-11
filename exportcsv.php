@@ -28,17 +28,17 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 if ($id) {
-    $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
-    $consentform  = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $consentform = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
 
 } else {
     die('You must specify a course_module ID');
 }
 
-$sortkey   = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname|firstname|email|timestamp.
+$sortkey = optional_param('sortkey', 'lastname', PARAM_ALPHA); // Sorted view: lastname|firstname|email|timestamp.
 $sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the order of the sorting (ASC or DESC).
-$tab  = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
+$tab = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 require_login($course, true, $cm);
 
@@ -71,7 +71,7 @@ foreach ($listusers as $record) {
     $csvrows[] = $csvrow;
 } // End loop records.
 
-switch ($tab){
+switch ($tab) {
     case CONSENTFORM_STATUS_AGREED:
         $statusname = get_string("agreed", "consentform");
         break;
@@ -90,6 +90,10 @@ switch ($tab){
 
 $export = new \mod_consentform\consentform_export();
 $exportformat = 'csv';
-$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $statusname . '_' . userdate(time(),
-        '%d-%m-%Y', 99, false));
+$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $statusname . '_' . userdate(
+    time(),
+    '%d-%m-%Y',
+    99,
+    false
+));
 $export->print_file();

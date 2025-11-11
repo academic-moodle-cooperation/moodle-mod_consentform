@@ -44,7 +44,6 @@ if (isset($CFG)) {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mtablepdf extends \pdf {
-
     /** @var int value for output format pdf */
     const OUTPUT_FORMAT_PDF = 0;
     /** @var int value for output format excel */
@@ -80,7 +79,6 @@ class mtablepdf extends \pdf {
         $this->setHeaderMargin(7);
         $this->SetFont('freesans', '');
         $this->columnwidths = $columnwidths;
-
     }
 
     /**
@@ -128,11 +126,10 @@ class mtablepdf extends \pdf {
      */
     public function add_row($row) {
         if (count($row) != count($this->columnwidths)) {
-
             var_dump($row);
             echo "Error: number of columns from row ("
-                .count($row) . ") doenst match the number defined ("
-                .count($this->columnwidths) . ")";
+                . count($row) . ") doenst match the number defined ("
+                . count($this->columnwidths) . ")";
             return false;
         }
 
