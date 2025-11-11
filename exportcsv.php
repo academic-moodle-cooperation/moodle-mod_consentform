@@ -31,7 +31,6 @@ if ($id) {
     $cm = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
     $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     $consentform = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
-
 } else {
     die('You must specify a course_module ID');
 }

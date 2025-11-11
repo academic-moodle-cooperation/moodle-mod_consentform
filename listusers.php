@@ -153,7 +153,7 @@ if ($download) {
         'id' => $id,
         'tab' => $tab,
         'sortkey' => $sortkey,
-        'sortorder' => $sortorder
+        'sortorder' => $sortorder,
     ]);
     $exporttext = get_string('downloadbuttonlabel', 'consentform');
     echo html_writer::start_div('d-inline-block ml-3');

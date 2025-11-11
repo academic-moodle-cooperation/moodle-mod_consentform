@@ -50,7 +50,7 @@ if (isset($CFG)) {
  * @copyright  2022 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, core_userlist_provider {
+class provider implements core_userlist_provider, metadataprovider, pluginprovider {
     /**
      * Provides meta data that is stored about a user with mod_consentform
      *
@@ -173,7 +173,6 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             writer::with_context($context)->export_data([], $consentformdata);
 
             static::export_states($context, $consentformid, $user);
-
         }
     }
 
@@ -297,7 +296,6 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             "(userid = :userid) AND id " . $csidssql,
             ['userid' => $user->id] + $csidsparams
         );
-
     }
 
     /**
@@ -337,5 +335,4 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             }
         }
     }
-
 }

@@ -350,7 +350,7 @@ class mtablepdf extends \pdf {
 
         header('Content-Type: text/plain');
         header('Content-Length: ' . strlen($filecontent));
-        header('Content-Disposition: attachment; filename="' . $filename . '"; filename*="' .rawurlencode($filename));
+        header('Content-Disposition: attachment; filename="' . $filename . '"; filename*="' . rawurlencode($filename));
         header('Content-Transfer-Encoding: binary');
 
         echo($filecontent);

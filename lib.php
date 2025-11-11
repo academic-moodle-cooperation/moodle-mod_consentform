@@ -52,7 +52,7 @@ define('CONSENTFORM_DEFAULTCSSCLASS_INLINE', 'consentform_confirmationtext_incou
  * @return mixed true if the feature is supported, null if unknown
  */
 function consentform_supports($feature) {
-    switch($feature) {
+    switch ($feature) {
         case FEATURE_MOD_INTRO:
             return false;
         case FEATURE_SHOW_DESCRIPTION:
@@ -235,7 +235,7 @@ function consentform_delete_instance($id) {
  * @param grade_item $grades reset grades in the gradebook
  * @return void
  */
-function consentform_grade_item_update(stdClass $consentform, $grades=null) {
+function consentform_grade_item_update(stdClass $consentform, $grades = null) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
@@ -295,7 +295,7 @@ function consentform_grade_item_delete($consentform) {
  */
 function consentform_update_grades(stdClass $consentform, $userid = 0) {
     global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     // Populate array of grade objects indexed by userid.
     $grades = [];
@@ -311,7 +311,7 @@ function consentform_update_grades(stdClass $consentform, $userid = 0) {
  * @param bool $agreed
  * @return false|void
  */
-function consentform_set_user_grade($consentform, $userid, $agreed=true) {
+function consentform_set_user_grade($consentform, $userid, $agreed = true) {
     if ($userid) {
         $grade = new stdClass();
         $grade->userid = $userid;
@@ -473,4 +473,3 @@ function consentform_pluginfile($course, $cm, $context, $filearea, $args, $force
     // Finally send the file.
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
-

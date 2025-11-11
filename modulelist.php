@@ -73,23 +73,24 @@ $PAGE->add_body_class('limitedwidth');
 $nocompletion = consentform_checkcompletion($id, $context, $course, $cm->completion);
 
 if ($nocompletion) {
-
     // Display error messages if completion settings are not sufficient.
     echo $OUTPUT->header();
-    $nocompletion = html_writer::div(get_string("nocompletiontitle", "mod_consentform"),
-            'font-weight-bold').$nocompletion;
+    $nocompletion = html_writer::div(
+        get_string("nocompletiontitle", "mod_consentform"),
+        'font-weight-bold'
+    ) . $nocompletion;
     echo $OUTPUT->notification($nocompletion, 'error', false);
-
 } else {
-
     if (has_capability('mod/consentform:submit', $context, null, false) || is_siteadmin()) {
         if ($consentform->nocoursemoduleslist) {
             echo $OUTPUT->header();
             echo consentform_shownocoursemodulelistinfo($id);
         } else {
             // Display course modules list to the users with the submit right.
-            consentform_showheaderwithoutintro($consentform->id,
-                get_string('dependencies_description', 'mod_consentform'));
+            consentform_showheaderwithoutintro(
+                $consentform->id,
+                get_string('dependencies_description', 'mod_consentform')
+            );
 
             // List of course modules.
             $table = new html_table();

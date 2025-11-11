@@ -128,7 +128,7 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                         'class' => 'iconlarge activityicon',
                         'alt' => $cminfo->modfullname,
                         'title' => $cminfo->modfullname,
-                        'role' => 'presentation'
+                        'role' => 'presentation',
                     ]) .
                         html_writer::tag('span', format_string($cminfo->name), ['class' => 'leftmargin']);
                     $row->cells[] = new html_table_cell(
@@ -140,7 +140,6 @@ function consentform_generate_coursemodulestable_content($course, $cmidcontrolle
                     $cmindex++;
                 }
             } // End if user can view.
-
         } // End if not this cmid.
     }  // End foreach.
 
@@ -255,7 +254,6 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
             if (!isset($table->wrap[$key])) {
                 $table->wrap[$key] = null;
             }
-
         }
     }
     if (empty($table->attributes['class'])) {
@@ -393,7 +391,7 @@ function consentform_render_coursemodulestable(html_table $table, $printfooter =
                         'class' => trim($row->attributes['class']),
                         'style' => $row->style,
                         'id' => $row->id,
-                        'name' => trim($row->attributes['name'])
+                        'name' => trim($row->attributes['name']),
                     ]
                 )
                     . "\n";
@@ -690,7 +688,6 @@ function consentform_delete_entry_availability($courseid, $cmidcontrolled, $cmid
     } else {
         return false;
     }
-
 }
 
 /**
@@ -1064,7 +1061,6 @@ function consentform_display_participants($listusers, $cmid, $sortkey, $sortorde
             $row->timestamp != CONSENTFORM_NOTIMESTAMP ? userdate($row->timestamp) : CONSENTFORM_NOTIMESTAMP,
             $state,
         ];
-
     }  // For each user row.
 
     if ($index == 0) {
@@ -1101,25 +1097,25 @@ function consentform_participantstable_headercolumn($column, $columntitle, $sort
     if ($column == $sortkey) {
         if ($sortorder == "DESC") {
             $icon = $OUTPUT->image_icon('t/sort_desc', get_string('sort'), 'moodle', [
-                'style' => 'cursor:pointer;margin-left:2px;nowrap'
+                'style' => 'cursor:pointer;margin-left:2px;nowrap',
             ]);
             $url = new moodle_url($urlinit, [
                 'sortkey' => $column,
                 'id' => $cmid,
                 'sesskey' => sesskey(),
                 'tab' => $tab,
-                'sortorder' => 'ASC'
+                'sortorder' => 'ASC',
             ]);
         } else {
             $icon = $OUTPUT->image_icon('t/sort_asc', get_string('sort'), 'moodle', [
-                'style' => 'cursor:pointer;margin-left:2px;nowrap'
+                'style' => 'cursor:pointer;margin-left:2px;nowrap',
             ]);
             $url = new moodle_url($urlinit, [
                 'sortkey' => $column,
                 'id' => $cmid,
                 'sesskey' => sesskey(),
                 'tab' => $tab,
-                'sortorder' => 'DESC'
+                'sortorder' => 'DESC',
             ]);
         }
     } else {
@@ -1128,7 +1124,7 @@ function consentform_participantstable_headercolumn($column, $columntitle, $sort
             'id' => $cmid,
             'sesskey' => sesskey(),
             'tab' => $tab,
-            'sortorder' => 'ASC'
+            'sortorder' => 'ASC',
         ]);
     }
 
@@ -1334,6 +1330,6 @@ function consentform_get_editor_options($context) {
         'changeformat' => 1,
         'context' => $context,
         'noclean' => 1,
-        'trusttext' => 0
+        'trusttext' => 0,
     ];
 }
