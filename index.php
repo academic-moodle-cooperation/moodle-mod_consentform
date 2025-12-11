@@ -28,8 +28,8 @@
 
 // Replace consentform with the name of your module and remove this line.
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $id = required_param('id', PARAM_INT); // Course.
 
@@ -54,7 +54,7 @@ $PAGE->set_pagelayout('incourse');
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strname);
 
-if (! $consentforms = get_all_instances_in_course('consentform', $course)) {
+if (!$consentforms = get_all_instances_in_course('consentform', $course)) {
     notice(get_string('noconsentforms', 'consentform'), new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
@@ -64,11 +64,11 @@ $table = new html_table();
 $table->attributes['class'] = 'generaltable mod_index';
 
 if ($usesections) {
-    $strsectionname = get_string('sectionname', 'format_'.$course->format);
-    $table->head  = [$strsectionname, $strname];
+    $strsectionname = get_string('sectionname', 'format_' . $course->format);
+    $table->head = [$strsectionname, $strname];
     $table->align = ['center', 'left'];
 } else {
-    $table->head  = [$strname];
+    $table->head = [$strname];
     $table->align = ['left'];
 }
 
@@ -90,8 +90,11 @@ foreach ($modinfo->instances['consentform'] as $cm) {
 
     $class = $cm->visible ? null : ['class' => 'dimmed'];
 
-    $row[] = html_writer::link(new moodle_url('view.php', ['id' => $cm->id]),
-                $cm->get_formatted_name(), $class);
+    $row[] = html_writer::link(
+        new moodle_url('view.php', ['id' => $cm->id]),
+        $cm->get_formatted_name(),
+        $class
+    );
     $table->data[] = $row;
 }
 

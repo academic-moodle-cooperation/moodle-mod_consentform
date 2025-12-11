@@ -34,7 +34,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_consentform_activity_structure_step extends restore_activity_structure_step {
-
     /** @var int ID of new consentform instance. */
     protected $newcfid;
 
@@ -44,14 +43,15 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
      * @return object
      */
     protected function define_structure() {
-
         $paths = [];
         $paths[] = new restore_path_element('consentform', '/activity/consentform');
 
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
-            $paths[] = new restore_path_element('consentformstate',
-                '/activity/consentform/consentformstates/consentformstate');
+            $paths[] = new restore_path_element(
+                'consentformstate',
+                '/activity/consentform/consentformstates/consentformstate'
+            );
         }
 
         // Return the paths wrapped into standard activity structure.
@@ -68,7 +68,7 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
     protected function process_consentform($data) {
         global $DB;
 
-        $data = (object)$data;
+        $data = (object) $data;
         $data->course = $this->get_courseid();
 
         if (empty($data->timecreated)) {
@@ -87,7 +87,7 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
         // Create the consentform instance.
         $newitemid = $DB->insert_record('consentform', $data);
         if ($data->confirmincourseoverview) {
-            $data->intro = str_replace("confirmation.php?id=".$data->id, "confirmation.php?id=".$newitemid, $data->intro);
+            $data->intro = str_replace("confirmation.php?id=" . $data->id, "confirmation.php?id=" . $newitemid, $data->intro);
             $data->id = $newitemid;
             $DB->update_record('consentform', $data);
         }
@@ -108,8 +108,11 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
         $data = (object) $data;
         $oldid = $data->id;
         $moduleid = $DB->get_field('modules', 'id', ['name' => 'consentform']);
-        $newcmid = $DB->get_field('course_modules', 'id',
-            ['module' => $moduleid, 'instance' => $this->newcfid]);
+        $newcmid = $DB->get_field(
+            'course_modules',
+            'id',
+            ['module' => $moduleid, 'instance' => $this->newcfid]
+        );
         $data->consentformcmid = $newcmid;
 
         $newitemid = $DB->insert_record('consentform_state', $data);

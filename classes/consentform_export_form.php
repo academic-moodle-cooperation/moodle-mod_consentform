@@ -41,7 +41,6 @@ if (isset($CFG)) {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class consentform_export_form extends \moodleform {
-
     /**
      * Define this form instance
      *

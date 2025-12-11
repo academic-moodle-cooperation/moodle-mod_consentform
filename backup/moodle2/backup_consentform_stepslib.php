@@ -34,7 +34,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_consentform_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Defines the backup structure of the module
      *
@@ -46,9 +45,23 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
 
         // Define the root element describing the consentform instance.
         $consentform = new backup_nested_element('consentform', ['id'], [
-            'name', 'intro', 'introformat', 'timecreated', 'timemodified', 'grade', 'confirmationtext', 'optionrevoke',
-            'optionrefuse', 'textagreementbutton', 'textrefusalbutton', 'textrevocationbutton', 'usegrade',
-            'confirmincourseoverview', 'nocoursemoduleslist', 'cssclassesstring']);
+            'name',
+            'intro',
+            'introformat',
+            'timecreated',
+            'timemodified',
+            'grade',
+            'confirmationtext',
+            'optionrevoke',
+            'optionrefuse',
+            'textagreementbutton',
+            'textrefusalbutton',
+            'textrevocationbutton',
+            'usegrade',
+            'confirmincourseoverview',
+            'nocoursemoduleslist',
+            'cssclassesstring',
+        ]);
 
         // Define data source.
         $consentform->set_source_table('consentform', ['id' => backup::VAR_ACTIVITYID]);
@@ -58,7 +71,9 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
         if ($userinfo) {
             $consentformstates = new backup_nested_element('consentformstates');
             $consentformstate = new backup_nested_element(
-                'consentformstate', ['id'], ['consentformcmid', 'userid', 'state', 'timestamp']
+                'consentformstate',
+                ['id'],
+                ['consentformcmid', 'userid', 'state', 'timestamp']
             );
             // Build the tree.
             $consentform->add_child($consentformstates);

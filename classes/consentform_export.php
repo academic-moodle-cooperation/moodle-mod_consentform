@@ -34,7 +34,6 @@ namespace mod_consentform;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class consentform_export {
-
     /** @var string export file format */
     private $exportformat;
     /** @var array rows to export in file */
