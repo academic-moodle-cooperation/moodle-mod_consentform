@@ -261,6 +261,10 @@ class overview extends activityoverviewbase {
 
     /**
      * Format count-of-total string using core helper.
+     *
+     * @param int $count Counted number of students in a state
+     * @param int $total Total number of students
+     * @return string Formatted string
      */
     private function format_count_of_total(int $count, int $total): string {
         return get_string('count_of_total', 'moodle', ['count' => $count, 'total' => $total]);
