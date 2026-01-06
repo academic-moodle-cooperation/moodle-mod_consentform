@@ -43,9 +43,16 @@ class custom_completion extends activity_custom_completion {
 
         $this->validate_rule($rule);
 
-        // Consentform only supports completionsubmit as a custom rule.
-        $status = $DB->record_exists('consentform_state', ['consentformid' => $this->cm->instance, 'userid' => $this->userid]);
-        return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+        if ($rule === 'completionsubmit') {
+            $status = $DB->record_exists(
+                'consentform_state',
+                ['consentformcmid' => $this->cm->id, 'userid' => $this->userid]
+            );
+            return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+        }
+
+        // Fallback (should not be reached for custom rules).
+        return COMPLETION_INCOMPLETE;
     }
 
     /**
@@ -55,7 +62,6 @@ class custom_completion extends activity_custom_completion {
      */
     public static function get_defined_custom_rules(): array {
         return [
-            'completionview',
             'completionsubmit',
         ];
     }
@@ -77,9 +83,7 @@ class custom_completion extends activity_custom_completion {
      * @return array
      */
     public function get_sort_order(): array {
-        return [
-            'completionview',
-            'completionsubmit',
-        ];
+        // Include standard 'completionview' plus custom rules in display order.
+        return ['completionview', 'completionsubmit'];
     }
 }
