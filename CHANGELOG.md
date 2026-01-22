@@ -4,6 +4,7 @@ CHANGELOG
 5.1.0 (2025-10-06)
 ------------------
 * Moodle 5.1.0 compatible version
+* [FEATURE] #8613 Implement consentform overview block for activity dashboard
 
 5.0.0 (2025-05-07)
 ------------------
