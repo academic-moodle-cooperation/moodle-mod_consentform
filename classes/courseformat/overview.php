@@ -204,23 +204,33 @@ class overview extends activityoverviewbase {
             textalign: text_align::CENTER,
         );
 
-        if (!empty($instance->optionrefuse)) {
-            $items['refused'] = new overviewitem(
+        $items['refused'] = !empty($instance->optionrefuse)
+            ? new overviewitem(
                 name: get_string('overviewrefused', 'mod_consentform'),
                 value: $counts['refused'],
                 content: $this->format_count_of_total($counts['refused'], $counts['total']),
                 textalign: text_align::CENTER,
+            )
+            : new overviewitem(
+                name: get_string('overviewrefused', 'mod_consentform'),
+                value: 0,
+                content: '-',
+                textalign: text_align::CENTER,
             );
-        }
 
-        if (!empty($instance->optionrevoke)) {
-            $items['revoked'] = new overviewitem(
+        $items['revoked'] = !empty($instance->optionrevoke)
+            ? new overviewitem(
                 name: get_string('overviewrevoked', 'mod_consentform'),
                 value: $counts['revoked'],
                 content: $this->format_count_of_total($counts['revoked'], $counts['total']),
                 textalign: text_align::CENTER,
+            )
+            : new overviewitem(
+                name: get_string('overviewrevoked', 'mod_consentform'),
+                value: 0,
+                content: '-',
+                textalign: text_align::CENTER,
             );
-        }
 
         $items['noaction'] = new overviewitem(
             name: get_string('overviewnoaction', 'mod_consentform'),
