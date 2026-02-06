@@ -50,4 +50,5 @@ Feature: In a course, a teacher should be able to add a new consentform
     And I click on "Add content" "button" in the "General" "section"
     And I click on "Activity or resource" "button" in the ".dropdown-menu.show" "css_element"
     And I follow "Consentform"
+    And I click on "Add selected activity" "button"
     Then I should see "Completion not active"
