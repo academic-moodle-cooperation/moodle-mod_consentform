@@ -68,7 +68,19 @@ $string['listusersbutton'] = 'View all agreements';
 $string['manage'] = 'Manage';
 $string['modulelistlinktext'] = 'Define dependencies';
 $string['modulename'] = 'Consentform';
-$string['modulename_help'] = 'Use the consentform module to uncover certain activities not before the participant has agreed.<p><a href="https://academic-moodle-cooperation.org/anleitungen/einverstandniserklarung-einholen/?lng=en" target="_blank">Consentform: Ask to consent</a></p>';
+$string['modulename_summary'] = 'The Consentform activity lets teachers require students to respond to a consent statement before selected course content becomes available. Record whether students agree, refuse, or revoke their agreement. It can also add completion-based access restrictions to selected activities and resources.';
+$string['modulename_help'] = '###### Key features
+* Show a required consent text with configurable agreement, refusal, and revocation buttons.
+* Use the participant response to complete the activity and unlock dependent course content.
+* Review agreement, refusal, revocation, and no-action counts, and export the recorded responses.
+
+###### Application Scenario
+* Ask students to confirm exam rules, study-law information, or participation conditions before they start a quiz or assignment.
+* Gate readings, activities, or other resources until each participant has actively agreed to the statement.
+* Keep a course-level record of participant decisions for administration and follow-up.';
+$string['modulename_tip'] = 'Enable completion tracking for the site, course, and Consentform activity before using it to unlock other activities or resources.
+
+<p><a href="https://academic-moodle-cooperation.org/anleitungen/einverstandniserklarung-einholen/?lng=en" target="_blank"><i class="icon fa fa-info-circle"></i>Guide: "Ask to consent (Consentform)"</a></p>';
 $string['modulenameplural'] = 'Consentforms';
 $string['modules'] = 'Activities and Ressources';
 $string['moduleviewed'] = 'Module main page viewed';
