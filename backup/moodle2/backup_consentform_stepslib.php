@@ -67,6 +67,7 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
 
         // Define file annotations.
         $consentform->annotate_files('mod_consentform', 'intro', null);
+        $consentform->annotate_files('mod_consentform', 'consentform', null);
 
         // Return the root element (consentform), wrapped into standard activity structure.
         return $this->prepare_activity_structure($consentform);
