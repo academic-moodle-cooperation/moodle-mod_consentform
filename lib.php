@@ -44,6 +44,30 @@ define('CONSENTFORM_DEFAULTCSSCLASS_INLINE', 'consentform_confirmationtext_incou
 /* Moodle core API */
 
 /**
+ * Builds the iframe used when agreement is shown directly in the course overview.
+ *
+ * @param int $consentformid Consentform instance id.
+ * @return string
+ */
+function consentform_get_courseoverview_iframe(int $consentformid): string {
+    global $CFG;
+
+    $iframeparms = [];
+    $iframeparms['src'] = $CFG->wwwroot . '/mod/consentform/confirmation.php?id=' . $consentformid;
+    $iframeparms['scrolling'] = 'auto';
+    $js = "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
+    $js .= "this.contentWindow.document.getElementById('page').style.marginBottom='0px';";
+    $js .= "this.contentWindow.document.getElementById('page-content').classList.remove('pb-3');";
+    $js .= "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+    $iframeparms['onload'] = $js;
+    $iframeparms['frameborder'] = '0';
+    $iframeparms['class'] = 'w-100';
+    $iframeparms['name'] = 'consentformiframe' . $consentformid;
+
+    return html_writer::tag('iframe', null, $iframeparms);
+}
+
+/**
  * Returns the information on whether the module supports a feature
  *
  * See plugin_supports() for more info.
@@ -106,20 +130,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
     $consentform->id = $DB->insert_record('consentform', $consentform);
 
     if ($consentform->confirmincourseoverview) {
-        $iframeparms = [];
-        $url = $CFG->wwwroot . "/mod/consentform/confirmation.php?id=" . $consentform->id;
-        $iframeparms["src"] = $url;
-        $iframeparms["scrolling"] = "auto";
-        $js = "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
-        $js .= "this.contentWindow.document.getElementById('page').style.marginBottom='0px';";
-        $js .= "this.contentWindow.document.getElementById('page-content').classList.remove('pb-3');";
-        $js .= "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
-        $iframeparms["onload"] = $js;
-        $iframeparms["frameborder"] = "0";
-        $iframeparms["class"] = "w-100";
-        $iframeparms["name"] = "consentformiframe$consentform->id";
-        $html = html_writer::tag("iframe", null, $iframeparms);
-        $consentform->intro = $html;
+        $consentform->intro = consentform_get_courseoverview_iframe((int) $consentform->id);
     }
 
     if ($consentform->usegrade) {
@@ -199,6 +210,10 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
             consentform_get_editor_options($context),
             $consentform->confirmationtext_editor['text']
         );
+    }
+
+    if ($consentformdb->confirmincourseoverview) {
+        $consentform->intro = consentform_get_courseoverview_iframe((int) $consentform->id);
     }
 
     $result = $DB->update_record('consentform', $consentform);
