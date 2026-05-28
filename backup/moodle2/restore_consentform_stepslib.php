@@ -24,6 +24,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once($CFG->dirroot . '/mod/consentform/lib.php');
+
 /**
  * Structure step to restore one consentform activity
  *
@@ -87,8 +89,8 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
         // Create the consentform instance.
         $newitemid = $DB->insert_record('consentform', $data);
         if ($data->confirmincourseoverview) {
-            $data->intro = str_replace("confirmation.php?id=".$data->id, "confirmation.php?id=".$newitemid, $data->intro);
             $data->id = $newitemid;
+            $data->intro = consentform_get_courseoverview_iframe((int) $newitemid);
             $DB->update_record('consentform', $data);
         }
         $this->newcfid = $newitemid;
@@ -107,10 +109,15 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $data = (object) $data;
         $oldid = $data->id;
-        $moduleid = $DB->get_field('modules', 'id', ['name' => 'consentform']);
-        $newcmid = $DB->get_field('course_modules', 'id',
-            ['module' => $moduleid, 'instance' => $this->newcfid]);
+
+        $newcmid = $this->get_mappingid('course_module', $data->consentformcmid);
+        $newuserid = $this->get_mappingid('user', $data->userid);
+        if (empty($newcmid) || empty($newuserid)) {
+            return;
+        }
+
         $data->consentformcmid = $newcmid;
+        $data->userid = $newuserid;
 
         $newitemid = $DB->insert_record('consentform_state', $data);
         $this->set_mapping('consentformstate', $oldid, $newitemid);
@@ -122,5 +129,6 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
     protected function after_execute() {
         // Add consentform related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_consentform', 'intro', null);
+        $this->add_related_files('mod_consentform', 'consentform', null);
     }
 }
