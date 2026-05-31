@@ -52,6 +52,7 @@ class consentform_agreement_form extends \moodleform {
 
         $mform = $this->_form;
         $data = &$this->_customdata;
+        $context = $data['context'] ?? \context::instance_by_id($data['contextid']);
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -73,7 +74,7 @@ class consentform_agreement_form extends \moodleform {
             'consentform',
             0
         );
-        $paneldata->confirmationtext = format_text($text);
+        $paneldata->confirmationtext = format_text($text, FORMAT_HTML, ['context' => $context]);
         $confirmationtexthtml = $OUTPUT->render_from_template('mod_consentform/confirmation_panel', $paneldata);
         $mform->addElement('html', $confirmationtexthtml);
 
@@ -86,16 +87,21 @@ class consentform_agreement_form extends \moodleform {
         $mform->addElement('html', consentform_get_agreementlogentry($data['cmid'], $data['userid'], $state));
 
         if (!$data['locked']) {
+            $buttonoptions = ['context' => $context, 'escape' => false];
+            $agreementlabel = format_string($data['consentform']->textagreementbutton, true, $buttonoptions);
+            $refusallabel = format_string($data['consentform']->textrefusalbutton, true, $buttonoptions);
+            $revocationlabel = format_string($data['consentform']->textrevocationbutton, true, $buttonoptions);
+
             // Display submit buttons.
             if ($state == CONSENTFORM_STATUS_AGREED) { // Already agreed.
                 if ($data['consentform']->optionrevoke) {
-                    $mform->addElement('submit', 'revocation', $data['consentform']->textrevocationbutton);
+                    $mform->addElement('submit', 'revocation', $revocationlabel);
                 }
             } else {
                 $buttonarray = [];
-                $buttonarray[] =& $mform->createElement('submit', 'agreement', $data['consentform']->textagreementbutton);
+                $buttonarray[] =& $mform->createElement('submit', 'agreement', $agreementlabel);
                 if ($data['consentform']->optionrefuse && $state != CONSENTFORM_STATUS_REFUSED) {
-                    $buttonarray[] =& $mform->createElement('submit', 'refusal', $data['consentform']->textrefusalbutton);
+                    $buttonarray[] =& $mform->createElement('submit', 'refusal', $refusallabel);
                 }
                 $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
             }

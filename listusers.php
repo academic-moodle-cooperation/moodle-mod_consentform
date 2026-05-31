@@ -40,6 +40,7 @@ $sortorder = optional_param('sortorder', 'ASC', PARAM_ALPHA);   // Defines the o
 $tab = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 
 $context = context_module::instance($cm->id);
+$coursecontext = context_course::instance($course->id);
 
 require_login($course, false, $cm);
 
@@ -70,14 +71,12 @@ $event->trigger();
 
 // Print the page header.
 $PAGE->set_url('/mod/consentform/listusers.php', ['id' => $cm->id]);
-$PAGE->set_title(format_string($consentform->name));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title(format_string($consentform->name, true, ['context' => $context]));
+$PAGE->set_heading(format_string($course->fullname, true, ['context' => $coursecontext]));
 $PAGE->add_body_class('limitedwidth');
 
 // Output starts here.
 consentform_showheaderwithoutintro($consentform->id);
-
-$coursecontext = context_course::instance($course->id);
 
 [$sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall] =
     consentform_statistics_listusers($coursecontext, $cm->id);

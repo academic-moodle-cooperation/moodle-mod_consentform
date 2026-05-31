@@ -66,3 +66,29 @@ Feature: A teacher should be able to add the options of revocation and rejection
     And I press "I do not agree"
     And I am on "Course 1" course homepage
     Then I should see "Not available unless:"
+
+  @javascript
+  Scenario: Button labels support Multilang filter v2 and more than 100 characters
+    Given the "filter_multilang2" plugin is installed
+    And the "multilang2" filter is "on"
+    And the "multilang2" filter applies to "content and headings"
+    And I log in as "teacher1"
+    And I add a consentform activity to course "Course 1" section "1" and I fill the form with:
+      | Name                         | consentform - Multilang2 |
+      | Consentform text to agree to | consentform text |
+      | Label Agreement Button       | {mlang de}Ich stimme dieser langen Einverstaendniserklaerung fuer den Multilang Test ausdruecklich zu{mlang}{mlang en}I agree to this consent form now{mlang} |
+      | Label Refusal Button         | {mlang de}Ich lehne diese lange Einverstaendniserklaerung fuer den Multilang Test ausdruecklich ab{mlang}{mlang en}I refuse this consent form now{mlang} |
+      | Label Revocation Button      | {mlang de}Ich widerrufe diese lange Einverstaendniserklaerung fuer den Multilang Test ausdruecklich{mlang}{mlang en}I revoke this consent form now{mlang} |
+    And I am on the "consentform - Multilang2" "consentform activity" page
+    And I follow "Settings"
+    And I set the field "optionrefuse" to "1"
+    And I press "Save and return to course"
+    And I am on the "consentform - Multilang2" "consentform activity" page logged in as "student1"
+    Then "I agree to this consent form now" "button" should be visible
+    And "I refuse this consent form now" "button" should be visible
+    And "input[type='submit'][value*='{mlang de}']" "css_element" should not exist
+    And I press "I agree to this consent form now"
+    When I am on the "consentform - Multilang2" "consentform activity" page logged in as "student1"
+    Then "I revoke this consent form now" "button" should be visible
+    And "input[type='submit'][value*='{mlang de}']" "css_element" should not exist
+    And I press "I revoke this consent form now"

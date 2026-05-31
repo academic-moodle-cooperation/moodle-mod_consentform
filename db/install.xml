@@ -16,9 +16,9 @@
         <FIELD NAME="confirmationtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Consentform text to agree to"/>
         <FIELD NAME="optionrevoke" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Provide option to revoke"/>
         <FIELD NAME="optionrefuse" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Provide option to refuse"/>
-        <FIELD NAME="textagreementbutton" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of agreement button"/>
-        <FIELD NAME="textrefusalbutton" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of refusal button"/>
-        <FIELD NAME="textrevocationbutton" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of revocation button"/>
+        <FIELD NAME="textagreementbutton" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of agreement button"/>
+        <FIELD NAME="textrefusalbutton" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of refusal button"/>
+        <FIELD NAME="textrevocationbutton" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Text field for label of revocation button"/>
         <FIELD NAME="usegrade" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Write a grade value of 1 for every agreement"/>
         <FIELD NAME="completionresponded" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Automatic completion when the user has agreed or refused"/>
         <FIELD NAME="completionagree" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="Automatic completion when the user has agreed"/>

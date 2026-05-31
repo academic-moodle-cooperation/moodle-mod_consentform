@@ -42,6 +42,7 @@ $tab = optional_param('tab', 1, PARAM_INT); // ID of tab of listusers.php.
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
+$coursecontext = context_course::instance($course->id);
 
 $listusers = consentform_get_listusers($sortkey, $sortorder, $tab, $context, $cm);
 $csvrows = [];
@@ -89,7 +90,9 @@ switch ($tab) {
 
 $export = new \mod_consentform\consentform_export();
 $exportformat = 'csv';
-$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $statusname . '_' . userdate(
+$courseshortname = format_string($course->shortname, true, ['context' => $coursecontext, 'escape' => false]);
+$consentformname = format_string($consentform->name, true, ['context' => $context, 'escape' => false]);
+$export->init($exportformat, $csvrows, $courseshortname . '_' . $consentformname . '_' . $statusname . '_' . userdate(
     time(),
     '%d-%m-%Y',
     99,
