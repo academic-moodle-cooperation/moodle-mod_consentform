@@ -94,6 +94,11 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
     $cmid = $consentform->coursemodule;
 
     $consentform->timecreated = time();
+    $consentform->completionresponded = empty($consentform->completionresponded) ? 0 : 1;
+    $consentform->completionagree = property_exists($consentform, 'completionagree')
+        ? (empty($consentform->completionagree) ? 0 : 1)
+        : 1;
+    $consentform->completionagree = $consentform->completionresponded ? 0 : $consentform->completionagree;
     if ($mform) {
         $consentform->confirmationtext = $consentform->confirmationtext_editor['text'];
     }
@@ -160,6 +165,15 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
     $consentform->timemodified = time();
     $consentform->completionunlocked = false;
     $consentform->id = $consentform->instance;
+    if (property_exists($consentform, 'completionagree')) {
+        $consentform->completionagree = empty($consentform->completionagree) ? 0 : 1;
+    }
+    if (property_exists($consentform, 'completionresponded')) {
+        $consentform->completionresponded = empty($consentform->completionresponded) ? 0 : 1;
+        if ($consentform->completionresponded) {
+            $consentform->completionagree = 0;
+        }
+    }
 
     $consentformdb = $DB->get_record('consentform', ["id" => $consentform->id]);
     if ($consentformdb->usegrade != $consentform->usegrade) {
@@ -222,6 +236,65 @@ function consentform_delete_instance($id) {
     rebuild_course_cache($consentform->course, false);
 
     return true;
+}
+
+/**
+ * Provide course module info with custom completion rules populated.
+ *
+ * @param cm_info|stdClass $coursemodule Course module object
+ * @return cached_cm_info|false
+ */
+function consentform_get_coursemodule_info($coursemodule) {
+    global $DB;
+
+    if (
+        !$consentform = $DB->get_record(
+            'consentform',
+            ['id' => $coursemodule->instance],
+            'id, name, intro, introformat, completionagree, completionresponded'
+        )
+    ) {
+        return false;
+    }
+
+    $info = new cached_cm_info();
+    $info->name = $consentform->name;
+
+    if ($coursemodule->showdescription) {
+        $info->content = format_module_intro('consentform', $consentform, $coursemodule->id, false);
+    }
+
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $info->customdata['customcompletionrules']['completionagree'] = (int) $consentform->completionagree;
+        $info->customdata['customcompletionrules']['completionresponded'] = (int) $consentform->completionresponded;
+    }
+
+    return $info;
+}
+
+/**
+ * Return descriptions of active custom completion rules.
+ *
+ * @param cm_info|stdClass $cm object with fields ->completion and ->customdata['customcompletionrules']
+ * @return array
+ */
+function mod_consentform_get_completion_active_rule_descriptions($cm) {
+    if (
+        empty($cm->customdata['customcompletionrules'])
+        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC
+    ) {
+        return [];
+    }
+
+    $descriptions = [];
+    if (!empty($cm->customdata['customcompletionrules']['completionagree'])) {
+        $descriptions[] = get_string('completionagree', 'consentform');
+    }
+    if (!empty($cm->customdata['customcompletionrules']['completionresponded'])) {
+        $descriptions[] = get_string('completionresponded', 'consentform');
+    }
+
+    return $descriptions;
 }
 
 /* Gradebook API */

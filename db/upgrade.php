@@ -157,5 +157,28 @@ function xmldb_consentform_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025050700, 'consentform');
     }
 
+    if ($oldversion < 2026051200) {
+        // Define field completionresponded to be added to consentform.
+        $table = new xmldb_table('consentform');
+        $field = new xmldb_field('completionresponded', XMLDB_TYPE_INTEGER, '2', null, null, null, '0', 'usegrade');
+
+        // Conditionally launch add field completionresponded.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field completionagree to be added to consentform.
+        $table = new xmldb_table('consentform');
+        $field = new xmldb_field('completionagree', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'completionresponded');
+
+        // Conditionally launch add field completionagree.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Consentform savepoint reached.
+        upgrade_mod_savepoint(true, 2026051200, 'consentform');
+    }
+
     return true;
 }

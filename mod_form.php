@@ -135,8 +135,8 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addHelpButton('cssclassesstring', 'cssclassesstring', 'consentform');
 
         $this->standard_coursemodule_elements();
+        $this->disable_completion_none_option();
 
-        $mform->disabledIf('completion', 'sesskey', 'neq', 'dummy');
         $mform->disabledIf('completionusegrade', 'completion', 'eq', 2);
         $mform->disabledIf('completionpassgrade', 'completion', 'eq', 2);
 
@@ -145,13 +145,49 @@ class mod_consentform_mod_form extends moodleform_mod {
     }
 
     /**
-     * Set completion to value 2
+     * Add custom completion rules for consentform.
+     *
+     * @return array
+     */
+    public function add_completion_rules() {
+        $mform = $this->_form;
+
+        $suffix = $this->get_suffix();
+        $completionagreeel = 'completionagree' . $suffix;
+        $completionrespondedel = 'completionresponded' . $suffix;
+
+        $mform->addElement('checkbox', $completionagreeel, '', get_string('completionagree', 'consentform'));
+        $mform->setDefault($completionagreeel, 1);
+
+        $mform->addElement('checkbox', $completionrespondedel, '', get_string('completionresponded', 'consentform'));
+        $mform->setDefault($completionrespondedel, 0);
+        $mform->disabledIf($completionagreeel, $completionrespondedel, 'checked');
+
+        return [$completionagreeel, $completionrespondedel];
+    }
+
+    /**
+     * Disable the completion "None" option because consentform requires active completion.
+     *
+     * @return void
+     */
+    protected function disable_completion_none_option() {
+        $completionnone = $this->_form->getElement('completion' . $this->get_suffix());
+        if (
+            $completionnone
+            && $completionnone->getType() === 'radio'
+            && (int) $completionnone->getValue() === COMPLETION_TRACKING_NONE
+        ) {
+            $completionnone->updateAttributes(['disabled' => 'disabled']);
+        }
+    }
+
+    /**
      * Activate show description option if confirmincourseoverview option is on
      */
     public function get_data() {
 
         if ($data = parent::get_data()) {
-            $data->completion = 2;
             if (isset($data->confirmincourseoverview) && $data->confirmincourseoverview == 1) {
                 $data->showdescription = 1;
             }
@@ -165,6 +201,15 @@ class mod_consentform_mod_form extends moodleform_mod {
      * @return void
      */
     public function data_preprocessing(&$defaultvalues) {
+        parent::data_preprocessing($defaultvalues);
+
+        if (!$this->_instance) {
+            $completionel = 'completion' . $this->get_suffix();
+            $defaultvalues[$completionel] = COMPLETION_TRACKING_AUTOMATIC;
+            $defaultvalues['completionagree' . $this->get_suffix()] = 1;
+            $defaultvalues['completionresponded' . $this->get_suffix()] = 0;
+        }
+
         if ($this->current->instance) {
             $draftitemid = file_get_submitted_draft_itemid('confirmationtext_editor');
             $defaultvalues['confirmationtext_editor']['format'] = 1;
@@ -182,12 +227,61 @@ class mod_consentform_mod_form extends moodleform_mod {
     }
 
     /**
+     * Set unchecked custom completion rule values to zero when completion settings are editable.
+     *
+     * @param stdClass $data submitted form data
+     * @return void
+     */
+    public function data_postprocessing($data) {
+        parent::data_postprocessing($data);
+
+        if (!empty($data->completionunlocked)) {
+            $suffix = $this->get_suffix();
+            $completionel = 'completion' . $suffix;
+            $completionagreeel = 'completionagree' . $suffix;
+            $completionrespondedel = 'completionresponded' . $suffix;
+            $automaticcompletion = !empty($data->{$completionel})
+                && $data->{$completionel} == COMPLETION_TRACKING_AUTOMATIC;
+
+            if (!$automaticcompletion) {
+                $data->{$completionagreeel} = 0;
+                $data->{$completionrespondedel} = 0;
+            } else if (!empty($data->{$completionrespondedel})) {
+                $data->{$completionagreeel} = 0;
+                $data->{$completionrespondedel} = 1;
+            } else {
+                $data->{$completionagreeel} = empty($data->{$completionagreeel}) ? 0 : 1;
+                $data->{$completionrespondedel} = 0;
+            }
+        }
+    }
+
+    /**
+     * Validate consentform completion settings.
+     *
+     * @param array $data Form data.
+     * @param array $files Submitted files.
+     * @return array
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        $completionel = 'completion' . $this->get_suffix();
+        if (isset($data[$completionel]) && (int) $data[$completionel] === COMPLETION_TRACKING_NONE) {
+            $errors[$completionel] = get_string('completionrequired', 'consentform');
+        }
+
+        return $errors;
+    }
+
+    /**
      * Called during validation to see whether some module-specific completion rules are selected.
      *
      * @param array $data Input data not yet validated.
      * @return bool True if one or more rules is enabled, false if none are.
      */
     public function completion_rule_enabled($data) {
-        return true;
+        $suffix = $this->get_suffix();
+        return !empty($data['completionagree' . $suffix]) || !empty($data['completionresponded' . $suffix]);
     }
 }
