@@ -21,14 +21,15 @@ Feature: A consentform can be completed when a student gives the required respon
       | student1 | C1     | student        |
 
   @javascript
-  Scenario: Completion is active by default and cannot be disabled.
+  Scenario: Only supported completion options are shown by default.
     Given I log in as "teacher1"
     And I add a consentform activity to course "Course 1" section "1" and I fill the form with:
       | Name                         | consentform - Completion settings |
       | Consentform text to agree to | consentform text                  |
       | Label Agreement Button       | I agree                           |
     When I am on the "consentform - Completion settings" "consentform activity editing" page
-    Then the "None" "field" should be disabled
+    Then "None" "field" should not exist
+    And "Receive a grade" "field" should not exist
     And the field "Add requirements" matches value "1"
     And the field "Agree to the consent form" matches value "1"
 

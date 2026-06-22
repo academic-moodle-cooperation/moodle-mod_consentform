@@ -135,10 +135,7 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addHelpButton('cssclassesstring', 'cssclassesstring', 'consentform');
 
         $this->standard_coursemodule_elements();
-        $this->disable_completion_none_option();
-
-        $mform->disabledIf('completionusegrade', 'completion', 'eq', 2);
-        $mform->disabledIf('completionpassgrade', 'completion', 'eq', 2);
+        $this->remove_unsupported_completion_options();
 
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
@@ -167,18 +164,32 @@ class mod_consentform_mod_form extends moodleform_mod {
     }
 
     /**
-     * Disable the completion "None" option because consentform requires active completion.
+     * Remove completion options that consentform does not support.
      *
      * @return void
      */
-    protected function disable_completion_none_option() {
-        $completionnone = $this->_form->getElement('completion' . $this->get_suffix());
+    protected function remove_unsupported_completion_options(): void {
+        $mform = $this->_form;
+        $suffix = $this->get_suffix();
+        $completionel = 'completion' . $suffix;
+        $completionnone = $mform->getElement($completionel);
+
         if (
             $completionnone
             && $completionnone->getType() === 'radio'
             && (int) $completionnone->getValue() === COMPLETION_TRACKING_NONE
         ) {
-            $completionnone->updateAttributes(['disabled' => 'disabled']);
+            $mform->removeElement($completionel);
+        }
+
+        $completionpassgradeel = 'completionpassgrade' . $suffix;
+        while ($mform->elementExists($completionpassgradeel)) {
+            $mform->removeElement($completionpassgradeel);
+        }
+
+        $completionusegradeel = 'completionusegrade' . $suffix;
+        if ($mform->elementExists($completionusegradeel)) {
+            $mform->removeElement($completionusegradeel);
         }
     }
 
