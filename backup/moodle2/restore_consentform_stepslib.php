@@ -84,6 +84,20 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
             $data->grade = -($this->get_mappingid('scale', abs($data->grade)));
         }
 
+        // Old backups do not contain the new completion fields. Keep the old default behaviour.
+        if (!property_exists($data, 'completionresponded')) {
+            $data->completionresponded = empty($data->completionsubmit) ? 0 : 1;
+        }
+        $data->completionresponded = empty($data->completionresponded) ? 0 : 1;
+        if (!property_exists($data, 'completionagree')) {
+            $data->completionagree = empty($data->completionresponded) ? 1 : 0;
+        }
+        $data->completionagree = empty($data->completionagree) ? 0 : 1;
+        if ($data->completionresponded) {
+            $data->completionagree = 0;
+        }
+        unset($data->completionsubmit);
+
         // Create the consentform instance.
         $newitemid = $DB->insert_record('consentform', $data);
         if ($data->confirmincourseoverview) {
