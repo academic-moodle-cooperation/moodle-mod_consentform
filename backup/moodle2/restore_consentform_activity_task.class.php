@@ -77,6 +77,11 @@ class restore_consentform_activity_task extends restore_activity_task {
 
         $rules[] = new restore_decode_rule('NEWMODULEVIEWBYID', '/mod/consentform/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('NEWMODULEINDEX', '/mod/consentform/index.php?id=$1', 'course');
+        $rules[] = new restore_decode_rule(
+            'NEWCONSENTFORMCONFIRMATION',
+            '/mod/consentform/confirmation.php?id=$1',
+            'consentform'
+        );
 
         return $rules;
     }
