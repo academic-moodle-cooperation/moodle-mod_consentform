@@ -50,7 +50,6 @@ require_once($CFG->dirroot . '/mod/consentform/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class backup_restore_test extends advanced_testcase {
-
     /**
      * Course overview iframe is regenerated with the target site's URL and new instance id.
      */
