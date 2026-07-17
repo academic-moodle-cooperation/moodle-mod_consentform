@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.1.1 (2026-07-17)
+-------------------
+* [FIXED] #8770 Fix cross-site restore for course overview agreement [github pull #16 @mm-poustini]
+
 5.1.0 (2025-10-06)
 ------------------
 * Moodle 5.1.0 compatible version
