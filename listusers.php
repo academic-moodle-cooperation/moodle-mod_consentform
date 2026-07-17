@@ -49,8 +49,10 @@ if (!(has_capability('mod/consentform:submit', $context) || is_siteadmin())) {
 
 if ($deleteuseraction) {
     require_sesskey();
-    $thisurl = new moodle_url('/mod/consentform/listusers.php',
-        ['id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder, 'sesskey' => sesskey()]);
+    $thisurl = new moodle_url(
+        '/mod/consentform/listusers.php',
+        ['id' => $cm->id, 'sortkey' => $sortkey, 'sortorder' => $sortorder, 'sesskey' => sesskey()]
+    );
     if ($DB->delete_records('consentform_state', ['consentformcmid' => $cm->id, 'userid' => $USER->id])) {
         redirect($thisurl, get_string("deletetestmessage", "consentform"), 0, 'notify');
     } else {
@@ -77,7 +79,7 @@ consentform_showheaderwithoutintro($consentform->id);
 
 $coursecontext = context_course::instance($course->id);
 
-list($sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall) =
+[$sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall] =
     consentform_statistics_listusers($coursecontext, $cm->id);
 
 $url = new moodle_url('/mod/consentform/listusers.php', ['id' => $id]);
@@ -96,15 +98,15 @@ $url->param('tab', CONSENTFORM_ALL);
 $thirdnavlink[CONSENTFORM_ALL] = $url->out();
 
 $thirdnav[$thirdnavlink[CONSENTFORM_STATUS_AGREED]] =
-    get_string('titleagreed', 'consentform')." (".$sumagreed.")";
+    get_string('titleagreed', 'consentform') . " (" . $sumagreed . ")";
 $thirdnav[$thirdnavlink[CONSENTFORM_STATUS_REFUSED]] =
     get_string('titlerefused', 'consentform') . " (" . $sumrefused . ")";
 $thirdnav[$thirdnavlink[CONSENTFORM_STATUS_REVOKED]] =
     get_string('titlerevoked', 'consentform') . " (" . $sumrevoked . ")";
 $thirdnav[$thirdnavlink[CONSENTFORM_STATUS_NOACTION]] =
-    get_string('titlenone', 'consentform')." (".$sumnoaction.")";
+    get_string('titlenone', 'consentform') . " (" . $sumnoaction . ")";
 $thirdnav[$thirdnavlink[CONSENTFORM_ALL]] =
-    get_string('titleall', 'consentform')." (".$sumall.")";
+    get_string('titleall', 'consentform') . " (" . $sumall . ")";
 
 $urlselector = new \url_select($thirdnav, $thirdnavlink[$tab]);
 
@@ -151,7 +153,7 @@ if ($download) {
         'id' => $id, 'tab' => $tab, 'sortkey' => $sortkey, 'sortorder' => $sortorder]);
     $exporttext = get_string('downloadbuttonlabel', 'consentform');
     echo html_writer::start_div('d-inline-block ml-3');
-    echo html_writer::link($exportlink, $exporttext,  ['class' => 'btn btn-primary']);
+    echo html_writer::link($exportlink, $exporttext, ['class' => 'btn btn-primary']);
     echo html_writer::end_div();
 }
 

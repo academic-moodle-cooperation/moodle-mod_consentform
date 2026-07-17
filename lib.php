@@ -77,7 +77,7 @@ function consentform_get_courseoverview_iframe(int $consentformid): string {
  */
 function consentform_supports($feature) {
 
-    switch($feature) {
+    switch ($feature) {
         case FEATURE_MOD_INTRO:
             return false;
         case FEATURE_SHOW_DESCRIPTION:
@@ -251,9 +251,9 @@ function consentform_delete_instance($id) {
  * @param grade_item $grades reset grades in the gradebook
  * @return void
  */
-function consentform_grade_item_update(stdClass $consentform, $grades=null) {
+function consentform_grade_item_update(stdClass $consentform, $grades = null) {
     global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     $item = [];
     $item['itemname'] = clean_param($consentform->name, PARAM_NOTAGS);
@@ -266,8 +266,16 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
         $grades = null;
     }
 
-    grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
-            $consentform->id, 0, $grades, $item);
+    grade_update(
+        'mod/consentform',
+        $consentform->course,
+        'mod',
+        'consentform',
+        $consentform->id,
+        0,
+        $grades,
+        $item
+    );
 }
 
 /**
@@ -278,10 +286,18 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
  */
 function consentform_grade_item_delete($consentform) {
     global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
-    return grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
-            $consentform->id, 0, null, ['deleted' => 1]);
+    return grade_update(
+        'mod/consentform',
+        $consentform->course,
+        'mod',
+        'consentform',
+        $consentform->id,
+        0,
+        null,
+        ['deleted' => 1]
+    );
 }
 
 /**
@@ -295,7 +311,7 @@ function consentform_grade_item_delete($consentform) {
  */
 function consentform_update_grades(stdClass $consentform, $userid = 0) {
     global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     // Populate array of grade objects indexed by userid.
     $grades = [];
@@ -311,10 +327,9 @@ function consentform_update_grades(stdClass $consentform, $userid = 0) {
  * @param bool $agreed
  * @return false|void
  */
-function consentform_set_user_grade($consentform, $userid, $agreed=true) {
+function consentform_set_user_grade($consentform, $userid, $agreed = true) {
 
     if ($userid) {
-
         $grade = new stdClass();
         $grade->userid = $userid;
         if ($agreed) {
@@ -327,7 +342,6 @@ function consentform_set_user_grade($consentform, $userid, $agreed=true) {
         $grade->datesubmitted = $time;
 
         return consentform_grade_item_update($consentform, $grade);
-
     } else {
         return false;
     }

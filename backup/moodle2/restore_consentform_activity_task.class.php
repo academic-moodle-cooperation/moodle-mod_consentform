@@ -41,7 +41,6 @@ require_once($CFG->dirroot . '/mod/consentform/locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_consentform_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have
      */
@@ -85,7 +84,6 @@ class restore_consentform_activity_task extends restore_activity_task {
         );
 
         return $rules;
-
     }
 
     /**
