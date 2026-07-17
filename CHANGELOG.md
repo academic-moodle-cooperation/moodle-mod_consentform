@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+5.0.1 (2026-07-17)
+-------------------
+
+* [FIXED] #8771 Fix cross-site restore for course overview agreement [github pull #15 @mm-poustini]
+
+
 5.0.0 (2025-05-07)
 ------------------
 

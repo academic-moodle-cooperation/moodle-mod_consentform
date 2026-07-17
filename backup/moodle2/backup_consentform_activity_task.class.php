@@ -71,6 +71,10 @@ class backup_consentform_activity_task extends backup_activity_task {
         $search = '/('.$base.'\/mod\/consentform\/view.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@NEWMODULEVIEWBYID*$2@$', $content);
 
+        // Link to consentform confirmation by instance id.
+        $search = '/(' . $base . '\/mod\/consentform\/confirmation.php\?id\=)([0-9]+)/';
+        $content = preg_replace($search, '$@NEWCONSENTFORMCONFIRMATION*$2@$', $content);
+
         return $content;
     }
 }
