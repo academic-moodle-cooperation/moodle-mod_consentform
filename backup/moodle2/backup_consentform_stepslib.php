@@ -32,7 +32,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_consentform_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Defines the backup structure of the module
      *
@@ -56,7 +55,9 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
         if ($userinfo) {
             $consentformstates = new backup_nested_element('consentformstates');
             $consentformstate = new backup_nested_element(
-                'consentformstate', ['id'], ['consentformcmid', 'userid', 'state', 'timestamp']
+                'consentformstate',
+                ['id'],
+                ['consentformcmid', 'userid', 'state', 'timestamp']
             );
             // Build the tree.
             $consentform->add_child($consentformstates);

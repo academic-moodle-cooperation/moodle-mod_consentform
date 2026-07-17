@@ -29,7 +29,7 @@ $id = optional_param('id', 0, PARAM_INT); // Instance ID.
 
 $consentform  = $DB->get_record('consentform', ['id' => $id], '*', MUST_EXIST);
 
-list($course, $cm) = get_course_and_cm_from_instance($id, 'consentform', $consentform->course);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'consentform', $consentform->course);
 
 require_login($course, false, $cm);
 
@@ -55,7 +55,8 @@ if ($consentform->cssclassesstring ?? false) {
     $cssclassesstring = CONSENTFORM_DEFAULTCSSCLASS_INLINE;
 }
 // Agreement form, participant's view.
-$mform = new \mod_consentform\consentform_agreement_form(null,
+$mform = new \mod_consentform\consentform_agreement_form(
+    null,
     ['id' => $id,
         'cmid' => $cm->id,
         'courseid' => $course->id,
@@ -64,13 +65,14 @@ $mform = new \mod_consentform\consentform_agreement_form(null,
         'confirmationtextclass' => $cssclassesstring,
         'locked' => $locked,
         'contextid' => $contextmodule->id,
-    ]);
+    ]
+);
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {
     $PAGE->set_url('/mod/consentform/confirmation.php', ['id' => $cm->id]);
     $PAGE->set_title(format_string($consentform->name));
     $PAGE->set_pagelayout('embedded');
-    if (isset( $data->agreement) && $data->agreement == $consentform->textagreementbutton) {
+    if (isset($data->agreement) && $data->agreement == $consentform->textagreementbutton) {
         $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
         $message = get_string('msgagreed', 'consentform');
         $event = \mod_consentform\event\agreement_agree::create(
@@ -105,7 +107,6 @@ if ($data = $mform->get_data()) {
     $redirecturl = new moodle_url('/mod/consentform/confirmation.php', ['id' => $id]);
     $SESSION->consentform_reloadiframe = "1";
     redirect($redirecturl);
-
 } else {  // No data from form.
     if (isset($SESSION->consentform_reloadiframe)) {
         unset($SESSION->consentform_reloadiframe);

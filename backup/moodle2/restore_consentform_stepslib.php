@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/mod/consentform/lib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_consentform_activity_structure_step extends restore_activity_structure_step {
-
     /** @var int ID of new consentform instance. */
     protected $newcfid;
 
@@ -52,8 +51,10 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
-            $paths[] = new restore_path_element('consentformstate',
-                '/activity/consentform/consentformstates/consentformstate');
+            $paths[] = new restore_path_element(
+                'consentformstate',
+                '/activity/consentform/consentformstates/consentformstate'
+            );
         }
 
         // Return the paths wrapped into standard activity structure.
