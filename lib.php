@@ -199,8 +199,11 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
         );
     }
 
-    if ($consentformdb->confirmincourseoverview) {
+    $confirmincourseoverview = $consentform->confirmincourseoverview ?? $consentformdb->confirmincourseoverview;
+    if ($confirmincourseoverview) {
         $consentform->intro = consentform_get_courseoverview_iframe((int) $consentform->id);
+    } else if ($consentformdb->confirmincourseoverview) {
+        $consentform->intro = '';
     }
 
     $result = $DB->update_record('consentform', $consentform);
