@@ -90,6 +90,46 @@ final class backup_restore_test extends advanced_testcase {
     }
 
     /**
+     * Updating an instance uses the submitted course overview setting.
+     */
+    public function test_update_instance_uses_submitted_course_overview_setting(): void {
+        global $CFG, $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $CFG->enablecompletion = true;
+        $CFG->wwwroot = 'https://target.example.test/moodle';
+
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => COMPLETION_ENABLED]);
+        $consentform = $this->create_consentform($course);
+        $update = clone $consentform;
+        $update->instance = $consentform->id;
+        $update->coursemodule = $consentform->cmid;
+        $update->confirmationtext_editor = [
+            'text' => $consentform->confirmationtext,
+            'itemid' => 0,
+        ];
+
+        $update->confirmincourseoverview = 1;
+        $this->assertTrue(consentform_update_instance($update));
+
+        $enabled = $DB->get_record('consentform', ['id' => $consentform->id], '*', MUST_EXIST);
+        $this->assertSame(1, (int) $enabled->confirmincourseoverview);
+        $this->assertStringContainsString(
+            $CFG->wwwroot . '/mod/consentform/confirmation.php?id=' . $consentform->id,
+            $enabled->intro
+        );
+        $this->assertStringContainsString('name="consentformiframe' . $consentform->id . '"', $enabled->intro);
+
+        $update->confirmincourseoverview = 0;
+        $this->assertTrue(consentform_update_instance($update));
+
+        $disabled = $DB->get_record('consentform', ['id' => $consentform->id], '*', MUST_EXIST);
+        $this->assertSame(0, (int) $disabled->confirmincourseoverview);
+        $this->assertSame('', $disabled->intro);
+    }
+
+    /**
      * Files embedded in the confirmation text are included in the restored module context.
      */
     public function test_confirmationtext_files_are_restored(): void {
