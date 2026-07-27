@@ -50,7 +50,7 @@ if (isset($CFG)) {
  * @copyright  2022 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, core_userlist_provider {
+class provider implements core_userlist_provider, metadataprovider, pluginprovider {
     /**
      * Provides meta data that is stored about a user with mod_consentform
      *
@@ -147,7 +147,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             return;
         }
 
-        list($ctxsql, $ctxparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
+        [$ctxsql, $ctxparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
 
         // Get all consentform instances of context.
         $sql = "SELECT DISTINCT(ctx.instanceid) AS cmid
@@ -174,7 +174,6 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             writer::with_context($context)->export_data([], $consentformdata);
 
             static::export_states($context, $consentformid, $user);
-
         }
     }
 
@@ -240,8 +239,12 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             // If we have a count over zero then we can proceed.
             if ($id > 0) {
                 // Get all the state records of this consentform instance.
-                $stateids = $DB->get_fieldset_select('consentform_state', 'id',
-                    'consentformcmid = :consentformcmid', ['consentformcmid' => $id]);
+                $stateids = $DB->get_fieldset_select(
+                    'consentform_state',
+                    'id',
+                    'consentformcmid = :consentformcmid',
+                    ['consentformcmid' => $id]
+                );
                 // Delete all state records of this consentform instance.
                 $DB->delete_records_list('consentform_state', 'id', $stateids);
             }
@@ -268,7 +271,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             return;
         }
 
-        list($ctxsql, $ctxparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
+        [$ctxsql, $ctxparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
 
         // Get all consentform instances of context.
         $sql = "SELECT DISTINCT(ctx.instanceid) AS cmid
@@ -282,16 +285,18 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             return;
         }
 
-        list($select, $params) = $DB->get_in_or_equal($consentformids);
+        [$select, $params] = $DB->get_in_or_equal($consentformids);
         $csids = $DB->get_fieldset_select('consentform_state', 'id', 'consentformcmid ' . $select, $params);
         if (empty($csids)) {
             return;
         }
         // Delete all state records of this user.
-        list($csidssql, $csidsparams) = $DB->get_in_or_equal($csids, SQL_PARAMS_NAMED);
-        $DB->delete_records_select('consentform_state', "(userid = :userid) AND id " . $csidssql,
-            ['userid' => $user->id] + $csidsparams);
-
+        [$csidssql, $csidsparams] = $DB->get_in_or_equal($csids, SQL_PARAMS_NAMED);
+        $DB->delete_records_select(
+            'consentform_state',
+            "(userid = :userid) AND id " . $csidssql,
+            ['userid' => $user->id] + $csidsparams
+        );
     }
 
     /**
@@ -320,13 +325,15 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
                 }
                 // Get state records of this consentform instance.
                 $csids = $DB->get_fieldset_select('consentform_state', 'id', 'consentformcmid = ?', [$consentform->id]);
-                list($csidssql, $csidsparams) = $DB->get_in_or_equal($csids, SQL_PARAMS_NAMED);
-                list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+                [$csidssql, $csidsparams] = $DB->get_in_or_equal($csids, SQL_PARAMS_NAMED);
+                [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
                 // Delete all record states of these users in these slots.
-                $DB->delete_records_select('consentform_state', "id " . $csidssql . " AND userid " . $usersql,
-                    $csidsparams + $userparams);
+                $DB->delete_records_select(
+                    'consentform_state',
+                    "id " . $csidssql . " AND userid " . $usersql,
+                    $csidsparams + $userparams
+                );
             }
         }
     }
-
 }

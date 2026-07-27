@@ -30,7 +30,6 @@ if ($id) {
     $cm         = get_coursemodule_from_id('consentform', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     $consentform  = $DB->get_record('consentform', ['id' => $cm->instance], '*', MUST_EXIST);
-
 } else {
     die('You must specify a course_module ID');
 }
@@ -70,7 +69,7 @@ foreach ($listusers as $record) {
     $csvrows[] = $csvrow;
 } // End loop records.
 
-switch ($tab){
+switch ($tab) {
     case CONSENTFORM_STATUS_AGREED:
         $statusname = get_string("agreed", "consentform");
         break;
@@ -89,6 +88,10 @@ switch ($tab){
 
 $export = new \mod_consentform\consentform_export();
 $exportformat = 'csv';
-$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $statusname . '_' . userdate(time(),
-        '%d-%m-%Y', 99, false));
+$export->init($exportformat, $csvrows, $course->shortname . '_' . $consentform->name . '_' . $statusname . '_' . userdate(
+    time(),
+    '%d-%m-%Y',
+    99,
+    false
+));
 $export->print_file();

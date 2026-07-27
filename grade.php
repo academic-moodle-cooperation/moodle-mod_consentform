@@ -36,4 +36,4 @@ if ($id) {
 require_course_login($course);
 
 // In the simplest case just redirect to the view page.
-redirect('view.php?id='.$id);
+redirect('view.php?id=' . $id);
