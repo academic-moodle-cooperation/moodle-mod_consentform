@@ -44,7 +44,6 @@ if (isset($CFG)) {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class consentform_agreement_form extends \moodleform {
-
     /**
      * Defines forms elements
      */
@@ -72,14 +71,18 @@ class consentform_agreement_form extends \moodleform {
             $data['contextid'],
             'mod_consentform',
             'consentform',
-            0);
+            0
+        );
         $paneldata->confirmationtext = format_text($text);
         $confirmationtexthtml = $OUTPUT->render_from_template('mod_consentform/confirmation_panel', $paneldata);
         $mform->addElement('html', $confirmationtexthtml);
 
         // Show state of confirmation of this user.
-        $state = $DB->get_field('consentform_state', 'state',
-                ['consentformcmid' => $data['cmid'], 'userid' => $data['userid']]) ?? false;
+        $state = $DB->get_field(
+            'consentform_state',
+            'state',
+            ['consentformcmid' => $data['cmid'], 'userid' => $data['userid']]
+        ) ?? false;
         $mform->addElement('html', consentform_get_agreementlogentry($data['cmid'], $data['userid'], $state));
 
         if (!$data['locked']) {
@@ -112,5 +115,4 @@ class consentform_agreement_form extends \moodleform {
         }
         return $data;
     }
-
 }

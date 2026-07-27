@@ -24,6 +24,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/mod/consentform/lib.php');
+
 /**
  * Structure step to restore one consentform activity
  *
@@ -34,7 +38,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_consentform_activity_structure_step extends restore_activity_structure_step {
-
     /** @var int ID of new consentform instance. */
     protected $newcfid;
 
@@ -50,8 +53,10 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
-            $paths[] = new restore_path_element('consentformstate',
-                '/activity/consentform/consentformstates/consentformstate');
+            $paths[] = new restore_path_element(
+                'consentformstate',
+                '/activity/consentform/consentformstates/consentformstate'
+            );
         }
 
         // Return the paths wrapped into standard activity structure.
@@ -87,8 +92,8 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
         // Create the consentform instance.
         $newitemid = $DB->insert_record('consentform', $data);
         if ($data->confirmincourseoverview) {
-            $data->intro = str_replace("confirmation.php?id=".$data->id, "confirmation.php?id=".$newitemid, $data->intro);
             $data->id = $newitemid;
+            $data->intro = consentform_get_courseoverview_iframe((int) $newitemid);
             $DB->update_record('consentform', $data);
         }
         $this->newcfid = $newitemid;
@@ -107,10 +112,15 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
 
         $data = (object) $data;
         $oldid = $data->id;
-        $moduleid = $DB->get_field('modules', 'id', ['name' => 'consentform']);
-        $newcmid = $DB->get_field('course_modules', 'id',
-            ['module' => $moduleid, 'instance' => $this->newcfid]);
+
+        $newcmid = $this->get_mappingid('course_module', $data->consentformcmid);
+        $newuserid = $this->get_mappingid('user', $data->userid);
+        if (empty($newcmid) || empty($newuserid)) {
+            return;
+        }
+
         $data->consentformcmid = $newcmid;
+        $data->userid = $newuserid;
 
         $newitemid = $DB->insert_record('consentform_state', $data);
         $this->set_mapping('consentformstate', $oldid, $newitemid);
@@ -122,5 +132,6 @@ class restore_consentform_activity_structure_step extends restore_activity_struc
     protected function after_execute() {
         // Add consentform related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_consentform', 'intro', null);
+        $this->add_related_files('mod_consentform', 'consentform', null);
     }
 }

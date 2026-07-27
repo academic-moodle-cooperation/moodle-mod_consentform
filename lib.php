@@ -44,6 +44,30 @@ define('CONSENTFORM_DEFAULTCSSCLASS_INLINE', 'consentform_confirmationtext_incou
 /* Moodle core API */
 
 /**
+ * Builds the iframe used when agreement is shown directly in the course overview.
+ *
+ * @param int $consentformid Consentform instance id.
+ * @return string
+ */
+function consentform_get_courseoverview_iframe(int $consentformid): string {
+    $url = new moodle_url('/mod/consentform/confirmation.php', ['id' => $consentformid]);
+    $iframeparams = [
+        'src' => $url->out(false),
+        'scrolling' => 'auto',
+        'frameborder' => '0',
+        'class' => 'w-100',
+        'name' => 'consentformiframe' . $consentformid,
+    ];
+    $js = "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
+    $js .= "this.contentWindow.document.getElementById('page').style.marginBottom='0px';";
+    $js .= "this.contentWindow.document.getElementById('page-content').classList.remove('pb-3');";
+    $js .= "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
+    $iframeparams['onload'] = $js;
+
+    return html_writer::tag('iframe', null, $iframeparams);
+}
+
+/**
  * Returns the information on whether the module supports a feature
  *
  * See plugin_supports() for more info.
@@ -53,7 +77,7 @@ define('CONSENTFORM_DEFAULTCSSCLASS_INLINE', 'consentform_confirmationtext_incou
  */
 function consentform_supports($feature) {
 
-    switch($feature) {
+    switch ($feature) {
         case FEATURE_MOD_INTRO:
             return false;
         case FEATURE_SHOW_DESCRIPTION:
@@ -90,7 +114,7 @@ function consentform_supports($feature) {
  * @return int The id of the newly inserted consentform record
  */
 function consentform_add_instance(stdClass $consentform, mod_consentform_mod_form|null $mform = null) {
-    global $DB, $CFG;
+    global $DB;
 
     $cmid = $consentform->coursemodule;
 
@@ -102,20 +126,7 @@ function consentform_add_instance(stdClass $consentform, mod_consentform_mod_for
     $consentform->id = $DB->insert_record('consentform', $consentform);
 
     if ($consentform->confirmincourseoverview) {
-        $iframeparms = [];
-        $url = $CFG->wwwroot."/mod/consentform/confirmation.php?id=".$consentform->id;
-        $iframeparms["src"] = $url;
-        $iframeparms["scrolling"] = "auto";
-        $js = "this.contentWindow.document.getElementById('page').style.marginTop='0px';";
-        $js .= "this.contentWindow.document.getElementById('page').style.marginBottom='0px';";
-        $js .= "this.contentWindow.document.getElementById('page-content').classList.remove('pb-3');";
-        $js .= "this.style.height=this.contentWindow.document.documentElement.scrollHeight + 'px';";
-        $iframeparms["onload"] = $js;
-        $iframeparms["frameborder"] = "0";
-        $iframeparms["class"] = "w-100";
-        $iframeparms["name"] = "consentformiframe$consentform->id";
-        $html = html_writer::tag("iframe", null, $iframeparms);
-        $consentform->intro = $html;
+        $consentform->intro = consentform_get_courseoverview_iframe((int) $consentform->id);
     }
 
     if ($consentform->usegrade) {
@@ -188,6 +199,13 @@ function consentform_update_instance(stdClass $consentform, mod_consentform_mod_
         );
     }
 
+    $confirmincourseoverview = $consentform->confirmincourseoverview ?? $consentformdb->confirmincourseoverview;
+    if ($confirmincourseoverview) {
+        $consentform->intro = consentform_get_courseoverview_iframe((int) $consentform->id);
+    } else if ($consentformdb->confirmincourseoverview) {
+        $consentform->intro = '';
+    }
+
     $result = $DB->update_record('consentform', $consentform);
 
     return $result;
@@ -236,9 +254,9 @@ function consentform_delete_instance($id) {
  * @param grade_item $grades reset grades in the gradebook
  * @return void
  */
-function consentform_grade_item_update(stdClass $consentform, $grades=null) {
+function consentform_grade_item_update(stdClass $consentform, $grades = null) {
     global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     $item = [];
     $item['itemname'] = clean_param($consentform->name, PARAM_NOTAGS);
@@ -251,8 +269,16 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
         $grades = null;
     }
 
-    grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
-            $consentform->id, 0, $grades, $item);
+    grade_update(
+        'mod/consentform',
+        $consentform->course,
+        'mod',
+        'consentform',
+        $consentform->id,
+        0,
+        $grades,
+        $item
+    );
 }
 
 /**
@@ -263,10 +289,18 @@ function consentform_grade_item_update(stdClass $consentform, $grades=null) {
  */
 function consentform_grade_item_delete($consentform) {
     global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
-    return grade_update('mod/consentform', $consentform->course, 'mod', 'consentform',
-            $consentform->id, 0, null, ['deleted' => 1]);
+    return grade_update(
+        'mod/consentform',
+        $consentform->course,
+        'mod',
+        'consentform',
+        $consentform->id,
+        0,
+        null,
+        ['deleted' => 1]
+    );
 }
 
 /**
@@ -280,7 +314,7 @@ function consentform_grade_item_delete($consentform) {
  */
 function consentform_update_grades(stdClass $consentform, $userid = 0) {
     global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     // Populate array of grade objects indexed by userid.
     $grades = [];
@@ -296,10 +330,9 @@ function consentform_update_grades(stdClass $consentform, $userid = 0) {
  * @param bool $agreed
  * @return false|void
  */
-function consentform_set_user_grade($consentform, $userid, $agreed=true) {
+function consentform_set_user_grade($consentform, $userid, $agreed = true) {
 
     if ($userid) {
-
         $grade = new stdClass();
         $grade->userid = $userid;
         if ($agreed) {
@@ -312,7 +345,6 @@ function consentform_set_user_grade($consentform, $userid, $agreed=true) {
         $grade->datesubmitted = $time;
 
         return consentform_grade_item_update($consentform, $grade);
-
     } else {
         return false;
     }
@@ -461,4 +493,3 @@ function consentform_pluginfile($course, $cm, $context, $filearea, $args, $force
     // Finally send the file.
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
-

@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
 /**
@@ -40,7 +40,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_consentform_mod_form extends moodleform_mod {
-
     /**
      * Defines forms elements
      */
@@ -53,8 +52,10 @@ class mod_consentform_mod_form extends moodleform_mod {
 
         $nocompletion = consentform_checkcompletion(null, $this->context, $this->_course, "nocheckcm");
         if ($nocompletion) {
-            $nocompletion = html_writer::div(get_string("nocompletiontitle", "mod_consentform"),
-                    'font-weight-bold').$nocompletion;
+            $nocompletion = html_writer::div(
+                get_string("nocompletiontitle", "mod_consentform"),
+                'font-weight-bold'
+            ) . $nocompletion;
             $nocompletion = $OUTPUT->notification($nocompletion, 'error', false);
             $mform->addElement('html', $nocompletion);
             $mform->addElement('hidden', 'update', "");
@@ -90,11 +91,13 @@ class mod_consentform_mod_form extends moodleform_mod {
         $mform->addElement('header', 'textfields', get_string('textfields', 'consentform'));
 
         // The text to agree to.
-        $mform->addElement('editor',
+        $mform->addElement(
+            'editor',
             'confirmationtext_editor',
             get_string("confirmationtext", "consentform"),
             null,
-            $editoroptions);
+            $editoroptions
+        );
         $mform->setType('confirmationtext_editor', PARAM_RAW);
         $mform->addRule('confirmationtext_editor', get_string('required'), 'required', null, 'client');
 
@@ -166,8 +169,14 @@ class mod_consentform_mod_form extends moodleform_mod {
             $draftitemid = file_get_submitted_draft_itemid('confirmationtext_editor');
             $defaultvalues['confirmationtext_editor']['format'] = 1;
             $defaultvalues['confirmationtext_editor']['text'] = file_prepare_draft_area(
-                $draftitemid, $this->context->id, 'mod_consentform', 'consentform', 0,
-                consentform_get_editor_options($this->context), $defaultvalues['confirmationtext']);
+                $draftitemid,
+                $this->context->id,
+                'mod_consentform',
+                'consentform',
+                0,
+                consentform_get_editor_options($this->context),
+                $defaultvalues['confirmationtext']
+            );
             $defaultvalues['confirmationtext_editor']['itemid'] = $draftitemid;
         }
     }
