@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.2.0 (2026-05-12)
+------------------
+* [FEATURE] #8556 Add explicit completion conditions for agreeing to or refusing the consentform
+
 5.1.0 (2025-10-06)
 ------------------
 * Moodle 5.1.0 compatible version
