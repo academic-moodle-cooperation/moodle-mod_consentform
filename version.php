@@ -31,6 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'mod_consentform';
 $plugin->version = 2026051200;
 $plugin->release = 'v5.2.0';
-$plugin->requires = 2025100600;
+$plugin->requires = 2026042000;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;

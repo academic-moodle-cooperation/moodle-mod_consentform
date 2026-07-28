@@ -7,6 +7,7 @@ CHANGELOG
 * [CHANGED] #8689 Update activity information language strings
 * [FEATURE] #8556 Add explicit completion conditions for agreeing to or refusing the consentform
 * [FEATURE] #8692 Support Multilang filter v2 in button labels
+* [FIXED] #8766 Fix cross-site activity restore [github pull #17 @dasistwas]
 
 5.1.0 (2025-10-06)
 ------------------
