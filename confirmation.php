@@ -34,6 +34,7 @@ $consentform = $DB->get_record('consentform', ['id' => $id], '*', MUST_EXIST);
 
 require_login($course, false, $cm);
 
+$contextmodule = context_module::instance($cm->id);
 $locked = false;
 $contextcoursecat = context_coursecat::instance($course->category);
 if ($contextcoursecat->locked) {
@@ -43,7 +44,6 @@ if ($contextcoursecat->locked) {
     if ($contextcourse->locked) {
         $locked = true;
     } else {
-        $contextmodule = context_module::instance($cm->id);
         if ($contextmodule->locked) {
             $locked = true;
         }
@@ -66,15 +66,16 @@ $mform = new \mod_consentform\consentform_agreement_form(
         'userid' => $USER->id,
         'confirmationtextclass' => $cssclassesstring,
         'locked' => $locked,
+        'context' => $contextmodule,
         'contextid' => $contextmodule->id,
     ]
 );
 // Process participant's agreement form data and redirect.
 if ($data = $mform->get_data()) {
     $PAGE->set_url('/mod/consentform/confirmation.php', ['id' => $cm->id]);
-    $PAGE->set_title(format_string($consentform->name));
+    $PAGE->set_title(format_string($consentform->name, true, ['context' => $contextmodule]));
     $PAGE->set_pagelayout('embedded');
-    if (isset($data->agreement) && $data->agreement == $consentform->textagreementbutton) {
+    if (isset($data->agreement)) {
         $ok = consentform_save_agreement(EXPECTEDCOMPLETIONVALUE, $USER->id, $cm->id);
         $message = get_string('msgagreed', 'consentform');
         $event = \mod_consentform\event\agreement_agree::create(
@@ -84,7 +85,7 @@ if ($data = $mform->get_data()) {
             ]
         );
         $event->trigger();
-    } else if (isset($data->revocation) && $data->revocation == $consentform->textrevocationbutton) {
+    } else if (isset($data->revocation)) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REVOKED, $USER->id, $cm->id);
         $message = get_string('msgrevoked', 'consentform');
         $event = \mod_consentform\event\agreement_revoke::create(
@@ -94,7 +95,7 @@ if ($data = $mform->get_data()) {
             ]
         );
         $event->trigger();
-    } else if (isset($data->refusal) && $data->refusal == $consentform->textrefusalbutton) {
+    } else if (isset($data->refusal)) {
         $ok = consentform_save_agreement(CONSENTFORM_STATUS_REFUSED, $USER->id, $cm->id);
         $message = get_string('msgrefused', 'consentform');
         $event = \mod_consentform\event\agreement_refuse::create(
@@ -117,7 +118,7 @@ if ($data = $mform->get_data()) {
     } else {
         // Display agreement form to participant.
         $PAGE->set_url('/mod/consentform/confirmation.php', ['id' => $cm->id]);
-        $PAGE->set_title(format_string($consentform->name));
+        $PAGE->set_title(format_string($consentform->name, true, ['context' => $contextmodule]));
         $PAGE->set_pagelayout('popup');
         echo $OUTPUT->header();
         $mform->display();

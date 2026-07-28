@@ -176,6 +176,97 @@ function xmldb_consentform_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Changing type of field textagreementbutton on table consentform to char.
+        $table = new xmldb_table('consentform');
+        $field = new xmldb_field(
+            'textagreementbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'optionrefuse'
+        );
+
+        // Launch change of type for field textagreementbutton.
+        $dbman->change_field_type($table, $field);
+
+        // Changing type of field textrefusalbutton on table consentform to char.
+        $field = new xmldb_field(
+            'textrefusalbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'textagreementbutton'
+        );
+
+        // Launch change of type for field textrefusalbutton.
+        $dbman->change_field_type($table, $field);
+
+        // Changing type of field textrevocationbutton on table consentform to char.
+        $field = new xmldb_field(
+            'textrevocationbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'textrefusalbutton'
+        );
+
+        // Launch change of type for field textrevocationbutton.
+        $dbman->change_field_type($table, $field);
+
+        // Changing precision of field textagreementbutton on table consentform to (255).
+        $field = new xmldb_field(
+            'textagreementbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'optionrefuse'
+        );
+
+        // Launch change of precision for field textagreementbutton.
+        $dbman->change_field_precision($table, $field);
+
+        // Changing precision of field textrefusalbutton on table consentform to (255).
+        $field = new xmldb_field(
+            'textrefusalbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'textagreementbutton'
+        );
+
+        // Launch change of precision for field textrefusalbutton.
+        $dbman->change_field_precision($table, $field);
+
+        // Changing precision of field textrevocationbutton on table consentform to (255).
+        $field = new xmldb_field(
+            'textrevocationbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'textrefusalbutton'
+        );
+
+        // Launch change of precision for field textrevocationbutton.
+        $dbman->change_field_precision($table, $field);
+
         // Consentform savepoint reached.
         upgrade_mod_savepoint(true, 2026051200, 'consentform');
     }
