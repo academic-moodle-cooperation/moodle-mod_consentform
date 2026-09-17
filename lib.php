@@ -39,6 +39,7 @@ define('CONSENTFORM_ALL', 99);
 define('CONSENTFORM_NOTIMESTAMP', '-');
 define('CONSENTFORM_DEFAULTCSSCLASS', 'consentform_confirmationtext');
 define('CONSENTFORM_DEFAULTCSSCLASS_INLINE', 'consentform_confirmationtext_incourseoverview');
+define('CONSENTFORM_BUTTON_LABEL_MAXLENGTH', 255);
 
 /* Moodle core API */
 
