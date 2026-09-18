@@ -58,6 +58,8 @@ class backup_consentform_activity_structure_step extends backup_activity_structu
             'textrefusalbutton',
             'textrevocationbutton',
             'usegrade',
+            'completionresponded',
+            'completionagree',
             'confirmincourseoverview',
             'nocoursemoduleslist',
             'cssclassesstring',

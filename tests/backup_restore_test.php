@@ -202,6 +202,74 @@ final class backup_restore_test extends advanced_testcase {
     }
 
     /**
+     * Completion settings in current and legacy backups.
+     *
+     * @return array
+     */
+    public static function completion_settings_provider(): array {
+        return [
+            'agreement' => [1, 0, false, null, 1, 0],
+            'response' => [0, 1, false, null, 0, 1],
+            'manual' => [0, 0, false, null, 0, 0],
+            'legacy default' => [0, 0, true, null, 1, 0],
+            'legacy submission enabled' => [0, 0, true, 1, 0, 1],
+            'legacy submission disabled' => [0, 0, true, 0, 1, 0],
+        ];
+    }
+
+    /**
+     * Completion settings survive restore, including defaults for old backups.
+     *
+     * @dataProvider completion_settings_provider
+     * @param int $agree Agreement rule in the source activity.
+     * @param int $responded Response rule in the source activity.
+     * @param bool $legacy Whether to remove the new fields from the backup.
+     * @param int|null $submit Legacy submission rule, if present.
+     * @param int $expectedagree Expected restored agreement rule.
+     * @param int $expectedresponded Expected restored response rule.
+     */
+    public function test_completion_settings_restore(
+        int $agree,
+        int $responded,
+        bool $legacy,
+        ?int $submit,
+        int $expectedagree,
+        int $expectedresponded
+    ): void {
+        global $CFG, $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $CFG->enablecompletion = true;
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => COMPLETION_ENABLED]);
+        $completion = ($agree || $responded || $legacy) ? COMPLETION_TRACKING_AUTOMATIC : COMPLETION_TRACKING_MANUAL;
+        $consentform = $this->create_consentform($course, [
+            'completionagree' => $agree,
+            'completionresponded' => $responded,
+            'completion' => $completion,
+        ]);
+        $backupid = $this->backup_course($course);
+
+        if ($legacy) {
+            $backupfile = $CFG->tempdir . '/backup/' . $backupid . '/activities/consentform_' .
+                $consentform->cmid . '/consentform.xml';
+            $xml = simplexml_load_file($backupfile);
+            unset($xml->consentform->completionagree, $xml->consentform->completionresponded);
+            if ($submit !== null) {
+                $xml->consentform->addChild('completionsubmit', (string) $submit);
+            }
+            $xml->asXML($backupfile);
+        }
+
+        $newcourseid = $this->restore_course($backupid, $course);
+        $restored = $DB->get_record('consentform', ['course' => $newcourseid], '*', MUST_EXIST);
+        $this->assertEquals($expectedagree, $restored->completionagree);
+        $this->assertEquals($expectedresponded, $restored->completionresponded);
+        $cm = get_coursemodule_from_instance('consentform', $restored->id, $newcourseid, false, MUST_EXIST);
+        $this->assertEquals($completion, $cm->completion);
+    }
+
+    /**
      * Creates a consentform activity without requiring a plugin data generator.
      *
      * @param stdClass $course Course record.

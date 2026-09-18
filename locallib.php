@@ -716,11 +716,7 @@ function consentform_save_agreement($status, $userid, $cmid) {
         $DB->insert_record('consentform_state', $record);
     }
 
-    if ($status == EXPECTEDCOMPLETIONVALUE) {
-        consentform_update_completionstate($cmid, $status);
-    } else {
-        consentform_update_completionstate($cmid, 0);
-    }
+    consentform_update_completionstate($cmid, $status);
 
     $instanceid = $DB->get_field('course_modules', 'instance', ['id' => $cmid]);
     $consentform = $DB->get_record('consentform', ['id' => $instanceid]);
@@ -793,18 +789,31 @@ function consentform_usegradechange_writegrades($consentform) {
  * @throws moodle_exception
  */
 function consentform_update_completionstate($cmid, $agreed, $userid = 0) {
-    global $USER;
+    global $DB, $USER;
 
     if (!$userid) {
         $userid = $USER->id;
     }
+
     $course = get_course_and_cm_from_cmid($cmid)[0];
     $cm = get_coursemodule_from_id(false, $cmid);
+
+    if ($cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
+        return true;
+    }
+
     $cminfo = new completion_info($course);
-    $current = $cminfo->get_data($cm, false, $userid);
-    $current->completionstate = $agreed;
-    $current->timemodified = time();
-    $cminfo->internal_set_data($cm, $current);
+
+    $completionrules = $DB->get_record(
+        'consentform',
+        ['id' => $cm->instance],
+        'id, completionagree, completionresponded',
+        MUST_EXIST
+    );
+
+    if ($completionrules->completionagree || $completionrules->completionresponded) {
+        $cminfo->update_state($cm, COMPLETION_UNKNOWN, $userid);
+    }
 
     return true;
 }
