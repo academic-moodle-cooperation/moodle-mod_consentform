@@ -38,6 +38,7 @@ if ($id) {
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
+$coursecontext = context_course::instance($course->id);
 $locked = false;
 if ($context->locked) {
     $locked = true;
@@ -65,8 +66,8 @@ $redirecturl = new moodle_url('/course/view.php', ['id' => $course->id]);
 
 // Print the page header.
 $PAGE->set_url('/mod/consentform/view.php', ['id' => $cm->id]);
-$PAGE->set_title(format_string($consentform->name));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title(format_string($consentform->name, true, ['context' => $context]));
+$PAGE->set_heading(format_string($course->fullname, true, ['context' => $coursecontext]));
 $PAGE->add_body_class('limitedwidth');
 
 $nocompletion = consentform_checkcompletion($id, $context, $course, $cm->completion);
@@ -99,7 +100,6 @@ if ($nocompletion) {
         echo html_writer::link($lulink, $lulinktext, ['class' => 'btn btn-secondary ml-2']);
 
         // Print list of user reaction statistics.
-        $coursecontext = context_course::instance($course->id);
         [$sumagreed, $sumrefused, $sumrevoked, $sumnoaction, $sumall] =
             consentform_statistics_listusers($coursecontext, $cm->id);
         $linkclass = ["class" => "list-group-item d-flex justify-content-between align-items-center"];
@@ -148,6 +148,7 @@ if ($nocompletion) {
                 'userid' => $USER->id,
                 'confirmationtextclass' => $cssclassesstring,
                 'locked' => $locked,
+                'context' => $context,
                 'contextid' => $context->id,
             ]
         );
