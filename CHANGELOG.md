@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+5.1.2 (2026-09-19)
+-------------------
+* [FEATURE] #8815 Add optional completion when a student agrees to or refuses the consent form
+* [FIXED] #8814 Support multilingual button labels and names with the Multilang v2 filter
+
 5.1.1 (2026-07-17)
 -------------------
 * [FIXED] #8770 Fix cross-site restore for course overview agreement [github pull #16 @mm-poustini]
