@@ -43,9 +43,33 @@ class custom_completion extends activity_custom_completion {
 
         $this->validate_rule($rule);
 
-        // Consentform only supports completionsubmit as a custom rule.
-        $status = $DB->record_exists('consentform_state', ['consentformid' => $this->cm->instance, 'userid' => $this->userid]);
-        return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+        if ($rule === 'completionagree') {
+            $status = $DB->record_exists(
+                'consentform_state',
+                [
+                    'consentformcmid' => $this->cm->id,
+                    'userid' => $this->userid,
+                    'state' => \CONSENTFORM_STATUS_AGREED,
+                ]
+            );
+            return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+        }
+
+        if ($rule === 'completionresponded') {
+            $status = $DB->record_exists_select(
+                'consentform_state',
+                'consentformcmid = :cmid AND userid = :userid AND state IN (:agreed, :refused)',
+                [
+                    'cmid' => $this->cm->id,
+                    'userid' => $this->userid,
+                    'agreed' => \CONSENTFORM_STATUS_AGREED,
+                    'refused' => \CONSENTFORM_STATUS_REFUSED,
+                ]
+            );
+            return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+        }
+
+        return parent::get_state($rule);
     }
 
     /**
@@ -55,8 +79,8 @@ class custom_completion extends activity_custom_completion {
      */
     public static function get_defined_custom_rules(): array {
         return [
-            'completionview',
-            'completionsubmit',
+            'completionagree',
+            'completionresponded',
         ];
     }
 
@@ -67,7 +91,8 @@ class custom_completion extends activity_custom_completion {
      */
     public function get_custom_rule_descriptions(): array {
         return [
-            'completionsubmit' => get_string('completiondetail:submit', 'consentform'),
+            'completionagree' => get_string('completionagree', 'consentform'),
+            'completionresponded' => get_string('completionresponded', 'consentform'),
         ];
     }
 
@@ -79,7 +104,8 @@ class custom_completion extends activity_custom_completion {
     public function get_sort_order(): array {
         return [
             'completionview',
-            'completionsubmit',
+            'completionagree',
+            'completionresponded',
         ];
     }
 }
