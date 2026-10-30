@@ -38,10 +38,11 @@ if ($id) {
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
+$coursecontext = context_course::instance($course->id);
 
 $event = \mod_consentform\event\course_module_instance_list_viewed::create([
     'objectid' => $cm->id,
-    'context' => context_course::instance($cm->course),
+    'context' => $coursecontext,
 ]);
 $event->add_record_snapshot('course', $PAGE->course);
 $event->add_record_snapshot($PAGE->cm->modname, $consentform);
@@ -66,8 +67,8 @@ $redirecturl = new moodle_url('/course/view.php', ['id' => $course->id]);
 
 // Print the page header.
 $PAGE->set_url('/mod/consentform/modulelist.php', ['id' => $cm->id]);
-$PAGE->set_title(format_string($consentform->name));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title(format_string($consentform->name, true, ['context' => $context]));
+$PAGE->set_heading(format_string($course->fullname, true, ['context' => $coursecontext]));
 $PAGE->add_body_class('limitedwidth');
 
 $nocompletion = consentform_checkcompletion($id, $context, $course, $cm->completion);

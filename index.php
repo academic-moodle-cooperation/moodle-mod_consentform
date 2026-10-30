@@ -37,18 +37,21 @@ $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 require_course_login($course);
 
+$coursecontext = context_course::instance($course->id);
 $params = [
-    'context' => context_course::instance($course->id),
+    'context' => $coursecontext,
 ];
 $event = \mod_consentform\event\course_module_instance_list_viewed::create($params);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
 $strname = get_string('modulenameplural', 'mod_consentform');
+$courseshortname = format_string($course->shortname, true, ['context' => $coursecontext]);
+$coursefullname = format_string($course->fullname, true, ['context' => $coursecontext]);
 $PAGE->set_url('/mod/consentform/index.php', ['id' => $id]);
 $PAGE->navbar->add($strname);
-$PAGE->set_title("$course->shortname: $strname");
-$PAGE->set_heading($course->fullname);
+$PAGE->set_title("$courseshortname: $strname");
+$PAGE->set_heading($coursefullname);
 $PAGE->set_pagelayout('incourse');
 
 echo $OUTPUT->header();

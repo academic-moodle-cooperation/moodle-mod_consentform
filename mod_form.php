@@ -107,7 +107,13 @@ class mod_consentform_mod_form extends moodleform_mod {
             $mform->addElement('text', $label, get_string($label, 'consentform'), 'size="32"');
             $mform->setType($label, PARAM_TEXT);
             $mform->setDefault($label, $settings->$label);
-            $mform->addRule($label, get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
+            $mform->addRule(
+                $label,
+                get_string('maximumchars', '', CONSENTFORM_BUTTON_LABEL_MAXLENGTH),
+                'maxlength',
+                CONSENTFORM_BUTTON_LABEL_MAXLENGTH,
+                'client'
+            );
             $mform->addRule($label, null, 'required', null, 'client');
         }
 
