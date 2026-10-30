@@ -176,6 +176,43 @@ function xmldb_consentform_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Increase the button label lengths to support multilang filter syntax.
+        $field = new xmldb_field(
+            'textagreementbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'optionrefuse'
+        );
+        $dbman->change_field_precision($table, $field);
+
+        $field = new xmldb_field(
+            'textrefusalbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'textagreementbutton'
+        );
+        $dbman->change_field_precision($table, $field);
+
+        $field = new xmldb_field(
+            'textrevocationbutton',
+            XMLDB_TYPE_CHAR,
+            '255',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            null,
+            'textrefusalbutton'
+        );
+        $dbman->change_field_precision($table, $field);
+
         // Consentform savepoint reached.
         upgrade_mod_savepoint(true, 2025100602, 'consentform');
     }
