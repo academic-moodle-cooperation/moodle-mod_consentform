@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+5.0.2 (2026-09-18)
+-------------------
+
+* [FEATURE] #8812 Add optional completion when a student agrees to or refuses the consent form
+* [FIXED] #8811 Support multilingual button labels and names with the Multilang v2 filter
+
+
 5.0.1 (2026-07-17)
 -------------------
 
